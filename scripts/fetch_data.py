@@ -15,13 +15,28 @@ Every feed is wrapped so one failure does not abort the others; failures are
 recorded in live.json._meta.errors so a partial refresh is transparent.
 Usage: python scripts/fetch_data.py
 """
-import io, os, re, json, statistics, datetime, pathlib
+import io, os, re, json, time, statistics, datetime, pathlib
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "live.json"
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) sg-property-decision/1.0"}
 DG = "https://data.gov.sg/api/action/datastore_search"
+
+def GET(url, headers=None, timeout=45, tries=4):
+    """requests.get with backoff on 429 / 5xx (data.gov.sg rate-limits datacentre IPs)."""
+    last = None
+    for i in range(tries):
+        r = requests.get(url, headers=headers or UA, timeout=timeout)
+        if r.status_code in (429, 502, 503, 504):
+            last = r
+            if i < tries - 1:
+                time.sleep(2 * (i + 1) + 1)
+                continue
+        r.raise_for_status()
+        return r
+    last.raise_for_status()
+    return last
 
 def qkey(q):
     y, qq = q.split("-Q"); return int(y) * 4 + int(qq)
@@ -33,18 +48,15 @@ def yoy(path):
     return round(path[-1][1] / path[-5][1] - 1, 4) if len(path) >= 5 else None
 
 def dg_all(rid, limit=3000):
-    r = requests.get(f"{DG}?resource_id={rid}&limit={limit}", headers=UA, timeout=45)
-    r.raise_for_status()
-    return r.json()["result"]["records"]
+    return GET(f"{DG}?resource_id={rid}&limit={limit}").json()["result"]["records"]
 
-def dg_tail(rid, n=6000):
+def dg_tail(rid, n=4000):
     """Last n records (highest _id = most recent). datastore_search returns the
-    first rows by default, so page to the tail via offset to get current months."""
-    total = requests.get(f"{DG}?resource_id={rid}&limit=1", headers=UA, timeout=30).json()["result"]["total"]
+    first rows by default, so page to the tail via offset to get current months.
+    n=4000 covers ~1.5 months of HDB resales (kept modest to avoid 429s in CI)."""
+    total = GET(f"{DG}?resource_id={rid}&limit=1", timeout=30).json()["result"]["total"]
     off = max(0, total - n)
-    r = requests.get(f"{DG}?resource_id={rid}&limit={n}&offset={off}", headers=UA, timeout=60)
-    r.raise_for_status()
-    return r.json()["result"]["records"]
+    return GET(f"{DG}?resource_id={rid}&limit={n}&offset={off}", timeout=60).json()["result"]["records"]
 
 # ---- planning area -> market segment (for GLS colouring) ----
 CCR = {"downtown core","orchard","newton","river valley","rochor","museum","singapore river",
@@ -86,7 +98,7 @@ def ura_locality():
     return out
 
 def hdb_resale():
-    recs = dg_tail("d_8b84c4ee58e3cfc0ece0d773c8ca6abc", 6000)
+    recs = dg_tail("d_8b84c4ee58e3cfc0ece0d773c8ca6abc", 4000)
     latest = max(r["month"] for r in recs)
     cur = [r for r in recs if r["month"] == latest]
     def psf(r):
@@ -104,12 +116,12 @@ def hdb_resale():
             "by_type": by_type, "source": "data.gov.sg d_8b84c4ee (HDB resale register)"}
 
 def gls():
-    page = requests.get("https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites", headers=UA, timeout=45).text
+    page = GET("https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites").text
     href = re.findall(r'href="([^"]+Vacant Sites[^"]*\.xlsx[^"]*)"', page)
     if not href:
         raise RuntimeError("GLS xlsx href not found on Past-Sale-Sites page")
     import pandas as pd
-    xb = requests.get(href[0].replace(" ", "%20"), headers=UA, timeout=90).content
+    xb = GET(href[0].replace(" ", "%20"), timeout=90).content
     df = pd.read_excel(io.BytesIO(xb), sheet_name=0, header=0)
     df.columns = [str(c).split("\n")[0].strip() for c in df.columns]
     df = df.rename(columns={"Successful Tender Price": "price",
@@ -138,14 +150,14 @@ def ura_transactions():
     key = os.environ.get("URA_ACCESS_KEY")
     if not key:
         return None
-    tok = requests.get("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
-                       headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
+    tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
+              headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
     hdr = {**UA, "AccessKey": key, "Token": tok}
     seg_psf = {"CCR": [], "RCR": [], "OCR": []}
     seg_map = {"CCR": "CCR", "RCR": "RCR", "OCR": "OCR"}
     for batch in (1, 2, 3, 4):
-        j = requests.get(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Transaction&batch={batch}",
-                         headers=hdr, timeout=60).json()
+        j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Transaction&batch={batch}",
+                headers=hdr, timeout=60).json()
         for proj in j.get("Result", []):
             seg = seg_map.get(proj.get("marketSegment"))
             if not seg: continue
