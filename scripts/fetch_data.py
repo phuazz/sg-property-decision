@@ -15,7 +15,7 @@ Every feed is wrapped so one failure does not abort the others; failures are
 recorded in live.json._meta.errors so a partial refresh is transparent.
 Usage: python scripts/fetch_data.py
 """
-import io, os, re, json, time, statistics, datetime, pathlib
+import io, os, re, sys, json, time, statistics, datetime, pathlib
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -59,6 +59,9 @@ def dg_tail(rid, n=4000):
     return GET(f"{DG}?resource_id={rid}&limit={n}&offset={off}", timeout=60).json()["result"]["records"]
 
 # ---- planning area -> market segment (for GLS colouring) ----
+# Approximation: URA defines CCR by postal district (9/10/11 + Downtown Core + Sentosa),
+# not by planning area. Bukit Timah PA spans CCR districts (10/11) and OCR (21) but is
+# tagged RCR here; the page flags segment tags as approximate for this reason.
 CCR = {"downtown core","orchard","newton","river valley","rochor","museum","singapore river",
        "marina south","straits view","tanglin","marina east"}
 RCR = {"kallang","geylang","queenstown","bukit merah","toa payoh","marine parade","novena",
@@ -188,6 +191,14 @@ def main():
         except Exception as e:
             live["_meta"]["errors"][name] = repr(e)
             print(f"  FAIL {name}: {e!r}")
+    fetched_any = any(name in live for name in feeds)
+    if not fetched_any:
+        # Every feed failed: keep the previous live.json rather than overwriting it
+        # with an empty shell, and fail the run so CI surfaces it.
+        print("::error::all live feeds failed - keeping the previous data/live.json")
+        sys.exit(1)
+    for name in live["_meta"]["errors"]:
+        print(f"::warning::live feed failed: {name} - curated baseline values will stand for it")
     OUT.write_text(json.dumps(live, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size/1024:.1f} KB); errors: {list(live['_meta']['errors'])}")
 

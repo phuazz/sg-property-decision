@@ -28,8 +28,13 @@ def merge_live(market, live):
     """Overlay live feeds onto the curated market baseline (canonical fields)."""
     if not live:
         return market
-    market["live"] = {"present": True, "fetched": live.get("_meta", {}).get("fetched"),
+    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official")
+    ok = [f for f in feeds if live.get(f)]
+    market["live"] = {"present": bool(ok), "fetched": live.get("_meta", {}).get("fetched"),
+                      "ok": ok, "failed": sorted(live.get("_meta", {}).get("errors", {})),
                       "errors": live.get("_meta", {}).get("errors", {})}
+    if not ok:
+        return market
     # price indices
     for key in ("ura_ppi", "hdb_rpi"):
         lv = live.get(key)

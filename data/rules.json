@@ -3,7 +3,7 @@
     "title": "Singapore property decision — regulatory & loan-engine constants",
     "asof": "2026-07-10",
     "not_advice": "Educational illustration of published rules, not financial or mortgage advice. Verify against MAS / MoneySense / IRAS / HDB before acting.",
-    "stability_note": "Core cooling-measure parameters have been stable since 27 Apr 2023 (stamp duty) and 20 Aug 2024 (HDB LTV). Every 2026-dated source treats them as unchanged.",
+    "stability_note": "Buyer-side parameters (TDSR, MSR, LTV, BSD, ABSD) unchanged since 27 Apr 2023 (ABSD/BSD) and 20 Aug 2024 (HDB LTV). Seller-side is NOT static: SSD holding period extended 3y->4y with rates raised 4pp on 4 Jul 2025 (encoded below); EC-specific tightening 8 May 2026 (see market.json ec_policy_2026).",
     "sources": "MAS; MoneySense (retrieved Jul 2026); IRAS / MOF (15 Feb 2023 stamp-duty revision); HDB / MND (20 Aug 2024)."
   },
 
@@ -35,16 +35,18 @@
       "age_plus_tenure_gt": 65,
       "note": "If tenure exceeds 30y (private) / 25y (HDB) OR the loan runs past age 65, LTV steps down to the reduced tier and first-loan minimum cash rises from 5% to 10%."
     },
-    "hdb_concessionary": { "max": 0.75, "tenure_cap_years": 25, "rate": 0.026, "note": "HDB loan LTV cut 80%->75% on 20 Aug 2024." },
+    "hdb_concessionary": { "max": 0.75, "tenure_cap_years": 25, "rate": 0.026, "stress_floor": 0.03, "cash_min": 0.0, "income_ceiling_monthly": 14000, "note": "HDB loan LTV cut 80%->75% on 20 Aug 2024. Downpayment can be fully CPF (no minimum cash). Tenure capped at the shorter of 25y and age 65. Eligible loan sized at a 3% floor (introduced 30 Sep 2022). Household income ceiling S$14,000 (S$7,000 singles).", "source": "HDB/MND (20 Aug 2024); MAS/MND/HDB joint release (29 Sep 2022); HDB HLE" },
     "source": "MoneySense (Jul 2026); HDB/MND (20 Aug 2024)"
   },
 
   "tenure_cap_years": {
     "private_bank": 35,
     "hdb_bank": 30,
+    "ec_bank": 30,
     "hdb_concessionary": 25,
-    "note": "Absolute maximum loan tenures. Separate from the LTV cliff at 30y/25y/age-65 above. For a borrower of age A wanting full 75% LTV on a private purchase, usable tenure = min(30, 65 - A).",
-    "source": "MAS / MoneySense (Jul 2026)"
+    "note": "Absolute maximum loan tenures. Separate from the LTV cliff at 30y/25y/age-65 above. For a borrower of age A wanting full 75% LTV on a private purchase, usable tenure = min(30, 65 - A). An EC bought from a developer is grouped with public housing at 30y.",
+    "flag": "ec_bank 30y is the consistent industry reading of MAS Notice 632; the MAS site was unavailable at review time (Jul 2026) - confirm against the notice text.",
+    "source": "MAS / MoneySense (Jul 2026); EC: DollarBack Mortgage / EC-specialist guides (Jul 2026)"
   },
 
   "absd": {
@@ -72,8 +74,16 @@
     "checkpoints_sgd": { "1000000": 24600, "1500000": 44600, "2000000": 69600 }
   },
 
+  "ssd": {
+    "note": "Seller's Stamp Duty, residential: payable if the property is sold within 4 years of purchase, on the higher of price or market value, by year of sale (year 1 = 16%). Applies to purchases on/after 4 Jul 2025; earlier purchases keep the prior 3-year 12/8/4% schedule. HDB's 5-year MOP normally outlasts it.",
+    "effective": "2025-07-04",
+    "holding_period_years": 4,
+    "rates_by_year": [0.16, 0.12, 0.08, 0.04],
+    "source": "MAS/MOF/MND joint release 3 Jul 2025; IRAS SSD (residential)"
+  },
+
   "rates": {
-    "sora_3m":            { "value": 0.011153, "asof": "2026-07-08", "source": "MAS daily rates via Cashew.sg", "flag": null },
+    "sora_3m":            { "value": 0.011153, "asof": "2026-07-08", "source": "MAS daily rates via Cashew.sg", "flag": "published by MAS; retrieved via an aggregator, not independently verified to the basis point" },
     "fixed_best":         { "value": 0.0130, "range": [0.0130, 0.0170], "asof": "2026-07-09", "source": "DollarBack / MortgageWise; DBS 2yr fixed 1.68%", "flag": "broker-negotiated promo, not board rate" },
     "floating_typical":   { "value": 0.0170, "range": [0.0140, 0.0210], "source": "3M SORA ~1.12% + spread 0.25-1.00%", "flag": "synthesised range" },
     "hdb_concessionary":  { "value": 0.0260, "source": "HDB (CPF OA + 0.1pp), unchanged" },

@@ -45,7 +45,7 @@
       "median_psf": 2650, "median_psf_flag": "portal aggregation",
       "yield_gross": [0.020, 0.028], "yield_pt": 0.024,
       "outlook_2026_qoq_range": [0.01, 0.02], "momentum_qoq": 0.020, "momentum_asof": "2026-Q2 flash",
-      "note": "Lowest yield; within the $1.2-1.5m budget only 1-bedders fit. Leading Q2 2026 on price after years of underperformance."
+      "note": "Lowest yield; within the $1.2-1.5m budget only 1-bedders fit. Momentum rotates quarter to quarter - read the live q/q column rather than a fixed narrative."
     },
     "Landed": {
       "label": "Landed housing",
@@ -68,6 +68,14 @@
     "OCR": { "all": 1399000, "new": 1575000, "resale": 1266000, "size": [680, 760] },
     "RCR": { "all": 1780000, "new": 1905000, "resale": 1641000, "size": [690, 750] },
     "CCR": { "all": 2050000, "new": 1962000, "resale": 2163000, "size": [660, 790] }
+  },
+
+  "ownership_costs": {
+    "note": "Recurring owner costs a mortgage instalment does not include. Estimates — MCST fees vary by project and share value; property tax uses IRAS owner-occupier bands on the annual value.",
+    "flag": "estimate",
+    "maintenance_monthly_2br_condo": [300, 450],
+    "property_tax_owner_occ_annual_at_brief": [1500, 2500],
+    "source": "typical 2026 MCST fee ranges (portal-sourced); IRAS owner-occupier tax schedule"
   },
 
   "gls": {
@@ -120,6 +128,6 @@
       "rcr_value_pocket": "D14 (Geylang / Eunos) fringe resale is the main RCR pocket that occasionally fits.",
       "ccr": "Only 1-bedders fit the budget in prime districts."
     },
-    "affordability_note": "At the 4% TDSR floor, 75% LTV, 30-year tenure, an OCR 2BR at ~$1.4m needs roughly $9,150/month income and ~$464k upfront (incl. ~$40.5k BSD). At age 42, full 75% LTV caps tenure at 23 years, which raises the instalment vs a 30-year loan — see the Affordability tab."
+    "affordability_note": "At the 4% TDSR floor and 75% LTV, an OCR 2BR at ~$1.4m needs roughly $10,600/month income over the 23-year tenure age 42 allows (about $9,100 if a 30-year tenure were available) and ~$395k upfront (25% downpayment + ~$40.6k BSD + ~$4k legal). See the Affordability tab."
   }
 }
