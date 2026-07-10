@@ -1,0 +1,148 @@
+{
+  "_meta": {
+    "title": "Singapore residential market snapshot",
+    "asof": "2026-07-10",
+    "not_advice": "Educational snapshot built from primary public sources (URA, HDB, MAS, SingStat) plus portal aggregations where no official figure exists. Portal-sourced and computed figures are flagged. Not financial advice.",
+    "refresh": "Manual curated snapshot. Live-pull path documented in README (data.gov.sg open API for HDB resale/rental + indices; URA Data Service token for private transactions; MAS page for SORA)."
+  },
+
+  "indices": {
+    "ura_ppi": {
+      "label": "URA Private Residential Property Price Index",
+      "base": "2009-Q1 = 100",
+      "level": 216.4, "level_asof": "2025-Q4",
+      "yoy_2024": 0.039, "yoy_2025": 0.033,
+      "q_path": [
+        { "q": "2024-Q4", "qoq": 0.023 },
+        { "q": "2025-Q1", "qoq": 0.008 },
+        { "q": "2025-Q2", "qoq": 0.010 },
+        { "q": "2025-Q3", "qoq": 0.009 },
+        { "q": "2025-Q4", "qoq": 0.006 },
+        { "q": "2026-Q1", "qoq": 0.009 },
+        { "q": "2026-Q2", "qoq": 0.005, "flag": "flash estimate; full stats 24 Jul 2026" }
+      ],
+      "seg_qoq_2026Q2_flash": { "landed": 0.026, "non_landed": -0.001, "CCR": 0.020, "RCR": -0.014, "OCR": -0.002 },
+      "source": "URA pr26-05 (Q4 2025), pr26-31 (Q1 2026), pr26-51 (Q2 2026 flash, 1 Jul 2026)"
+    },
+    "hdb_rpi": {
+      "label": "HDB Resale Price Index",
+      "base": "2009-Q1 = 100",
+      "level": 202.7, "level_asof": "2026-Q2 flash",
+      "yoy_2024": 0.097, "yoy_2025": 0.029,
+      "q_path": [
+        { "q": "2025-Q1", "level": 201.0, "qoq": 0.016 },
+        { "q": "2025-Q2", "level": 202.9, "qoq": 0.009 },
+        { "q": "2025-Q3", "level": 203.7, "qoq": 0.004 },
+        { "q": "2025-Q4", "level": 203.6, "qoq": 0.000 },
+        { "q": "2026-Q1", "level": 203.4, "qoq": -0.001 },
+        { "q": "2026-Q2", "level": 202.7, "qoq": -0.003, "flag": "flash; second consecutive decline" }
+      ],
+      "source": "HDB quarterly releases; Q2 2026 flash 1 Jul 2026 (corroborated ERA/99.co)"
+    },
+    "ura_rental": {
+      "label": "URA Private Residential Rental Index",
+      "level": 160.9, "level_asof": "2025-Q4",
+      "yoy_2025": 0.019, "qoq_2026Q1": 0.003, "vacancy_end_2025": 0.060,
+      "source": "URA pr26-05 / pr26-31"
+    }
+  },
+
+  "segments": {
+    "OCR": {
+      "label": "Outside Central Region (suburban / mass-market)",
+      "median_psf": 1650, "median_psf_flag": "portal aggregation (lovelyhomes 2026), not a URA median",
+      "yield_gross": [0.040, 0.045], "yield_pt": 0.0425,
+      "outlook_2026_qoq_range": [0.02, 0.03], "momentum_2026Q2_flash": -0.002,
+      "note": "Best gross yield and the only segment where the $1.2-1.5m 2-bed brief fits comfortably (resale). Suburban demand anchored by upgrader / new-household formation."
+    },
+    "RCR": {
+      "label": "Rest of Central Region (city fringe)",
+      "median_psf": 2180, "median_psf_flag": "portal aggregation",
+      "yield_gross": [0.030, 0.040], "yield_pt": 0.0336,
+      "outlook_2026_qoq_range": [0.00, 0.01], "momentum_2026Q2_flash": -0.014,
+      "note": "Above-budget for 2-bed resale (avg ~$1.64m) except older / fringe stock — D14 (Geylang / Eunos) is the main value pocket."
+    },
+    "CCR": {
+      "label": "Core Central Region (prime)",
+      "median_psf": 2650, "median_psf_flag": "portal aggregation",
+      "yield_gross": [0.020, 0.028], "yield_pt": 0.024,
+      "outlook_2026_qoq_range": [0.01, 0.02], "momentum_2026Q2_flash": 0.020,
+      "note": "Lowest yield; within the $1.2-1.5m budget only 1-bedders fit. Leading Q2 2026 on price (+2.0% flash) after years of underperformance."
+    },
+    "Landed": {
+      "label": "Landed housing",
+      "yield_gross": [0.018, 0.025], "yield_pt": 0.020,
+      "outlook_2026_qoq_range": [0.00, 0.01], "momentum_2026Q2_flash": 0.026,
+      "fy2025": 0.076,
+      "note": "Scarce, citizen-only, lowest yield and least liquid, but structurally supply-constrained. Outside the budget and the liquidity brief."
+    },
+    "HDB": {
+      "label": "HDB resale",
+      "yield_gross": [0.045, 0.056], "yield_pt": 0.050,
+      "outlook_2026_qoq_range": [0.00, 0.02], "momentum_2026Q2_flash": -0.003,
+      "note": "Highest gross yield and most liquid by volume, but MOP/eligibility/ethnic-quota rules, MSR cap, and no ABSD-free 2nd-property leverage. Mild two-quarter price decline into 2026."
+    }
+  },
+
+  "quantum_2br": {
+    "note": "Average transacted quantum for 2-bedroom non-landed, full-year 2025 (Stacked Homes, 13 Jan 2026 — best available baseline; add ~3-4% for 2026 drift). Sizes in sqft.",
+    "OCR": { "all": 1399000, "new": 1575000, "resale": 1266000, "size": [680, 760] },
+    "RCR": { "all": 1780000, "new": 1905000, "resale": 1641000, "size": [690, 750] },
+    "CCR": { "all": 2050000, "new": 1962000, "resale": 2163000, "size": [660, 790] }
+  },
+
+  "gls": {
+    "note": "Government Land Sales residential tenders, 2026 year-to-date. Land bid $psf per plot ratio (ppr) signals developer conviction and sets a forward floor under nearby new-launch and resale prices. Number of bids gauges competition.",
+    "source": "URA Past-Sale-Sites workbook; Stacked Homes (31 Mar 2026); 99.co (Jun 2026)",
+    "tenders_2026": [
+      { "site": "Woodlands Drive 17 (EC)", "district": "D25", "region": "OCR", "close": "2026-01", "tenderer": "Sim Lian", "psf_ppr": 794, "bids": 3, "note": "Record EC land rate; margin over 2nd bid 0.4%" },
+      { "site": "Dairy Farm Walk", "district": "D23", "region": "OCR", "close": "2026-01", "tenderer": "ABR / LWH / Macly / RP Ventures", "psf_ppr": 962, "bids": 5 },
+      { "site": "Tanjong Rhu Road", "district": "D15", "region": "RCR", "close": "2026-02", "tenderer": "CDL / Woh Hup", "psf_ppr": 1455, "bids": 5, "note": "RCR record at the time" },
+      { "site": "Lentor Central", "district": "D26", "region": "OCR", "close": "2026-03", "tenderer": "GuocoLand / Intrepid / TID", "psf_ppr": 1278, "bids": 5, "note": "bid count 5-6 across sources" },
+      { "site": "Dover Drive", "district": "D5", "region": "RCR", "close": "2026-03", "tenderer": "Qingjian / Forsea / Jianan", "psf_ppr": 1556, "bids": 6, "note": "2nd-highest RCR land rate ever; +31% vs group's 2024 nearby buy" },
+      { "site": "Peck Hay Road (Newton)", "district": "D9", "region": "CCR", "close": "2026-06", "tenderer": "CDL / Hong Leong", "psf_ppr": 1865, "bids": 4 }
+    ],
+    "avg_psf_ppr_2026ytd": 1397,
+    "avg_psf_ppr_2025": 1240,
+    "yoy": 0.127,
+    "trend_note": "Land rates up ~13% YoY on 3-6 disciplined bids per tender — bids rising, participation steady, margins tight. Land cost is the sticky floor while resale prices plateau.",
+    "land_to_launch": {
+      "note": "Rule-of-thumb forward launch price from a winning land bid, derived from 2025-26 public land-vs-launch pairs. Launch psf ~= land psf ppr x factor (covers construction, financing, margin). Flagged heuristic, not a valuation.",
+      "factor_range": [1.75, 2.05],
+      "examples": [
+        { "site": "Tengah Garden Ave", "land_psf_ppr": 821, "launch_psf": 2000 },
+        { "site": "Lakeside Drive", "land_psf_ppr": 1132, "launch_psf": 2300 },
+        { "site": "Dunearn Road", "land_psf_ppr": 1410, "launch_psf": 3100 }
+      ]
+    }
+  },
+
+  "ec_policy_2026": {
+    "effective": "2026-05-08",
+    "note": "EC policy fine-tuning; applies only to EC GLS sites with tender closing on/after 8 May 2026. Existing pipeline and already-launched 2026 ECs keep the old 5-year MOP + deferred-payment scheme.",
+    "changes": {
+      "mop_years": [5, 10],
+      "full_privatisation_years": [10, 15],
+      "first_timer_quota": [0.70, 0.90],
+      "deferred_payment_scheme": "abolished for new sites",
+      "income_ceiling_sgd": 16000
+    },
+    "source": "MND announcement 8 May 2026 (PropNex / ERA / 99.co)"
+  },
+
+  "brief": {
+    "label": "Friend's brief — 42-year-old, needs a home soon",
+    "budget_sgd": [1200000, 1500000],
+    "bedrooms": [2, 3],
+    "type": "condo",
+    "priorities": ["good location", "good liquidity", "cash cover 2-3 years of instalments"],
+    "fit_summary": {
+      "best_fit": "Resale OCR 2-bedder ~$1.25-1.4m, 700-800 sqft (D18 Tampines, D19 Hougang/Sengkang/Punggol, D22 Jurong, D23 Bukit Batok/Panjang, D25 Woodlands, D27 Sembawang/Yishun).",
+      "stretch": "New-launch OCR 2-bedder at $2,100-2,200 psf, ~650-700 sqft, ~$1.4-1.6m (top of budget).",
+      "three_bed": "Resale OCR 3-bedder possible in older stock, ~$1.35-1.5m for 1,000-1,100 sqft; new-launch OCR 3-bed ~$1.9m+ is out of budget.",
+      "rcr_value_pocket": "D14 (Geylang / Eunos) fringe resale is the main RCR pocket that occasionally fits.",
+      "ccr": "Only 1-bedders fit the budget in prime districts."
+    },
+    "affordability_note": "At the 4% TDSR floor, 75% LTV, 30-year tenure, an OCR 2BR at ~$1.4m needs roughly $9,150/month income and ~$464k upfront (incl. ~$40.5k BSD). At age 42, full 75% LTV caps tenure at 23 years, which raises the instalment vs a 30-year loan — see the Affordability tab."
+  }
+}

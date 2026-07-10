@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Property Decision · Singapore</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fafaf8; --bg2:#ffffff; --bg3:#f5f5f0; --bg4:#eeeee8; --bg-hover:#f0f0ea;
+  --bd:#e2e0d8; --bd2:#d5d3ca; --bd-strong:#c0beb5;
+  --t1:#1a1a18; --t2:#5c5c56; --t3:#8a8a82; --t4:#b0b0a8;
+  --g:#1a8754; --g2:#22a366; --g-bg:rgba(26,135,84,0.07); --g-bg2:rgba(26,135,84,0.14);
+  --r:#c0392b; --r2:#e74c3c; --r-bg:rgba(192,57,43,0.07); --r-bg2:rgba(192,57,43,0.14);
+  --b:#2563eb; --b2:#3b82f6; --b-bg:rgba(37,99,235,0.06); --b-bg2:rgba(37,99,235,0.12);
+  --a:#b45309; --a-bg:rgba(180,83,9,0.07);
+  --p:#7c3aed; --p-bg:rgba(124,58,237,0.06);
+  --c:#0891b2; --c-bg:rgba(8,145,178,0.06);
+  --pk:#be185d; --pk-bg:rgba(190,24,93,0.06);
+  --serif:'Instrument Serif',Georgia,serif; --sans:'DM Sans',-apple-system,sans-serif; --mono:'JetBrains Mono','SF Mono','Menlo',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 6px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.04);
+  --radius:8px; --radius-lg:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+.shell{max-width:1520px;margin:0 auto;padding:20px 32px 60px}
+.mono{font-family:var(--mono)}
+.pos{color:var(--g)} .neg{color:var(--r)} .neu{color:var(--b)}
+h1,h2,h3{font-weight:400}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3)}
+
+/* masthead */
+.masthead{padding:26px 0 20px;border-bottom:2px solid var(--t1);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+.masthead h1{font-family:var(--serif);font-size:34px;letter-spacing:-0.5px}
+.masthead h1 em{font-style:italic;color:var(--t3)}
+.masthead .sub{font-size:13px;color:var(--t2);margin-top:4px;max-width:640px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.pill-live{background:var(--g-bg);color:var(--g);border-color:var(--g-bg2)}
+.pill-date{background:var(--bg3);color:var(--t2);border-color:var(--bd)}
+.pill-warn{background:var(--a-bg);color:var(--a);border-color:rgba(180,83,9,0.2)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g);display:inline-block}
+
+/* kpi strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:var(--radius-lg);overflow:hidden;margin:18px 0}
+.kpi{background:var(--bg2);padding:13px 15px}
+.kpi .label{margin-bottom:6px}
+.kpi-val{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.kpi-sub{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin:8px 0 22px;overflow-x:auto}
+.tab{position:relative;padding:11px 18px;font-size:14px;font-weight:500;color:var(--t2);background:none;border:none;cursor:pointer;white-space:nowrap;min-height:44px;font-family:var(--sans)}
+.tab:hover{color:var(--t1)}
+.tab.active{color:var(--t1);font-weight:600}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--t1)}
+.pane{display:none;animation:fade .2s ease}
+.pane.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+/* cards + grid */
+.grid{display:grid;gap:16px}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:18px 20px}
+.card h3{font-size:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t2);margin-bottom:14px}
+.card .intro{font-size:13px;color:var(--t2);margin-bottom:14px}
+.two-col{display:grid;grid-template-columns:340px 1fr;gap:16px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+
+/* form */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:4px}
+.field .hint{font-size:11px;color:var(--t3);font-weight:400}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid var(--bd2);border-radius:var(--radius);font-family:var(--mono);font-size:14px;background:var(--bg2);color:var(--t1)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--b);box-shadow:0 0 0 3px var(--b-bg)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input[type=range]{flex:1;accent-color:var(--b)}
+.slider-val{font-family:var(--mono);font-size:14px;font-weight:600;min-width:64px;text-align:right}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.preset{font-size:11.5px;padding:5px 10px;border:1px solid var(--bd2);border-radius:999px;background:var(--bg2);cursor:pointer;color:var(--t2)}
+.preset:hover{border-color:var(--b);color:var(--b)}
+
+/* result tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.tile{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius);padding:12px 14px}
+.tile .label{margin-bottom:5px}
+.tile .v{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:-0.5px}
+.tile .vs{font-size:11px;color:var(--t3);margin-top:3px}
+.tile.hl{background:var(--b-bg);border-color:var(--b-bg2)}
+.tile.good{background:var(--g-bg);border-color:var(--g-bg2)}
+.tile.warn{background:var(--a-bg);border-color:rgba(180,83,9,0.2)}
+
+/* verdict banner */
+.verdict{border-radius:var(--radius);padding:13px 16px;font-size:13.5px;margin-bottom:14px;border:1px solid}
+.verdict.good{background:var(--g-bg);border-color:var(--g-bg2);color:#14603c}
+.verdict.warn{background:var(--a-bg);border-color:rgba(180,83,9,0.25);color:#7c4406}
+.verdict.bad{background:var(--r-bg);border-color:var(--r-bg2);color:#8f2a20}
+.verdict b{font-weight:700}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--t2);font-weight:700;padding:9px 10px;background:var(--bg3);border-bottom:2px solid var(--bd2);position:sticky;top:0}
+td{padding:9px 10px;border-bottom:1px solid var(--bd)}
+tr:hover td{background:var(--bg-hover)}
+td.num,th.num{text-align:right;font-family:var(--mono)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:var(--radius-lg)}
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+.chip-g{background:var(--g-bg2);color:var(--g)} .chip-a{background:var(--a-bg);color:var(--a)} .chip-r{background:var(--r-bg2);color:var(--r)} .chip-b{background:var(--b-bg2);color:var(--b)} .chip-n{background:var(--bg4);color:var(--t2)}
+
+/* bars */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:10px;font-size:12.5px}
+.bar-track{background:var(--bg4);border-radius:4px;height:20px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-num{font-family:var(--mono);font-weight:600;text-align:right}
+
+.note{font-size:12px;color:var(--t3);margin-top:10px;line-height:1.55}
+.flag{color:var(--a);font-weight:600}
+.callout{background:var(--bg3);border-left:3px solid var(--b);border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;font-size:13px;color:var(--t2);margin:14px 0}
+.callout b{color:var(--t1)}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--bd);font-size:11.5px;color:var(--t3);line-height:1.7}
+footer b{color:var(--t2)}
+.disc{background:var(--a-bg);border:1px solid rgba(180,83,9,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#7c4406;margin-top:16px}
+h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
+.sec-sub{font-size:13px;color:var(--t2);margin-bottom:16px;max-width:820px}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <div>
+      <h1>Property Decision · <em>Singapore</em></h1>
+      <div class="sub">Buy HDB, condo or landed — how much to borrow versus hold in cash, and where. A decision tool, not advice.</div>
+    </div>
+    <div class="pills">
+      <span class="pill pill-live"><span class="dot"></span>SNAPSHOT</span>
+      <span class="pill pill-date" id="pill-asof">as of —</span>
+      <span class="pill pill-warn">Not financial advice</span>
+    </div>
+  </header>
+
+  <div class="kpi-strip" id="kpis"></div>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-t="afford">1 · Affordability &amp; loan</button>
+    <button class="tab" data-t="leverage">2 · Buy vs rent · cash vs mortgage</button>
+    <button class="tab" data-t="type">3 · HDB vs condo vs landed</button>
+    <button class="tab" data-t="where">4 · Where to buy</button>
+  </nav>
+
+  <!-- TAB 1 -->
+  <section class="pane active" id="pane-afford">
+    <h2 class="section">Can you afford it — and what does age do to the loan?</h2>
+    <p class="sec-sub">The gate. Enter a profile and the engine applies the published rules — LTV, TDSR at the 4% stress floor, MSR for HDB/EC — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill. Defaults are set to the brief: a 42-year-old buying a ~S$1.35m condo.</p>
+    <div class="presets" id="presets"></div>
+    <div class="two-col">
+      <div class="card">
+        <h3>Your profile</h3>
+        <div class="field"><label>Age of (main) borrower</label><input id="i-age" type="number" min="21" max="70" value="42"></div>
+        <div class="field"><label>Gross monthly income <span class="hint">— combined, all borrowers</span></label><input id="i-income" type="number" step="500" value="11000"></div>
+        <div class="field"><label>Existing monthly debt <span class="hint">— car, other loans</span></label><input id="i-debt" type="number" step="100" value="0"></div>
+        <div class="field"><label>Cash + CPF available <span class="hint">— for downpayment, stamp duty, buffer</span></label><input id="i-cash" type="number" step="10000" value="500000"></div>
+        <div class="field"><label>Target purchase price</label><input id="i-price" type="number" step="10000" value="1350000"></div>
+        <div class="field-row">
+          <div class="field"><label>Property type</label><select id="i-type"><option value="private">Private condo</option><option value="ec">EC (from developer)</option><option value="hdb">HDB resale</option></select></div>
+          <div class="field"><label>Buyer profile</label><select id="i-cz"><option value="SC">Citizen</option><option value="PR">PR</option><option value="Foreigner">Foreigner</option></select></div>
+        </div>
+        <div class="field"><label>This is my … residential property</label><select id="i-count"><option value="0">1st (no other property)</option><option value="1">2nd</option><option value="2">3rd or more</option></select></div>
+        <div class="field"><label>Loan tenure <span class="hint" id="ten-hint"></span></label>
+          <div class="slider-row"><input id="i-tenure" type="range" min="5" max="35" value="23"><span class="slider-val mono" id="ten-val">23 yr</span></div>
+        </div>
+        <div class="field"><label>Package interest rate <span class="hint">— actual rate you would pay</span></label>
+          <div class="slider-row"><input id="i-rate" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="rate-val">1.60%</span></div>
+        </div>
+      </div>
+      <div>
+        <div id="verdict"></div>
+        <div class="tiles" id="afford-tiles"></div>
+        <div class="card" style="margin-bottom:16px">
+          <h3>The age effect — instalment by tenure</h3>
+          <p class="intro" id="age-intro"></p>
+          <div class="bars" id="tenure-bars"></div>
+          <div class="note" id="age-note"></div>
+        </div>
+        <div class="card">
+          <h3>Upfront cash — where it goes</h3>
+          <div class="bars" id="upfront-bars"></div>
+          <div class="note">LTV downpayment splits into a minimum cash portion and a CPF-or-cash portion. BSD is the buyer's stamp duty; ABSD is nil for a citizen's first property. Legal and valuation are estimated at ~S$4,000.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 2 -->
+  <section class="pane" id="pane-leverage">
+    <h2 class="section">No mortgage is less stress — but cheap debt on a good asset is hard to beat</h2>
+    <p class="sec-sub">With 3-month SORA near 1% and packages around 1.3–1.7%, the mortgage rate sits below both property's long-run return and a balanced portfolio. So the expected-value answer is to borrow and keep cash invested — provided you hold enough liquid reserve never to be a forced seller. This module makes that trade-off explicit; it does not pretend the future is known.</p>
+    <div class="two-col">
+      <div class="card">
+        <h3>Assumptions</h3>
+        <div class="field"><label>Mortgage rate</label><div class="slider-row"><input id="l-m" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="l-m-val">1.60%</span></div></div>
+        <div class="field"><label>Expected return on invested cash <span class="hint">— balanced portfolio, long-run</span></label><div class="slider-row"><input id="l-p" type="range" min="1.0" max="9.0" step="0.25" value="5.0"><span class="slider-val mono" id="l-p-val">5.00%</span></div></div>
+        <div class="field"><label>Property appreciation <span class="hint">— long-run, nominal</span></label><div class="slider-row"><input id="l-g" type="range" min="0" max="6" step="0.25" value="3.0"><span class="slider-val mono" id="l-g-val">3.00%</span></div></div>
+        <div class="field"><label>Surplus cash you could prepay or invest</label><input id="l-surplus" type="number" step="10000" value="120000"></div>
+        <div class="field"><label>Horizon</label><div class="slider-row"><input id="l-n" type="range" min="1" max="25" value="10"><span class="slider-val mono" id="l-n-val">10 yr</span></div></div>
+      </div>
+      <div>
+        <div class="tiles" id="lev-tiles"></div>
+        <div class="card" style="margin-bottom:16px">
+          <h3>The forced-seller buffer</h3>
+          <p class="intro">The one rule that keeps leverage safe: hold enough liquid cash to cover the instalment through a spell of unemployment or a rate spike, so a bad market never forces a sale. The brief set this at 2–3 years.</p>
+          <div class="bars" id="buffer-bars"></div>
+          <div class="note" id="buffer-note"></div>
+        </div>
+        <div class="card">
+          <h3>Prepay versus stay invested</h3>
+          <div class="bars" id="lev-bars"></div>
+          <div class="note" id="lev-note"></div>
+          <div class="disc" id="lev-disc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3 -->
+  <section class="pane" id="pane-type">
+    <h2 class="section">HDB, condo or landed — matched to what you want</h2>
+    <p class="sec-sub">The brief is a home that holds value and stays liquid, bought with cheap leverage while the loan window is still open. That points to a resale condo in a good suburban location — but the scorecard lays out the trade-offs so the choice is yours.</p>
+    <div class="tbl-wrap" style="margin-bottom:16px"><table id="type-table"></table></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))" id="type-cards"></div>
+    <div class="callout" id="ec-callout"></div>
+  </section>
+
+  <!-- TAB 4 -->
+  <section class="pane" id="pane-where">
+    <h2 class="section">Where — segments, yields and what the land bids are telling you</h2>
+    <p class="sec-sub">A winning land bid is a forward signal: developers are pricing tomorrow's launches, and a competitive bid sets a floor under nearby future prices. Read the segment table for value and yield, the land-bid table for developer conviction, and the brief map for where S$1.2–1.5m actually reaches.</p>
+    <div class="grid" style="grid-template-columns:1fr;gap:18px">
+      <div class="card">
+        <h3>Segments — price, yield, momentum</h3>
+        <div class="tbl-wrap"><table id="seg-table"></table></div>
+        <div class="note">Median $psf and gross yields are segment aggregates (several portal-sourced, flagged in the data); a specific project can differ materially. Gross yield is before maintenance, tax and vacancy — net is typically ~0.8–1.2pp lower.</div>
+      </div>
+      <div class="card">
+        <h3>Government Land Sales — 2026 winning bids</h3>
+        <div class="tbl-wrap"><table id="gls-table"></table></div>
+        <div class="note" id="gls-note"></div>
+      </div>
+      <div class="card">
+        <h3>What S$1.2–1.5m buys — the brief mapped</h3>
+        <div id="brief-map"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/* ---------- data (pipeline inlines these; falls back to fetch for standalone dev) ---------- */
+const RULES = {"_meta":{"title":"Singapore property decision — regulatory & loan-engine constants","asof":"2026-07-10","not_advice":"Educational illustration of published rules, not financial or mortgage advice. Verify against MAS / MoneySense / IRAS / HDB before acting.","stability_note":"Core cooling-measure parameters have been stable since 27 Apr 2023 (stamp duty) and 20 Aug 2024 (HDB LTV). Every 2026-dated source treats them as unchanged.","sources":"MAS; MoneySense (retrieved Jul 2026); IRAS / MOF (15 Feb 2023 stamp-duty revision); HDB / MND (20 Aug 2024)."},"tdsr":{"limit":0.55,"stress_rate":0.04,"note":"Total monthly debt obligations must not exceed 55% of gross monthly income. The property instalment in the test is computed at the higher of the 4.0% p.a. medium-term floor or the actual rate. Binding constraint for most private-property buyers.","source":"MAS (medium-term rate effective 30 Sep 2022; 55% TDSR since 16 Dec 2021)"},"msr":{"limit":0.3,"stress_rate":0.04,"applies_to":["HDB flat","EC bought from developer"],"note":"Mortgage Servicing Ratio: housing loan instalment must not exceed 30% of gross monthly income. Applies ON TOP of TDSR for HDB and new ECs; does not apply to private condos or resale ECs past MOP.","source":"MoneySense (Jul 2026)"},"ltv":{"note":"Loan-to-value ceilings for bank loans to individuals. The MAX tier applies only if BOTH: loan tenure within the cliff AND borrower age + tenure <= 65 at the end of the loan. Otherwise the REDUCED tier applies and the minimum cash portion rises.","bank_individual":{"loan1":{"max":0.75,"reduced":0.55,"cash_min":0.05,"cash_min_reduced":0.1},"loan2":{"max":0.45,"reduced":0.25,"cash_min":0.25},"loan3plus":{"max":0.35,"reduced":0.15,"cash_min":0.25}},"reduction_trigger":{"tenure_gt_years_private":30,"tenure_gt_years_hdb":25,"age_plus_tenure_gt":65,"note":"If tenure exceeds 30y (private) / 25y (HDB) OR the loan runs past age 65, LTV steps down to the reduced tier and first-loan minimum cash rises from 5% to 10%."},"hdb_concessionary":{"max":0.75,"tenure_cap_years":25,"rate":0.026,"note":"HDB loan LTV cut 80%->75% on 20 Aug 2024."},"source":"MoneySense (Jul 2026); HDB/MND (20 Aug 2024)"},"tenure_cap_years":{"private_bank":35,"hdb_bank":30,"hdb_concessionary":25,"note":"Absolute maximum loan tenures. Separate from the LTV cliff at 30y/25y/age-65 above. For a borrower of age A wanting full 75% LTV on a private purchase, usable tenure = min(30, 65 - A).","source":"MAS / MoneySense (Jul 2026)"},"absd":{"note":"Additional Buyer's Stamp Duty, on the higher of price or market value. Index = [1st property, 2nd, 3rd or more]. US nationals, and nationals/PRs of Iceland, Liechtenstein, Norway and Switzerland, are treated as Singapore Citizens under FTAs. Unchanged since 27 Apr 2023.","source":"IRAS","rates":{"SC":[0.0,0.2,0.3],"PR":[0.05,0.3,0.35],"Foreigner":[0.6,0.6,0.6],"Entity":[0.65,0.65,0.65]}},"bsd":{"note":"Buyer's Stamp Duty, residential, effective 15 Feb 2023, on the higher of price or market value. Marginal tiers.","source":"IRAS / MOF","brackets":[{"up_to":180000,"rate":0.01},{"up_to":360000,"rate":0.02},{"up_to":1000000,"rate":0.03},{"up_to":1500000,"rate":0.04},{"up_to":3000000,"rate":0.05},{"up_to":null,"rate":0.06}],"checkpoints_sgd":{"1000000":24600,"1500000":44600,"2000000":69600}},"rates":{"sora_3m":{"value":0.011153,"asof":"2026-07-08","source":"MAS daily rates via Cashew.sg","flag":null},"fixed_best":{"value":0.013,"range":[0.013,0.017],"asof":"2026-07-09","source":"DollarBack / MortgageWise; DBS 2yr fixed 1.68%","flag":"broker-negotiated promo, not board rate"},"floating_typical":{"value":0.017,"range":[0.014,0.021],"source":"3M SORA ~1.12% + spread 0.25-1.00%","flag":"synthesised range"},"hdb_concessionary":{"value":0.026,"source":"HDB (CPF OA + 0.1pp), unchanged"},"default_mortgage_rate":0.016,"note":"Live 3M SORA is scrapeable from the MAS domestic-interest-rates page; package rates have no public feed and are curated here. Refresh at each review."},"cpf":{"oa_rate":0.025,"note":"CPF Ordinary Account pays 2.5% p.a. Cash used for downpayment/instalments has an opportunity cost at least equal to this (and typically the investor's portfolio return). Used in the cash-vs-mortgage module as the CPF hurdle.","source":"CPF Board (floor rate)"}};
+const MARKET = {"_meta":{"title":"Singapore residential market snapshot","asof":"2026-07-10","not_advice":"Educational snapshot built from primary public sources (URA, HDB, MAS, SingStat) plus portal aggregations where no official figure exists. Portal-sourced and computed figures are flagged. Not financial advice.","refresh":"Manual curated snapshot. Live-pull path documented in README (data.gov.sg open API for HDB resale/rental + indices; URA Data Service token for private transactions; MAS page for SORA)."},"indices":{"ura_ppi":{"label":"URA Private Residential Property Price Index","base":"2009-Q1 = 100","level":216.4,"level_asof":"2025-Q4","yoy_2024":0.039,"yoy_2025":0.033,"q_path":[{"q":"2024-Q4","qoq":0.023},{"q":"2025-Q1","qoq":0.008},{"q":"2025-Q2","qoq":0.01},{"q":"2025-Q3","qoq":0.009},{"q":"2025-Q4","qoq":0.006},{"q":"2026-Q1","qoq":0.009},{"q":"2026-Q2","qoq":0.005,"flag":"flash estimate; full stats 24 Jul 2026"}],"seg_qoq_2026Q2_flash":{"landed":0.026,"non_landed":-0.001,"CCR":0.02,"RCR":-0.014,"OCR":-0.002},"source":"URA pr26-05 (Q4 2025), pr26-31 (Q1 2026), pr26-51 (Q2 2026 flash, 1 Jul 2026)"},"hdb_rpi":{"label":"HDB Resale Price Index","base":"2009-Q1 = 100","level":202.7,"level_asof":"2026-Q2 flash","yoy_2024":0.097,"yoy_2025":0.029,"q_path":[{"q":"2025-Q1","level":201.0,"qoq":0.016},{"q":"2025-Q2","level":202.9,"qoq":0.009},{"q":"2025-Q3","level":203.7,"qoq":0.004},{"q":"2025-Q4","level":203.6,"qoq":0.0},{"q":"2026-Q1","level":203.4,"qoq":-0.001},{"q":"2026-Q2","level":202.7,"qoq":-0.003,"flag":"flash; second consecutive decline"}],"source":"HDB quarterly releases; Q2 2026 flash 1 Jul 2026 (corroborated ERA/99.co)"},"ura_rental":{"label":"URA Private Residential Rental Index","level":160.9,"level_asof":"2025-Q4","yoy_2025":0.019,"qoq_2026Q1":0.003,"vacancy_end_2025":0.06,"source":"URA pr26-05 / pr26-31"}},"segments":{"OCR":{"label":"Outside Central Region (suburban / mass-market)","median_psf":1650,"median_psf_flag":"portal aggregation (lovelyhomes 2026), not a URA median","yield_gross":[0.04,0.045],"yield_pt":0.0425,"outlook_2026_qoq_range":[0.02,0.03],"momentum_2026Q2_flash":-0.002,"note":"Best gross yield and the only segment where the $1.2-1.5m 2-bed brief fits comfortably (resale). Suburban demand anchored by upgrader / new-household formation."},"RCR":{"label":"Rest of Central Region (city fringe)","median_psf":2180,"median_psf_flag":"portal aggregation","yield_gross":[0.03,0.04],"yield_pt":0.0336,"outlook_2026_qoq_range":[0.0,0.01],"momentum_2026Q2_flash":-0.014,"note":"Above-budget for 2-bed resale (avg ~$1.64m) except older / fringe stock — D14 (Geylang / Eunos) is the main value pocket."},"CCR":{"label":"Core Central Region (prime)","median_psf":2650,"median_psf_flag":"portal aggregation","yield_gross":[0.02,0.028],"yield_pt":0.024,"outlook_2026_qoq_range":[0.01,0.02],"momentum_2026Q2_flash":0.02,"note":"Lowest yield; within the $1.2-1.5m budget only 1-bedders fit. Leading Q2 2026 on price (+2.0% flash) after years of underperformance."},"Landed":{"label":"Landed housing","yield_gross":[0.018,0.025],"yield_pt":0.02,"outlook_2026_qoq_range":[0.0,0.01],"momentum_2026Q2_flash":0.026,"fy2025":0.076,"note":"Scarce, citizen-only, lowest yield and least liquid, but structurally supply-constrained. Outside the budget and the liquidity brief."},"HDB":{"label":"HDB resale","yield_gross":[0.045,0.056],"yield_pt":0.05,"outlook_2026_qoq_range":[0.0,0.02],"momentum_2026Q2_flash":-0.003,"note":"Highest gross yield and most liquid by volume, but MOP/eligibility/ethnic-quota rules, MSR cap, and no ABSD-free 2nd-property leverage. Mild two-quarter price decline into 2026."}},"quantum_2br":{"note":"Average transacted quantum for 2-bedroom non-landed, full-year 2025 (Stacked Homes, 13 Jan 2026 — best available baseline; add ~3-4% for 2026 drift). Sizes in sqft.","OCR":{"all":1399000,"new":1575000,"resale":1266000,"size":[680,760]},"RCR":{"all":1780000,"new":1905000,"resale":1641000,"size":[690,750]},"CCR":{"all":2050000,"new":1962000,"resale":2163000,"size":[660,790]}},"gls":{"note":"Government Land Sales residential tenders, 2026 year-to-date. Land bid $psf per plot ratio (ppr) signals developer conviction and sets a forward floor under nearby new-launch and resale prices. Number of bids gauges competition.","source":"URA Past-Sale-Sites workbook; Stacked Homes (31 Mar 2026); 99.co (Jun 2026)","tenders_2026":[{"site":"Woodlands Drive 17 (EC)","district":"D25","region":"OCR","close":"2026-01","tenderer":"Sim Lian","psf_ppr":794,"bids":3,"note":"Record EC land rate; margin over 2nd bid 0.4%"},{"site":"Dairy Farm Walk","district":"D23","region":"OCR","close":"2026-01","tenderer":"ABR / LWH / Macly / RP Ventures","psf_ppr":962,"bids":5},{"site":"Tanjong Rhu Road","district":"D15","region":"RCR","close":"2026-02","tenderer":"CDL / Woh Hup","psf_ppr":1455,"bids":5,"note":"RCR record at the time"},{"site":"Lentor Central","district":"D26","region":"OCR","close":"2026-03","tenderer":"GuocoLand / Intrepid / TID","psf_ppr":1278,"bids":5,"note":"bid count 5-6 across sources"},{"site":"Dover Drive","district":"D5","region":"RCR","close":"2026-03","tenderer":"Qingjian / Forsea / Jianan","psf_ppr":1556,"bids":6,"note":"2nd-highest RCR land rate ever; +31% vs group's 2024 nearby buy"},{"site":"Peck Hay Road (Newton)","district":"D9","region":"CCR","close":"2026-06","tenderer":"CDL / Hong Leong","psf_ppr":1865,"bids":4}],"avg_psf_ppr_2026ytd":1397,"avg_psf_ppr_2025":1240,"yoy":0.127,"trend_note":"Land rates up ~13% YoY on 3-6 disciplined bids per tender — bids rising, participation steady, margins tight. Land cost is the sticky floor while resale prices plateau.","land_to_launch":{"note":"Rule-of-thumb forward launch price from a winning land bid, derived from 2025-26 public land-vs-launch pairs. Launch psf ~= land psf ppr x factor (covers construction, financing, margin). Flagged heuristic, not a valuation.","factor_range":[1.75,2.05],"examples":[{"site":"Tengah Garden Ave","land_psf_ppr":821,"launch_psf":2000},{"site":"Lakeside Drive","land_psf_ppr":1132,"launch_psf":2300},{"site":"Dunearn Road","land_psf_ppr":1410,"launch_psf":3100}]}},"ec_policy_2026":{"effective":"2026-05-08","note":"EC policy fine-tuning; applies only to EC GLS sites with tender closing on/after 8 May 2026. Existing pipeline and already-launched 2026 ECs keep the old 5-year MOP + deferred-payment scheme.","changes":{"mop_years":[5,10],"full_privatisation_years":[10,15],"first_timer_quota":[0.7,0.9],"deferred_payment_scheme":"abolished for new sites","income_ceiling_sgd":16000},"source":"MND announcement 8 May 2026 (PropNex / ERA / 99.co)"},"brief":{"label":"Friend's brief — 42-year-old, needs a home soon","budget_sgd":[1200000,1500000],"bedrooms":[2,3],"type":"condo","priorities":["good location","good liquidity","cash cover 2-3 years of instalments"],"fit_summary":{"best_fit":"Resale OCR 2-bedder ~$1.25-1.4m, 700-800 sqft (D18 Tampines, D19 Hougang/Sengkang/Punggol, D22 Jurong, D23 Bukit Batok/Panjang, D25 Woodlands, D27 Sembawang/Yishun).","stretch":"New-launch OCR 2-bedder at $2,100-2,200 psf, ~650-700 sqft, ~$1.4-1.6m (top of budget).","three_bed":"Resale OCR 3-bedder possible in older stock, ~$1.35-1.5m for 1,000-1,100 sqft; new-launch OCR 3-bed ~$1.9m+ is out of budget.","rcr_value_pocket":"D14 (Geylang / Eunos) fringe resale is the main RCR pocket that occasionally fits.","ccr":"Only 1-bedders fit the budget in prime districts."},"affordability_note":"At the 4% TDSR floor, 75% LTV, 30-year tenure, an OCR 2BR at ~$1.4m needs roughly $9,150/month income and ~$464k upfront (incl. ~$40.5k BSD). At age 42, full 75% LTV caps tenure at 23 years, which raises the instalment vs a 30-year loan — see the Affordability tab."}};
+
+async function loadData(){
+  if(RULES && MARKET) return {rules:RULES, market:MARKET};
+  const [r,m] = await Promise.all([
+    fetch('data/rules.json').then(x=>x.json()),
+    fetch('data/market.json').then(x=>x.json())
+  ]);
+  return {rules:r, market:m};
+}
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const fmt0=n=>n.toLocaleString('en-SG',{maximumFractionDigits:0});
+const sgd=n=>'S$'+fmt0(Math.round(n));
+const sgdk=n=>n>=1e6?('S$'+(n/1e6).toFixed(2)+'m'):('S$'+fmt0(Math.round(n/1000))+'k');
+const pct=(n,d=1)=>(n*100).toFixed(d)+'%';
+
+// monthly payment
+function pmt(rateAnnual, years, principal){
+  const r=rateAnnual/12, n=years*12;
+  if(r===0) return principal/n;
+  return principal*r/(1-Math.pow(1+r,-n));
+}
+// principal affordable given a monthly ceiling
+function loanFromInstalment(maxInst, rateAnnual, years){
+  const r=rateAnnual/12, n=years*12;
+  if(maxInst<=0) return 0;
+  if(r===0) return maxInst*n;
+  return maxInst*(1-Math.pow(1+r,-n))/r;
+}
+function bsd(price, brackets){
+  let tax=0, prev=0;
+  for(const b of brackets){
+    const cap=b.up_to===null?Infinity:b.up_to;
+    if(price>prev){ tax+=(Math.min(price,cap)-prev)*b.rate; prev=cap; } else break;
+  }
+  return tax;
+}
+
+let D; // {rules, market}
+
+/* ---------- loan engine ---------- */
+function computeLoan(inp){
+  const R=D.rules;
+  const isHDB=inp.type==='hdb', isEC=inp.type==='ec', isPrivate=inp.type==='private';
+  const msrApplies=isHDB||isEC;
+  // tenure caps
+  const absCap=isHDB?R.tenure_cap_years.hdb_bank:R.tenure_cap_years.private_bank;
+  const cliffTenure=isHDB?R.ltv.reduction_trigger.tenure_gt_years_hdb:R.ltv.reduction_trigger.tenure_gt_years_private;
+  const fullLtvMaxTenure=Math.max(5,Math.min(cliffTenure, R.ltv.reduction_trigger.age_plus_tenure_gt-inp.age));
+  const tenure=Math.min(inp.tenure, absCap);
+  // LTV tier
+  const loanKey=inp.count==0?'loan1':(inp.count==1?'loan2':'loan3plus');
+  const ltvSpec=R.ltv.bank_individual[loanKey];
+  const reduced = (tenure>cliffTenure) || ((inp.age+tenure)>R.ltv.reduction_trigger.age_plus_tenure_gt);
+  const ltv = reduced?ltvSpec.reduced:ltvSpec.max;
+  const cashMinFrac = reduced?(ltvSpec.cash_min_reduced||ltvSpec.cash_min):ltvSpec.cash_min;
+  // caps on loan
+  const byLTV = inp.price*ltv;
+  const stress=R.tdsr.stress_rate;
+  const tdsrCeil = R.tdsr.limit*inp.income - inp.debt;
+  const byTDSR = loanFromInstalment(tdsrCeil, stress, tenure);
+  let byMSR=Infinity;
+  if(msrApplies) byMSR=loanFromInstalment(R.msr.limit*inp.income, stress, tenure);
+  const maxLoan=Math.max(0,Math.min(byLTV,byTDSR,byMSR));
+  const bind = maxLoan===byLTV?'LTV (cash)':(maxLoan===byTDSR?'TDSR (income)':'MSR (income)');
+  // apply
+  const loan=maxLoan;
+  const downpay=inp.price-loan;
+  const cashMin=inp.price*cashMinFrac;
+  const cashPortion=Math.max(cashMin, downpay-(inp.price*ltv- (inp.price*ltv))); // min cash floor; rest cpf/cash
+  const minCash=Math.min(downpay, Math.max(cashMin, downpay-(inp.price - cashMin - loan)));
+  // simpler: min cash floor = cashMin; cpf/cash = downpay - cashMin (>=0)
+  const reqCash=Math.max(cashMin, downpay>=cashMin?cashMin:downpay);
+  const cpfOrCash=Math.max(0,downpay-cashMin);
+  // duties
+  const absdRates=R.absd.rates[inp.cz]||R.absd.rates.SC;
+  const absd=inp.price*absdRates[Math.min(2,inp.count)];
+  const stampBSD=bsd(inp.price, R.bsd.brackets);
+  const legal=4000;
+  const upfront=downpay+stampBSD+absd+legal;
+  // instalments
+  const instActual=pmt(inp.rate, tenure, loan);
+  const instStress=pmt(stress, tenure, loan);
+  const tdsrUsed=(instStress+inp.debt)/inp.income;
+  const msrUsed=msrApplies?instStress/inp.income:null;
+  const bufferAfter=inp.cash-upfront;
+  const bufferMonths=instActual>0?bufferAfter/instActual:0;
+  return {isHDB,isEC,isPrivate,msrApplies,tenure,absCap,fullLtvMaxTenure,cliffTenure,reduced,ltv,cashMinFrac,
+    byLTV,byTDSR,byMSR,maxLoan,bind,loan,downpay,cashMin,cpfOrCash,absd,absdRate:absdRates[Math.min(2,inp.count)],
+    stampBSD,legal,upfront,instActual,instStress,tdsrUsed,msrUsed,bufferAfter,bufferMonths};
+}
+
+function readInputs(){
+  return {
+    age:+$('i-age').value, income:+$('i-income').value, debt:+$('i-debt').value,
+    cash:+$('i-cash').value, price:+$('i-price').value, type:$('i-type').value,
+    cz:$('i-cz').value, count:+$('i-count').value, tenure:+$('i-tenure').value, rate:+$('i-rate').value/100
+  };
+}
+
+/* ---------- render tab 1 ---------- */
+function renderAfford(){
+  const inp=readInputs();
+  // sync tenure ceiling to type
+  const absCap=inp.type==='hdb'?D.rules.tenure_cap_years.hdb_bank:D.rules.tenure_cap_years.private_bank;
+  $('i-tenure').max=absCap;
+  if(inp.tenure>absCap){inp.tenure=absCap;$('i-tenure').value=absCap;}
+  $('ten-val').textContent=inp.tenure+' yr';
+  $('rate-val').textContent=(inp.rate*100).toFixed(2)+'%';
+  const c=computeLoan(inp);
+  $('ten-hint').textContent='— full '+pct(D.rules.ltv.bank_individual.loan1.max,0)+' LTV needs ≤ '+c.fullLtvMaxTenure+' yr at age '+inp.age;
+
+  // verdict
+  let vClass='good', vMsg='';
+  const affordable = c.upfront<=inp.cash;
+  const tdsrOk = c.tdsrUsed<=D.rules.tdsr.limit+1e-6;
+  if(!affordable){vClass='bad';}
+  else if(c.bufferMonths<12){vClass='warn';}
+  const bufTxt=c.bufferMonths>=24?'a comfortable':(c.bufferMonths>=12?'a thin':'an insufficient');
+  vMsg=`<b>${c.bind==='LTV (cash)'?'Cash / LTV is the binding limit':'Income (TDSR/MSR) is the binding limit'}.</b> `+
+    `You can borrow up to <b>${sgd(c.maxLoan)}</b> (${pct(c.maxLoan/inp.price,0)} of price) over ${c.tenure} years. `+
+    `Upfront you need <b>${sgd(c.upfront)}</b>; you have ${sgd(inp.cash)} `+
+    (affordable?`— leaving ${sgd(c.bufferAfter)}, ${bufTxt} <b>${c.bufferMonths.toFixed(0)}-month</b> instalment buffer.`
+      :`— <b>short by ${sgd(c.upfront-inp.cash)}</b>. Lower the price or raise cash.`)+
+    (c.reduced?` <span class="flag">Note: this tenure pushes past the age-65 / ${c.cliffTenure}-year limit, so LTV drops to ${pct(c.ltv,0)} and minimum cash rises to ${pct(c.cashMinFrac,0)}.</span>`:``);
+  $('verdict').innerHTML=`<div class="verdict ${vClass}">${vMsg}</div>`;
+
+  // tiles
+  const tiles=[
+    {l:'Max loan',v:sgdk(c.maxLoan),s:pct(c.maxLoan/inp.price,0)+' of price · '+c.bind,cls:'hl'},
+    {l:'Monthly instalment',v:sgd(c.instActual),s:'at '+(inp.rate*100).toFixed(2)+'% · '+pct(c.instActual/inp.income,0)+' of income'},
+    {l:'Instalment at 4% stress',v:sgd(c.instStress),s:'TDSR test = '+pct(c.tdsrUsed,0)+(tdsrOk?' ✓':' ✗ over 55%'),cls:tdsrOk?'':'warn'},
+    {l:'Upfront cash needed',v:sgd(c.upfront),s:'downpay + '+sgd(c.stampBSD+c.absd)+' duties'},
+    {l:'Forced-seller buffer',v:c.bufferMonths.toFixed(0)+' mo',s:sgd(Math.max(0,c.bufferAfter))+' left after purchase',cls:c.bufferMonths>=24?'good':(c.bufferMonths>=12?'warn':'warn')}
+  ];
+  $('afford-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
+
+  // age effect — instalment by tenure at the constrained loan
+  const loan=c.maxLoan;
+  const tset=[15,20,c.fullLtvMaxTenure,25,30].filter((v,i,a)=>v>=5&&v<=absCap&&a.indexOf(v)===i).sort((a,b)=>a-b);
+  const maxInst=Math.max(...tset.map(t=>pmt(inp.rate,t,loan)));
+  $('age-intro').textContent=`Same ${sgd(loan)} loan at ${(inp.rate*100).toFixed(2)}%, over different tenures. At age ${inp.age}, full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV caps you at ${c.fullLtvMaxTenure} years — stretch longer and the LTV falls, so the practical choice is a shorter loan and a higher monthly.`;
+  $('tenure-bars').innerHTML=tset.map(t=>{
+    const inst=pmt(inp.rate,t,loan);
+    const isCap=t===c.fullLtvMaxTenure;
+    const over=(inp.age+t)>D.rules.ltv.reduction_trigger.age_plus_tenure_gt || t>c.cliffTenure;
+    return `<div class="bar-row"><span>${t} yr${isCap?' · your cap':''}${over&&!isCap?' · 55% LTV only':''}</span>`+
+      `<div class="bar-track"><div class="bar-fill" style="width:${inst/maxInst*100}%;background:${isCap?'var(--b)':(over?'var(--a)':'var(--bd-strong)')}"></div></div>`+
+      `<span class="bar-num">${sgd(inst)}</span></div>`;
+  }).join('');
+  $('age-note').innerHTML=`Read the bars as "same ${sgd(loan)} loan, different tenure". At age ${inp.age} you cannot both keep the full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV and stretch past ${c.fullLtvMaxTenure} years — the amber bars are only reachable by dropping to ${pct(c.ltv===D.rules.ltv.bank_individual.loan1.reduced?c.ltv:D.rules.ltv.bank_individual.loan1.reduced,0)} LTV (much more cash down) or by being younger. That lower monthly a 30-year loan would give is the age cost: the window closes at 65 minus tenure, so borrowing while it is open is the "use the good loan" point.`;
+
+  // upfront breakdown
+  const parts=[
+    {l:'Min cash downpayment',v:c.cashMin,col:'var(--r2)'},
+    {l:'CPF / cash downpayment',v:c.cpfOrCash,col:'var(--b2)'},
+    {l:'Buyer stamp duty (BSD)',v:c.stampBSD,col:'var(--p)'},
+    {l:'ABSD ('+pct(c.absdRate,0)+')',v:c.absd,col:'var(--a)'},
+    {l:'Legal + valuation',v:c.legal,col:'var(--t3)'}
+  ].filter(p=>p.v>0);
+  const upMax=Math.max(...parts.map(p=>p.v));
+  $('upfront-bars').innerHTML=parts.map(p=>`<div class="bar-row"><span>${p.l}</span><div class="bar-track"><div class="bar-fill" style="width:${p.v/upMax*100}%;background:${p.col}"></div></div><span class="bar-num">${sgd(p.v)}</span></div>`).join('')
+    +`<div class="bar-row" style="border-top:1px solid var(--bd);padding-top:6px;margin-top:2px"><span><b>Total upfront</b></span><div></div><span class="bar-num"><b>${sgd(c.upfront)}</b></span></div>`;
+
+  // feed leverage tab defaults (set state BEFORE syncLev so the buffer bars render on first paint)
+  window._afford=c; window._inp=inp;
+  $('l-m').value=(inp.rate*100).toFixed(2); syncLev();
+}
+
+/* ---------- render tab 2 ---------- */
+function syncLev(){
+  const m=+$('l-m').value/100, p=+$('l-p').value/100, g=+$('l-g').value/100, N=+$('l-n').value, surplus=+$('l-surplus').value;
+  $('l-m-val').textContent=(m*100).toFixed(2)+'%'; $('l-p-val').textContent=(p*100).toFixed(2)+'%';
+  $('l-g-val').textContent=(g*100).toFixed(2)+'%'; $('l-n-val').textContent=N+' yr';
+  const spread=p-m;
+  const c=window._afford, inp=window._inp;
+  // tiles
+  const investGrow=surplus*Math.pow(1+p,N), prepayEquiv=surplus*Math.pow(1+m,N);
+  const edge=investGrow-prepayEquiv;
+  const tiles=[
+    {l:'Rate spread (invest − borrow)',v:(spread>=0?'+':'')+pct(spread,2),s:spread>0?'leverage adds expected value':'prepaying wins',cls:spread>0?'good':'warn'},
+    {l:'Carry vs a suburban rent',v:(function(){const y=D.market.segments.OCR.yield_pt;return (y-m>=0?'+':'')+pct(y-m,2);})(),s:'OCR gross yield '+pct(D.market.segments.OCR.yield_pt,1)+' − rate'},
+    {l:'Give-up from prepaying',v:sgd(edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus',cls:'hl'},
+  ];
+  $('lev-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
+  // buffer bars
+  if(c){
+    const months=c.bufferMonths;
+    const segs=[{l:'Your buffer',m:months,col:months>=24?'var(--g)':'var(--a)'},{l:'Brief target (2–3 yr)',m:30,col:'var(--bd-strong)'}];
+    const bmax=Math.max(36,months);
+    $('buffer-bars').innerHTML=segs.map(s=>`<div class="bar-row"><span>${s.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,s.m/bmax*100)}%;background:${s.col}"></div></div><span class="bar-num">${s.m.toFixed(0)} mo</span></div>`).join('');
+    $('buffer-note').innerHTML=`After buying, you hold ${sgd(Math.max(0,c.bufferAfter))} — about <b>${months.toFixed(0)} months</b> of instalments at ${sgd(c.instActual)}. `+
+      (months>=24?`That clears the 2–3-year rule: a job loss or a rate spike does not force a sale.`:`That is below the 2–3-year rule — trim the price, borrow a touch less, or hold more cash before committing.`);
+  }
+  // prepay vs invest projection bars (net worth delta narrative)
+  const yrs=[Math.round(N/2),N];
+  const rows=yrs.map(y=>{const inv=surplus*Math.pow(1+p,y), pre=surplus*Math.pow(1+m,y); return {y,inv,pre};});
+  const rmax=Math.max(...rows.map(r=>r.inv));
+  $('lev-bars').innerHTML=rows.map(r=>`
+    <div class="bar-row"><span>Invest · yr ${r.y}</span><div class="bar-track"><div class="bar-fill" style="width:${r.inv/rmax*100}%;background:var(--g)"></div></div><span class="bar-num">${sgdk(r.inv)}</span></div>
+    <div class="bar-row"><span>Prepay · yr ${r.y}</span><div class="bar-track"><div class="bar-fill" style="width:${r.pre/rmax*100}%;background:var(--b2)"></div></div><span class="bar-num">${sgdk(r.pre)}</span></div>`).join('');
+  $('lev-note').innerHTML=`Keeping ${sgdk(surplus)} invested at ${pct(p,1)} rather than prepaying a ${pct(m,1)} loan is expected to leave you <b>${sgd(edge)}</b> better off after ${N} years — the reward for the spread. Prepaying is the certain, lower-return path.`;
+  $('lev-disc').innerHTML=`<b>Read this honestly.</b> The invested path only wins if you actually invest the cash and earn ${pct(p,1)} — it is an expectation, not a promise, and it carries market risk the mortgage does not. The buffer above is what lets you ride out a bad sequence without selling. If you value certainty or would not invest the difference, prepaying is the rational choice. Not advice.`;
+}
+
+/* ---------- render tab 3 ---------- */
+function renderType(){
+  const S=D.market.segments;
+  const rows=[
+    {t:'HDB resale',quantum:'S$0.5–0.8m',liq:'Highest',yield:pct(S.HDB.yield_pt,1),app:'+0–2%',lev:'HDB loan 75% / bank; MSR 30%',restr:'Citizenship, MOP, ethnic quota, income ceiling',hedge:'Moderate',fit:'chip-a'},
+    {t:'Private condo',quantum:'S$1.0m+',liq:'High',yield:pct(S.OCR.yield_pt,1)+' (OCR)',app:'+1–3%',lev:'Bank only; TDSR 55%',restr:'ABSD on 2nd+; few use restrictions',hedge:'Strong',fit:'chip-g'},
+    {t:'Landed',quantum:'S$3.5m+',liq:'Lowest',yield:pct(S.Landed.yield_pt,1),app:'+0–1% (scarce)',lev:'Bank only; TDSR 55%',restr:'Citizens only; large quantum',hedge:'Strongest (land-scarce)',fit:'chip-n'}
+  ];
+  $('type-table').innerHTML=`<thead><tr><th>Type</th><th>Entry quantum</th><th>Liquidity</th><th class="num">Gross yield</th><th>2026 outlook</th><th>Leverage</th><th>Key restrictions</th><th>Inflation hedge</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td><b>${r.t}</b> <span class="chip ${r.fit}">${r.fit==='chip-g'?'brief fit':(r.fit==='chip-a'?'possible':'—')}</span></td><td class="num">${r.quantum}</td><td>${r.liq}</td><td class="num">${r.yield}</td><td>${r.app}</td><td>${r.lev}</td><td>${r.restr}</td><td>${r.hedge}</td></tr>`).join('')+`</tbody>`;
+  const cards=[
+    {t:'Why a condo fits the brief',b:'Needs a home now, wants liquidity, has cheap leverage available. A resale condo in a good suburban spot is liquid (deep buyer pool), fully leverageable at 75% with no ABSD on a first property, and tracks inflation well. This is the centre of the target.',cls:'good'},
+    {t:'When HDB resale makes sense',b:'If the priority is the highest yield and lowest entry cost, and the eligibility rules fit. But the MSR 30% cap, MOP lock-in and the mild 2026 price dip make it a home-first, not a leverage-the-good-loan, play.',cls:''},
+    {t:'Why landed is off-brief',b:'Structurally scarce and the strongest long-run hedge, but the quantum is far above budget, it is the least liquid, and citizens-only. Not a match for a S$1.2–1.5m, liquidity-first buyer.',cls:''}
+  ];
+  $('type-cards').innerHTML=cards.map(c=>`<div class="card" style="border-left:3px solid ${c.cls==='good'?'var(--g)':'var(--bd2)'}"><h3>${c.t}</h3><p style="font-size:13px;color:var(--t2)">${c.b}</p></div>`).join('');
+  const ec=D.market.ec_policy_2026;
+  $('ec-callout').innerHTML=`<b>Considering an EC?</b> From ${ec.effective} the rules tightened for new sites: MOP ${ec.changes.mop_years[0]}→${ec.changes.mop_years[1]} years, full privatisation ${ec.changes.full_privatisation_years[0]}→${ec.changes.full_privatisation_years[1]} years, first-timer quota ${pct(ec.changes.first_timer_quota[0],0)}→${pct(ec.changes.first_timer_quota[1],0)}, and the deferred-payment scheme abolished. Existing pipeline ECs keep the old 5-year MOP. An EC is cheaper than a condo but locks you in far longer — weigh that against the "stay liquid" brief.`;
+}
+
+/* ---------- render tab 4 ---------- */
+function renderWhere(){
+  const S=D.market.segments, G=D.market.gls;
+  const order=['OCR','RCR','CCR','Landed','HDB'];
+  $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Q2-26 momentum</th><th>2026 outlook</th><th>Read</th></tr></thead><tbody>`+
+    order.map(k=>{const s=S[k];const mo=s.momentum_2026Q2_flash;const psf=s.median_psf?('$'+fmt0(s.median_psf)):'—';
+      const read=k==='OCR'?'Best yield · brief fits here':k==='CCR'?'Prime leading on price':k==='HDB'?'Highest yield · rule-bound':k==='RCR'?'Fringe value in D14':'Scarce · off-brief';
+      return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_qoq_range[0],0)+'…'+pct(s.outlook_2026_qoq_range[1],0)} q/q</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
+
+  const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
+  $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>District</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
+    G.tenders_2026.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
+      return `<tr><td>${t.site}${t.note?' <span class="chip chip-n" title="'+t.note+'">i</span>':''}</td><td>${t.district}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
+  $('gls-note').innerHTML=`Land rates are up <b>~${pct(G.yoy,0)}</b> year on year (2026 average $${fmt0(G.avg_psf_ppr_2026ytd)} vs $${fmt0(G.avg_psf_ppr_2025)} psf ppr in 2025) on ${G.tenders_2026[0].bids}–6 bids per tender — developers are still paying up. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there.`;
+
+  const b=D.market.brief, f=b.fit_summary;
+  $('brief-map').innerHTML=`
+    <div class="verdict good" style="margin-bottom:12px"><b>Best fit — ${sgd(b.budget_sgd[0])}–${sgd(b.budget_sgd[1])}, 2-bed condo:</b> ${f.best_fit}</div>
+    <div class="bars">
+      ${[['Resale OCR 2-bed (comfortable)',f.best_fit],['New-launch OCR 2-bed (top of budget)',f.stretch],['Resale OCR 3-bed (older stock)',f.three_bed],['RCR value pocket',f.rcr_value_pocket],['CCR at this budget',f.ccr]].map(([k,v])=>`<div style="padding:9px 0;border-bottom:1px solid var(--bd)"><span class="label" style="display:block;margin-bottom:3px">${k}</span><span style="font-size:13px;color:var(--t2)">${v}</span></div>`).join('')}
+    </div>
+    <div class="note">${b.affordability_note}</div>`;
+}
+
+/* ---------- KPIs + footer ---------- */
+function renderKPIs(){
+  const R=D.rules, M=D.market;
+  const ppiYoY=M.indices.ura_ppi.yoy_2025, hdbYoY=M.indices.hdb_rpi.yoy_2025;
+  const k=[
+    {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'as of '+R.rates.sora_3m.asof},
+    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'promo · 1–3 yr'},
+    {l:'TDSR stress floor',v:pct(R.tdsr.stress_rate,0),s:'loans sized at this rate'},
+    {l:'Private PPI',v:'+'+pct(ppiYoY,1),s:'2025 · Q2-26 flash +0.5%'},
+    {l:'HDB resale RPI',v:'+'+pct(hdbYoY,1),s:'2025 · now easing'},
+    {l:'GLS land bids',v:'+'+pct(M.gls.yoy,0),s:'2026 YoY · sticky floor'}
+  ];
+  $('kpis').innerHTML=k.map(x=>`<div class="kpi"><div class="label">${x.l}</div><div class="kpi-val">${x.v}</div><div class="kpi-sub">${x.s}</div></div>`).join('');
+  $('pill-asof').textContent='snapshot '+M._meta.asof;
+  $('footer').innerHTML=`<b>Sources.</b> Rules — MAS / MoneySense / IRAS (in force July 2026). Market — URA (PPI, rental index, GLS), HDB (RPI), MAS (SORA), SingStat; segment $psf and yields are partly portal aggregations, flagged in the data. Package rates are curated (no public feed). `+
+    `<br><b>Not financial, mortgage or tax advice.</b> This is an educational illustration of published rules and public data. A bank's actual assessment (income recognition, CPF limits, guarantor rules) will differ; confirm with a licensed banker or broker before committing. Figures are a snapshot as of ${M._meta.asof} and date quickly. `+
+    `<br>Built on the vault dashboard convention · Personal project · ${M._meta.asof}.`;
+}
+
+/* ---------- wiring ---------- */
+function wire(){
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active'); $('pane-'+t.dataset.t).classList.add('active');
+  }));
+  ['i-age','i-income','i-debt','i-cash','i-price','i-type','i-cz','i-count','i-tenure','i-rate'].forEach(id=>{
+    $(id).addEventListener('input',renderAfford);
+  });
+  ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
+  const presets=[
+    {n:'42 · S$1.35m condo (the brief)',v:{age:42,income:11000,debt:0,cash:500000,price:1350000,type:'private',cz:'SC',count:0,tenure:23,rate:1.6}},
+    {n:'35 · S$1.5m condo, longer loan',v:{age:35,income:13000,debt:0,cash:520000,price:1500000,type:'private',cz:'SC',count:0,tenure:30,rate:1.6}},
+    {n:'45 · S$1.2m resale, cash-rich',v:{age:45,income:9000,debt:0,cash:700000,price:1200000,type:'private',cz:'SC',count:0,tenure:20,rate:1.6}},
+    {n:'40 · HDB resale S$0.75m',v:{age:40,income:8000,debt:0,cash:250000,price:750000,type:'hdb',cz:'SC',count:0,tenure:25,rate:2.6}}
+  ];
+  $('presets').innerHTML=presets.map((p,i)=>`<button class="preset" data-i="${i}">${p.n}</button>`).join('');
+  $('presets').querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>{
+    const v=presets[+btn.dataset.i].v;
+    $('i-age').value=v.age;$('i-income').value=v.income;$('i-debt').value=v.debt;$('i-cash').value=v.cash;
+    $('i-price').value=v.price;$('i-type').value=v.type;$('i-cz').value=v.cz;$('i-count').value=v.count;
+    $('i-tenure').value=v.tenure;$('i-rate').value=v.rate;renderAfford();
+  }));
+}
+
+(async function init(){
+  try{
+    D=await loadData();
+    renderKPIs(); wire(); renderAfford(); renderType(); renderWhere();
+  }catch(e){
+    document.querySelector('.shell').insertAdjacentHTML('beforeend',
+      `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>

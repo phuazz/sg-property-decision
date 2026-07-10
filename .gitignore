@@ -1,0 +1,14 @@
+# Licensed / private material never enters this repo.
+# Broker research PDFs (DBS / Goldman / Macquarie) live in OneDrive, not here.
+private/
+*.pdf
+research/
+
+# Tooling
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc
+.venv/

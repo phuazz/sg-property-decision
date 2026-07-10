@@ -1,0 +1,89 @@
+{
+  "_meta": {
+    "title": "Singapore property decision — regulatory & loan-engine constants",
+    "asof": "2026-07-10",
+    "not_advice": "Educational illustration of published rules, not financial or mortgage advice. Verify against MAS / MoneySense / IRAS / HDB before acting.",
+    "stability_note": "Core cooling-measure parameters have been stable since 27 Apr 2023 (stamp duty) and 20 Aug 2024 (HDB LTV). Every 2026-dated source treats them as unchanged.",
+    "sources": "MAS; MoneySense (retrieved Jul 2026); IRAS / MOF (15 Feb 2023 stamp-duty revision); HDB / MND (20 Aug 2024)."
+  },
+
+  "tdsr": {
+    "limit": 0.55,
+    "stress_rate": 0.04,
+    "note": "Total monthly debt obligations must not exceed 55% of gross monthly income. The property instalment in the test is computed at the higher of the 4.0% p.a. medium-term floor or the actual rate. Binding constraint for most private-property buyers.",
+    "source": "MAS (medium-term rate effective 30 Sep 2022; 55% TDSR since 16 Dec 2021)"
+  },
+
+  "msr": {
+    "limit": 0.30,
+    "stress_rate": 0.04,
+    "applies_to": ["HDB flat", "EC bought from developer"],
+    "note": "Mortgage Servicing Ratio: housing loan instalment must not exceed 30% of gross monthly income. Applies ON TOP of TDSR for HDB and new ECs; does not apply to private condos or resale ECs past MOP.",
+    "source": "MoneySense (Jul 2026)"
+  },
+
+  "ltv": {
+    "note": "Loan-to-value ceilings for bank loans to individuals. The MAX tier applies only if BOTH: loan tenure within the cliff AND borrower age + tenure <= 65 at the end of the loan. Otherwise the REDUCED tier applies and the minimum cash portion rises.",
+    "bank_individual": {
+      "loan1":     { "max": 0.75, "reduced": 0.55, "cash_min": 0.05, "cash_min_reduced": 0.10 },
+      "loan2":     { "max": 0.45, "reduced": 0.25, "cash_min": 0.25 },
+      "loan3plus": { "max": 0.35, "reduced": 0.15, "cash_min": 0.25 }
+    },
+    "reduction_trigger": {
+      "tenure_gt_years_private": 30,
+      "tenure_gt_years_hdb": 25,
+      "age_plus_tenure_gt": 65,
+      "note": "If tenure exceeds 30y (private) / 25y (HDB) OR the loan runs past age 65, LTV steps down to the reduced tier and first-loan minimum cash rises from 5% to 10%."
+    },
+    "hdb_concessionary": { "max": 0.75, "tenure_cap_years": 25, "rate": 0.026, "note": "HDB loan LTV cut 80%->75% on 20 Aug 2024." },
+    "source": "MoneySense (Jul 2026); HDB/MND (20 Aug 2024)"
+  },
+
+  "tenure_cap_years": {
+    "private_bank": 35,
+    "hdb_bank": 30,
+    "hdb_concessionary": 25,
+    "note": "Absolute maximum loan tenures. Separate from the LTV cliff at 30y/25y/age-65 above. For a borrower of age A wanting full 75% LTV on a private purchase, usable tenure = min(30, 65 - A).",
+    "source": "MAS / MoneySense (Jul 2026)"
+  },
+
+  "absd": {
+    "note": "Additional Buyer's Stamp Duty, on the higher of price or market value. Index = [1st property, 2nd, 3rd or more]. US nationals, and nationals/PRs of Iceland, Liechtenstein, Norway and Switzerland, are treated as Singapore Citizens under FTAs. Unchanged since 27 Apr 2023.",
+    "source": "IRAS",
+    "rates": {
+      "SC":        [0.00, 0.20, 0.30],
+      "PR":        [0.05, 0.30, 0.35],
+      "Foreigner": [0.60, 0.60, 0.60],
+      "Entity":    [0.65, 0.65, 0.65]
+    }
+  },
+
+  "bsd": {
+    "note": "Buyer's Stamp Duty, residential, effective 15 Feb 2023, on the higher of price or market value. Marginal tiers.",
+    "source": "IRAS / MOF",
+    "brackets": [
+      { "up_to": 180000,  "rate": 0.01 },
+      { "up_to": 360000,  "rate": 0.02 },
+      { "up_to": 1000000, "rate": 0.03 },
+      { "up_to": 1500000, "rate": 0.04 },
+      { "up_to": 3000000, "rate": 0.05 },
+      { "up_to": null,    "rate": 0.06 }
+    ],
+    "checkpoints_sgd": { "1000000": 24600, "1500000": 44600, "2000000": 69600 }
+  },
+
+  "rates": {
+    "sora_3m":            { "value": 0.011153, "asof": "2026-07-08", "source": "MAS daily rates via Cashew.sg", "flag": null },
+    "fixed_best":         { "value": 0.0130, "range": [0.0130, 0.0170], "asof": "2026-07-09", "source": "DollarBack / MortgageWise; DBS 2yr fixed 1.68%", "flag": "broker-negotiated promo, not board rate" },
+    "floating_typical":   { "value": 0.0170, "range": [0.0140, 0.0210], "source": "3M SORA ~1.12% + spread 0.25-1.00%", "flag": "synthesised range" },
+    "hdb_concessionary":  { "value": 0.0260, "source": "HDB (CPF OA + 0.1pp), unchanged" },
+    "default_mortgage_rate": 0.0160,
+    "note": "Live 3M SORA is scrapeable from the MAS domestic-interest-rates page; package rates have no public feed and are curated here. Refresh at each review."
+  },
+
+  "cpf": {
+    "oa_rate": 0.025,
+    "note": "CPF Ordinary Account pays 2.5% p.a. Cash used for downpayment/instalments has an opportunity cost at least equal to this (and typically the investor's portfolio return). Used in the cash-vs-mortgage module as the CPF hurdle.",
+    "source": "CPF Board (floor rate)"
+  }
+}
