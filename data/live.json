@@ -1,0 +1,255 @@
+{
+ "_meta": {
+  "fetched": "2026-07-10T00:57:30Z",
+  "errors": {}
+ },
+ "ura_ppi": {
+  "label": "URA Private Residential PPI (All Residential)",
+  "base": "2009-Q1=100",
+  "level": 218.3,
+  "level_asof": "2026-Q1",
+  "yoy": 0.0341,
+  "qoq": 0.0088,
+  "q_path": [
+   {
+    "q": "2024-Q1",
+    "index": 204.3
+   },
+   {
+    "q": "2024-Q2",
+    "index": 206.1
+   },
+   {
+    "q": "2024-Q3",
+    "index": 204.7
+   },
+   {
+    "q": "2024-Q4",
+    "index": 209.4
+   },
+   {
+    "q": "2025-Q1",
+    "index": 211.1
+   },
+   {
+    "q": "2025-Q2",
+    "index": 213.2
+   },
+   {
+    "q": "2025-Q3",
+    "index": 215.1
+   },
+   {
+    "q": "2025-Q4",
+    "index": 216.4
+   },
+   {
+    "q": "2026-Q1",
+    "index": 218.3
+   }
+  ],
+  "source": "data.gov.sg d_97f8a2e9 (URA)"
+ },
+ "hdb_rpi": {
+  "label": "HDB Resale Price Index",
+  "base": "2009-Q1=100",
+  "level": 203.4,
+  "level_asof": "2026-Q1",
+  "yoy": 0.0119,
+  "qoq": -0.001,
+  "q_path": [
+   {
+    "q": "2024-Q1",
+    "index": 183.7
+   },
+   {
+    "q": "2024-Q2",
+    "index": 187.9
+   },
+   {
+    "q": "2024-Q3",
+    "index": 192.9
+   },
+   {
+    "q": "2024-Q4",
+    "index": 197.9
+   },
+   {
+    "q": "2025-Q1",
+    "index": 201.0
+   },
+   {
+    "q": "2025-Q2",
+    "index": 202.9
+   },
+   {
+    "q": "2025-Q3",
+    "index": 203.7
+   },
+   {
+    "q": "2025-Q4",
+    "index": 203.6
+   },
+   {
+    "q": "2026-Q1",
+    "index": 203.4
+   }
+  ],
+  "source": "data.gov.sg d_14f63e59 (HDB)"
+ },
+ "locality": {
+  "CCR": {
+   "level": 158.6,
+   "asof": "2026-Q1",
+   "qoq": 0.0057,
+   "yoy_est": 0.0167
+  },
+  "RCR": {
+   "level": 228.9,
+   "asof": "2026-Q1",
+   "qoq": 0.0079,
+   "yoy_est": 0.007
+  },
+  "OCR": {
+   "level": 271.4,
+   "asof": "2026-Q1",
+   "qoq": 0.0218,
+   "yoy_est": 0.0515
+  },
+  "_source": "data.gov.sg d_f65e490a (URA non-landed by segment)"
+ },
+ "hdb_resale": {
+  "asof_month": "2026-07",
+  "n": 410,
+  "median_price": 640000,
+  "median_psf": 612,
+  "by_type": {
+   "2 ROOM": {
+    "n": 13,
+    "median_price": 370000
+   },
+   "3 ROOM": {
+    "n": 60,
+    "median_price": 478500
+   },
+   "4 ROOM": {
+    "n": 198,
+    "median_price": 628000
+   },
+   "5 ROOM": {
+    "n": 116,
+    "median_price": 730000
+   },
+   "EXECUTIVE": {
+    "n": 22,
+    "median_price": 932500
+   },
+   "MULTI-GENERATION": {
+    "n": 1,
+    "median_price": 1190000
+   }
+  },
+  "source": "data.gov.sg d_8b84c4ee (HDB resale register)"
+ },
+ "gls": {
+  "tenders_recent": [
+   {
+    "site": "River Valley Green (Parcel C)",
+    "pa": "River Valley",
+    "region": "CCR",
+    "close": "2026-06",
+    "psf_ppr": 1730,
+    "bids": 4,
+    "tenderer": "SMCL Haven 3 Pte. Ltd. and CSC Land Group (Singapore) Pte. L"
+   },
+   {
+    "site": "Peck Hay Road",
+    "pa": "Newton",
+    "region": "CCR",
+    "close": "2026-06",
+    "psf_ppr": 1865,
+    "bids": 4,
+    "tenderer": "CDL Constellation Pte. Ltd. and Garden Estates (Pte.) Limite"
+   },
+   {
+    "site": "Holland Plain",
+    "pa": "Bukit Timah",
+    "region": "RCR",
+    "close": "2026-05",
+    "psf_ppr": 1491,
+    "bids": 1,
+    "tenderer": "Sim Lian Land Pte Ltd and Sim Lian Development Pte Ltd"
+   },
+   {
+    "site": "Dunearn Road",
+    "pa": "Bukit Timah",
+    "region": "RCR",
+    "close": "2026-05",
+    "psf_ppr": 1625,
+    "bids": 6,
+    "tenderer": "Winrich Investment Pte. Ltd. and Metrobilt Construction Pte "
+   },
+   {
+    "site": "Kallang Close",
+    "pa": "Kallang",
+    "region": "RCR",
+    "close": "2026-04",
+    "psf_ppr": 1415,
+    "bids": 4,
+    "tenderer": "Frasers Property Phoenix Pte. Ltd. and MJR Investment Pte. L"
+   },
+   {
+    "site": "Dover Drive",
+    "pa": "Queenstown",
+    "region": "RCR",
+    "close": "2026-03",
+    "psf_ppr": 1556,
+    "bids": 6,
+    "tenderer": "CNQC Realty (Prime) Pte. Ltd., Forsea Residence Pte. Ltd. an"
+   },
+   {
+    "site": "Lentor Central",
+    "pa": "Ang Mo Kio",
+    "region": "OCR",
+    "close": "2026-03",
+    "psf_ppr": 1278,
+    "bids": 5,
+    "tenderer": "GuocoLand (Singapore) Pte. Ltd., Intrepid Investments Pte. L"
+   },
+   {
+    "site": "Tanjong Rhu Road",
+    "pa": "Kallang",
+    "region": "RCR",
+    "close": "2026-02",
+    "psf_ppr": 1455,
+    "bids": 5,
+    "tenderer": "CDL Constellation Pte. Ltd. and Bedrock Ventures Pte. Ltd."
+   },
+   {
+    "site": "Dairy Farm Walk",
+    "pa": "Bukit Panjang",
+    "region": "OCR",
+    "close": "2026-01",
+    "psf_ppr": 962,
+    "bids": 5,
+    "tenderer": "ABR Holdings Limited, LWH Holdings Pte. Ltd., Macly Capital "
+   },
+   {
+    "site": "Bedok Rise",
+    "pa": "Bedok",
+    "region": "OCR",
+    "close": "2025-12",
+    "psf_ppr": 1330,
+    "bids": 10,
+    "tenderer": "Bellis Residential Pte. Ltd."
+   }
+  ],
+  "avg_psf_ppr_year": {
+   "2026": 1486,
+   "2025": 1260
+  },
+  "yoy": 0.179,
+  "asof": "2026-06-23",
+  "source": "URA Past-Sale-Sites .xlsx (residential awards)"
+ }
+}

@@ -29,5 +29,9 @@ fallback so `npx serve .` works standalone in dev.
 
 ## Status / entry point
 
-Data layer done (`rules.json`, `market.json`). Dashboard modules: Affordability & loan · Buy-vs-rent /
-cash-vs-mortgage · Type (HDB/condo/landed) · Where (segment + GLS land bids). Private repo.
+**Public & live** at phuazz.github.io/sg-property-decision (in the hub). Four modules: Affordability & loan ·
+Buy-vs-rent / cash-vs-mortgage · Type (HDB/condo/landed) · Where (segment + GLS land bids). Live data wired
+via `scripts/fetch_data.py` → `data/live.json` (data.gov.sg indices/segment momentum/HDB medians + URA GLS),
+overlaid by `pipeline.py`; weekly `.github/workflows/refresh.yml`. Official segment $psf is gated on the
+`URA_ACCESS_KEY` secret (skips cleanly). SORA + package rates stay curated in `rules.json`. Work on
+`template.html` + `data/*.json`; never hand-edit `docs/index.html`.

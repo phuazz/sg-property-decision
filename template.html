@@ -135,7 +135,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       <div class="sub">Buy HDB, condo or landed — how much to borrow versus hold in cash, and where. A decision tool, not advice.</div>
     </div>
     <div class="pills">
-      <span class="pill pill-live"><span class="dot"></span>SNAPSHOT</span>
+      <span class="pill pill-live" id="pill-live"><span class="dot"></span>SNAPSHOT</span>
       <span class="pill pill-date" id="pill-asof">as of —</span>
       <span class="pill pill-warn">Not financial advice</span>
     </div>
@@ -241,7 +241,8 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       <div class="card">
         <h3>Segments — price, yield, momentum</h3>
         <div class="tbl-wrap"><table id="seg-table"></table></div>
-        <div class="note">Median $psf and gross yields are segment aggregates (several portal-sourced, flagged in the data); a specific project can differ materially. Gross yield is before maintenance, tax and vacancy — net is typically ~0.8–1.2pp lower.</div>
+        <div id="hdb-live"></div>
+        <div class="note">Median $psf and gross yields are segment aggregates (several portal-sourced, flagged in the data); a specific project can differ materially. Momentum is the latest quarterly q/q (official from data.gov.sg where live, else the Q2-26 flash). Gross yield is before maintenance, tax and vacancy — net is typically ~0.8–1.2pp lower.</div>
       </div>
       <div class="card">
         <h3>Government Land Sales — 2026 winning bids</h3>
@@ -492,16 +493,21 @@ function renderType(){
 function renderWhere(){
   const S=D.market.segments, G=D.market.gls;
   const order=['OCR','RCR','CCR','Landed','HDB'];
-  $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Q2-26 momentum</th><th>2026 outlook</th><th>Read</th></tr></thead><tbody>`+
-    order.map(k=>{const s=S[k];const mo=s.momentum_2026Q2_flash;const psf=s.median_psf?('$'+fmt0(s.median_psf)):'—';
+  $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Latest q/q</th><th>2026 outlook</th><th>Read</th></tr></thead><tbody>`+
+    order.map(k=>{const s=S[k];const mo=s.momentum_qoq;const psf=s.median_psf?('$'+fmt0(s.median_psf)):'—';
       const read=k==='OCR'?'Best yield · brief fits here':k==='CCR'?'Prime leading on price':k==='HDB'?'Highest yield · rule-bound':k==='RCR'?'Fringe value in D14':'Scarce · off-brief';
-      return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_qoq_range[0],0)+'…'+pct(s.outlook_2026_qoq_range[1],0)} q/q</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
+      return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}" title="${s.momentum_asof||''}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_qoq_range[0],0)+'…'+pct(s.outlook_2026_qoq_range[1],0)} q/q</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
+
+  // live HDB resale median (present only when live.json is overlaid)
+  const H=D.market.hdb_resale;
+  $('hdb-live').innerHTML = H ? `<div class="callout" style="margin:12px 0 4px"><b>HDB resale — ${H.asof_month} (live, ${H.n} deals so far):</b> median <span class="mono">${sgd(H.median_price)}</span> · <span class="mono">$${fmt0(H.median_psf)}</span> psf. `+
+    Object.entries(H.by_type).filter(([t])=>/ROOM|EXEC/.test(t)).map(([t,v])=>`${t.replace(' ROOM','R').replace('EXECUTIVE','Exec')} ${sgdk(v.median_price)}`).join(' · ')+`</div>` : '';
 
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
-  $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>District</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
-    G.tenders_2026.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
-      return `<tr><td>${t.site}${t.note?' <span class="chip chip-n" title="'+t.note+'">i</span>':''}</td><td>${t.district}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
-  $('gls-note').innerHTML=`Land rates are up <b>~${pct(G.yoy,0)}</b> year on year (2026 average $${fmt0(G.avg_psf_ppr_2026ytd)} vs $${fmt0(G.avg_psf_ppr_2025)} psf ppr in 2025) on ${G.tenders_2026[0].bids}–6 bids per tender — developers are still paying up. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there.`;
+  $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
+    G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
+      return `<tr><td>${t.site}${t.note?' <span class="chip chip-n" title="'+String(t.note).replace(/"/g,'')+'">i</span>':''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
+  $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) on a handful of disciplined bids per tender — developers are still paying up. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
 
   const b=D.market.brief, f=b.fit_summary;
   $('brief-map').innerHTML=`
@@ -515,18 +521,20 @@ function renderWhere(){
 /* ---------- KPIs + footer ---------- */
 function renderKPIs(){
   const R=D.rules, M=D.market;
-  const ppiYoY=M.indices.ura_ppi.yoy_2025, hdbYoY=M.indices.hdb_rpi.yoy_2025;
+  const ppi=M.indices.ura_ppi, hdb=M.indices.hdb_rpi, live=M.live&&M.live.present;
   const k=[
-    {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'as of '+R.rates.sora_3m.asof},
-    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'promo · 1–3 yr'},
+    {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'curated · '+R.rates.sora_3m.asof},
+    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'curated · promo 1–3 yr'},
     {l:'TDSR stress floor',v:pct(R.tdsr.stress_rate,0),s:'loans sized at this rate'},
-    {l:'Private PPI',v:'+'+pct(ppiYoY,1),s:'2025 · Q2-26 flash +0.5%'},
-    {l:'HDB resale RPI',v:'+'+pct(hdbYoY,1),s:'2025 · now easing'},
-    {l:'GLS land bids',v:'+'+pct(M.gls.yoy,0),s:'2026 YoY · sticky floor'}
+    {l:'Private PPI',v:'+'+pct(ppi.yoy,1),s:ppi.asof+' · q/q '+(ppi.qoq>=0?'+':'')+pct(ppi.qoq,1)},
+    {l:'HDB resale RPI',v:(hdb.yoy>=0?'+':'')+pct(hdb.yoy,1),s:hdb.asof+' · q/q '+(hdb.qoq>=0?'+':'')+pct(hdb.qoq,1)},
+    {l:'GLS land bids',v:(M.gls.yoy>=0?'+':'')+pct(M.gls.yoy,0),s:'YoY · '+M.gls.asof.replace(' (live)','')}
   ];
   $('kpis').innerHTML=k.map(x=>`<div class="kpi"><div class="label">${x.l}</div><div class="kpi-val">${x.v}</div><div class="kpi-sub">${x.s}</div></div>`).join('');
-  $('pill-asof').textContent='snapshot '+M._meta.asof;
-  $('footer').innerHTML=`<b>Sources.</b> Rules — MAS / MoneySense / IRAS (in force July 2026). Market — URA (PPI, rental index, GLS), HDB (RPI), MAS (SORA), SingStat; segment $psf and yields are partly portal aggregations, flagged in the data. Package rates are curated (no public feed). `+
+  if(live){ $('pill-live').innerHTML='<span class="dot"></span>LIVE'; $('pill-asof').textContent='data '+M.live.fetched.slice(0,10)+' · rules '+M._meta.asof; }
+  else { $('pill-asof').textContent='snapshot '+M._meta.asof; }
+  const liveTxt=live?`Indices, segment momentum, GLS land bids and HDB resale medians refreshed live ${M.live.fetched.slice(0,10)} from data.gov.sg + the URA GLS workbook; SORA and package rates are curated (no public feed); official segment $psf lights up when a URA Data Service key is supplied. `:``;
+  $('footer').innerHTML=`<b>Sources.</b> Rules — MAS / MoneySense / IRAS (in force July 2026). Market — URA (PPI, rental index, GLS), HDB (RPI, resale register), MAS (SORA), SingStat; segment $psf and yields are partly portal aggregations, flagged in the data. `+liveTxt+
     `<br><b>Not financial, mortgage or tax advice.</b> This is an educational illustration of published rules and public data. A bank's actual assessment (income recognition, CPF limits, guarantor rules) will differ; confirm with a licensed banker or broker before committing. Figures are a snapshot as of ${M._meta.asof} and date quickly. `+
     `<br>Built on the vault dashboard convention · Personal project · ${M._meta.asof}.`;
 }
