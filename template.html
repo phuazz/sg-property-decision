@@ -157,6 +157,32 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .nextbtn:hover{background:var(--b-bg2)}
 @media(max-width:700px){.steps{grid-template-columns:1fr 1fr}}
 @media(max-width:460px){.steps{grid-template-columns:1fr}}
+
+/* engaging hook hero */
+.hook-kicker{display:inline-block;font-size:12.5px;font-weight:600;color:var(--a);background:var(--a-bg);border:1px solid rgba(180,83,9,0.22);border-radius:999px;padding:5px 13px;margin-bottom:13px}
+.hook-h1{font-family:var(--serif);font-size:31px;line-height:1.12;letter-spacing:-0.5px;margin:2px 0 10px;max-width:780px}
+@media(max-width:600px){.hook-h1{font-size:25px}}
+.hook-buys{margin:8px 0 16px}
+.hook-buys-head{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:16px}
+.hook-budget-val{font-family:var(--mono);font-size:25px;font-weight:700;letter-spacing:-0.5px}
+.hook-buys-head input[type=range]{flex:1;min-width:200px;accent-color:var(--t1);height:6px}
+.buys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:640px){.buys{grid-template-columns:1fr}}
+.buy{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius);padding:15px 16px;position:relative}
+.buy.best{background:var(--g-bg);border-color:var(--g-bg2)}
+.buy-emoji{font-size:26px;line-height:1}
+.buy-seg{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;color:var(--t3);margin:9px 0 3px}
+.buy-what{font-size:16px;font-weight:700;color:var(--t1);line-height:1.25}
+.buy-size{font-family:var(--mono);font-size:12.5px;color:var(--t2);margin-top:4px}
+.buy-tag{position:absolute;top:13px;right:13px;font-size:10px;font-weight:700;color:var(--g);background:var(--g-bg2);border-radius:999px;padding:2px 8px}
+.hooks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 24px}
+@media(max-width:640px){.hooks{grid-template-columns:1fr}}
+.hookcard{text-align:left;background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--b);border-radius:var(--radius-lg);padding:15px 16px;cursor:pointer;font-family:var(--sans);transition:box-shadow .15s,transform .15s}
+.hookcard:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.hook-num{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-0.5px;color:var(--t1)}
+.hook-txt{font-size:12.5px;color:var(--t2);line-height:1.45;margin-top:5px}
+.hook-go{font-size:11.5px;font-weight:600;color:var(--b);margin-top:9px}
+.goalq{font-size:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3);margin:8px 0 12px}
 </style>
 </head>
 <body>
@@ -186,8 +212,22 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <!-- OVERVIEW -->
   <section class="pane active" id="pane-start">
     <div class="overview">
-      <h2 class="section">Buying a home in Singapore? Start with four questions.</h2>
-      <p class="lead">Big, vague decisions get easier when you break them up. This tool turns "should I buy, and what?" into four smaller questions you can actually answer — with today's rules, rates and prices already filled in. Work through them in order, or jump to the one on your mind. <b>Educational, not advice.</b></p>
+      <div class="hook-kicker">🚗 In Singapore, S$200k barely buys a car — your home is the decision that really matters.</div>
+      <h2 class="hook-h1">The same budget buys wildly different homes, and your age decides how much you can borrow.</h2>
+      <p class="lead">Property is the biggest number most of us ever sign for, and the rules are quietly stacked with catches — your age, the stress test, the stamp duties. This turns it into four questions you can answer, with today's real rates and prices. <b>Educational, not advice.</b></p>
+
+      <div class="card hook-buys">
+        <div class="hook-buys-head">
+          <div><span class="label">Drag to your budget</span><div class="hook-budget-val" id="hook-bval">S$1,350,000</div></div>
+          <input id="hook-budget" type="range" min="500000" max="3000000" step="50000" value="1350000" aria-label="budget">
+        </div>
+        <div class="buys" id="buys"></div>
+        <div class="note" id="buys-note"></div>
+      </div>
+
+      <div class="hooks" id="hooks"></div>
+
+      <div class="goalq">Or work through the four questions &darr;</div>
       <div class="steps">
         <button class="step" onclick="switchTab('afford')"><span class="step-n">1</span><span class="step-t">Can I afford it?</span><span class="step-d">The biggest loan you can take at your age, the monthly repayment at today's rate, and the cash you need on day one.</span><span class="step-go">Work it out &rarr;</span></button>
         <button class="step" onclick="switchTab('leverage')"><span class="step-n">2</span><span class="step-t">Pay cash, or take a loan?</span><span class="step-d">Rates are near 1%. See whether borrowing cheaply and keeping cash invested beats paying cash — and the buffer that keeps it safe.</span><span class="step-go">Weigh it up &rarr;</span></button>
@@ -346,6 +386,7 @@ const commafy=s=>{const d=s.replace(/[^\d]/g,'');return d?(+d).toLocaleString('e
 const setMoney=(id,val)=>{$(id).value=(+val).toLocaleString('en-SG');};
 function attachMoney(id){
   const el=$(id);
+  if(el.value) el.value=commafy(el.value);   // format the initial value on load
   el.addEventListener('input',()=>{
     const caret=el.selectionStart, digitsLeft=el.value.slice(0,caret).replace(/[^\d]/g,'').length;
     el.value=commafy(el.value);
@@ -619,12 +660,31 @@ function renderKPIs(){
     `<br>Built on the vault dashboard convention · Personal project · ${M._meta.asof}.`;
 }
 
-/* ---------- overview at-a-glance ---------- */
-function renderAtGlance(){
-  const R=D.rules, M=D.market, ppi=M.indices.ura_ppi, hdb=M.indices.hdb_rpi;
-  const priceWord=Math.abs(ppi.qoq)<0.003?'roughly flat':(ppi.qoq>0?'edging up':'softening');
-  const hdbWord=hdb.qoq>=0?'holding':'easing';
-  $('atglance').innerHTML=`<b>Right now:</b> the 3-month SORA benchmark is about <b>${pct(R.rates.sora_3m.value,1)}</b> and the best fixed home loans start near <b>${pct(R.rates.fixed_best.value,1)}</b> — the cheapest borrowing since 2021. Private home prices are <b>${priceWord}</b> (${ppi.asof}) and HDB resale is <b>${hdbWord}</b>, while developers' land bids are <b>${(M.gls.yoy>=0?'up ':'down ')+pct(Math.abs(M.gls.yoy),0)}</b> on a year ago — cheap money meeting a firm price floor. ${M.live&&M.live.present?'These figures refresh automatically.':''}`;
+/* ---------- overview hook: what your budget buys + three "aha" numbers ---------- */
+function renderHook(){
+  const M=D.market, R=D.rules, B=numVal('hook-budget')||+$('hook-budget').value;
+  $('hook-bval').textContent=sgd(B);
+  const segs=[
+    {k:'OCR',emoji:'🏡',name:'Suburban · OCR'},
+    {k:'RCR',emoji:'🏢',name:'City-fringe · RCR'},
+    {k:'CCR',emoji:'🏙️',name:'Prime · CCR'}
+  ];
+  const bed=s=>s<520?'A 1-bedroom':s<760?'A 2-bedroom':s<1050?'A roomy 2–3 bed':'A 3-bedroom+';
+  $('buys').innerHTML=segs.map((sg,i)=>{
+    const psf=M.segments[sg.k].median_psf, size=Math.round(B/psf/10)*10;
+    return `<div class="buy${i===0?' best':''}">${i===0?'<span class="buy-tag">most home</span>':''}`+
+      `<div class="buy-emoji">${sg.emoji}</div><div class="buy-seg">${sg.name}</div>`+
+      `<div class="buy-what">${bed(size)}</div><div class="buy-size">~${fmt0(size)} sqft · at $${fmt0(psf)} psf</div></div>`;
+  }).join('');
+  const bsdAmt=bsd(B, R.bsd.brackets);
+  $('buys-note').innerHTML=`Same <b>${sgd(B)}</b>, three very different homes — sized at each area's median $psf. Suburban stretches furthest and still leaves ~<b>${sgd(bsdAmt)}</b> for the stamp duty, plus room for a cash buffer; prime buys the least space per dollar. A rough teaser — <b>Where to buy</b> has the real detail.`;
+  const loan=R.rates.fixed_best.value, cpf=R.cpf.oa_rate, land=M.gls.yoy;
+  const hooks=[
+    {num:'23 vs 30 yrs',txt:'At 42 the best loan terms cap you near 23 years, not 30 — the loan must clear by age 65. Shorter loan, higher monthly: the window to borrow well closes with age.',go:'See your number →',t:'afford',col:'var(--b)'},
+    {num:pct(loan,1)+' vs '+pct(cpf,1),txt:'Your home loan now costs less than your CPF even earns — the cheapest borrowing since 2021. That quietly flips the old "just pay cash" instinct.',go:'Cash or loan? →',t:'leverage',col:'var(--g)'},
+    {num:(land>=0?'+':'')+pct(land,0)+' on land',txt:"What developers paid for land this year versus last. Every winning bid sets a floor under tomorrow's launch and resale prices nearby.",go:'Where to buy? →',t:'where',col:'var(--a)'}
+  ];
+  $('hooks').innerHTML=hooks.map(h=>`<button class="hookcard" style="border-left-color:${h.col}" onclick="switchTab('${h.t}')"><div class="hook-num">${h.num}</div><div class="hook-txt">${h.txt}</div><div class="hook-go">${h.go}</div></button>`).join('');
 }
 
 /* ---------- wiring ---------- */
@@ -635,6 +695,7 @@ function wire(){
     $(id).addEventListener('input',renderAfford);
   });
   ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
+  $('hook-budget').addEventListener('input',()=>{renderHook(); setMoney('i-price',$('hook-budget').value); renderAfford();});
   const presets=[
     {n:'42 · S$1.35m condo (example)',v:{age:42,income:11000,debt:0,cash:500000,price:1350000,type:'private',cz:'SC',count:0,tenure:23,rate:1.6}},
     {n:'35 · S$1.5m condo, longer loan',v:{age:35,income:13000,debt:0,cash:520000,price:1500000,type:'private',cz:'SC',count:0,tenure:30,rate:1.6}},
@@ -655,7 +716,7 @@ function wire(){
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderAtGlance(); wire(); renderAfford(); renderType(); renderWhere();
+    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
