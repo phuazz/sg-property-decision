@@ -19,8 +19,11 @@ seller — but any age, income, budget, property type and buyer profile can be e
 2. **Buy vs rent · cash vs mortgage** — the debate. With 3-month SORA near 1% and packages ~1.3–1.7%,
    the mortgage rate sits **below** both property's long-run inflation-plus-real return and a balanced
    portfolio's expected return, so borrowing and keeping cash invested wins on expected value — *if* the
-   liquidity buffer is there. The module shows the interest-rate spread, a net-worth projection under
-   all-cash vs max-loan-invest-the-rest, and the forced-seller buffer (months of instalments covered).
+   liquidity buffer is there. The module shows the interest-rate spread (carry net of running costs), a
+   year-one own-vs-rent decomposition (rent avoided, interest, maintenance + tax, returns forgone on the
+   upfront, expected appreciation), prepay-vs-invest compounding, and the forced-seller buffer measured
+   three ways (package rate, stress rate, including running costs) — plus the SSD exit lock (16/12/8/4%
+   within 4 years of purchase).
 3. **Type — HDB vs condo vs landed** — a profile-aware scorecard across entry quantum, liquidity,
    appreciation track record and outlook, gross yield, leverage eligibility, restrictions and
    inflation-tracking.
@@ -35,8 +38,11 @@ seller — but any age, income, budget, property type and buyer profile can be e
 All dashboard data is built from **primary public sources**, deliberately independent of the licensed
 broker research that informed the framework (see IP firewall below).
 
-- **Regulatory & loan constants** (`data/rules.json`) — MAS / MoneySense (TDSR 55% @ 4% floor, MSR 30%,
-  LTV 75/45/35 + the age-65 tenure cliff, tenure caps), IRAS (ABSD, BSD). Verified in force July 2026.
+- **Regulatory & loan constants** (`data/rules.json`) — MAS / MoneySense (TDSR 55% and MSR 30% at the
+  higher of the 4% floor or the actual rate; LTV 75/45/35 + the age-65 tenure cliff; tenure caps incl.
+  EC 30y; HDB concessionary loan 75% / no minimum cash / 3% floor / 25y-or-age-65; 30% variable-income
+  haircut), IRAS (ABSD, BSD, and SSD 16/12/8/4% within 4 years wef 4 Jul 2025). Verified in force
+  July 2026.
 - **Market snapshot** (`data/market.json`) — URA PPI + rental index and HDB RPI (levels + quarterly path),
   segment $psf and gross yields, 2-bed quantum by segment, the 2026 GLS tender table, and the 8 May 2026
   EC policy change. Every figure carries a source; portal aggregations and computed/flash values are flagged.
@@ -49,6 +55,12 @@ broker research that informed the framework (see IP firewall below).
 `market.json` (the baseline stands if `live.json` is absent, so `npx serve .` still works). A GitHub
 Action (`.github/workflows/refresh.yml`) re-runs it weekly and commits the rebuilt page, so the LIVE
 pill and the numbers stay current without manual runs.
+
+Failures are visible, not silent: a feed that fails at refresh turns the pill amber (`LIVE · partial`,
+hover lists the feeds; the footer repeats them) while curated baseline values stand for it, each figure
+keeps its own as-of label, and if **every** feed fails `fetch_data.py` exits non-zero and keeps the
+previous `live.json` so the page never claims a fresh fetch it did not get. A fetch older than 14 days
+flips the pill to `LIVE · stale (Nd)`.
 
 | Feed | Source | Access | State |
 |---|---|---|---|
@@ -105,8 +117,9 @@ prohibits redistribution and use as AI input. They are filed **privately in OneD
 2. **Segment medians hide dispersion.** $psf and yield are segment aggregates (several portal-sourced); a
    specific project/district/floor/lease can differ materially. The tool guides *where to look*, not *which unit*.
 3. **The loan engine is an illustration of the rules, not an approval.** It applies the published TDSR/MSR/LTV
-   formulae at the stress floor; a bank's actual assessment (income recognition, variable-income haircuts,
-   guarantor rules, CPF usage limits) will differ. Confirm with a banker/broker before committing.
+   formulae at the higher of the floor or your rate, with the 30% variable-income haircut; a bank's actual
+   assessment (income recognition, income-weighted average age on joint loans, guarantor rules, CPF usage
+   limits, valuation vs price) will differ. Confirm with a banker/broker before committing.
 
 ## Status
 
@@ -116,5 +129,18 @@ loan-engine maths verified in-browser on both the LTV-bound and MSR-bound paths;
 (data.gov.sg indices + segment momentum + HDB medians, URA GLS land bids) with a weekly refresh Action;
 official segment $psf is gated on a free URA Data Service key. The licensed broker PDFs stay private in
 OneDrive (IP firewall).
+
+**Post-publication review + fix pass (2026-07-10, same day):** severity-ranked review memo, then patches —
+stress test corrected to the higher of the floor or the actual rate (was fixed 4%); EC tenure capped at
+30y (flagged pending confirmation against MAS Notice 632 text — MAS site was down at review); HDB
+concessionary-loan mode added (75%, no minimum cash, 3% floor, 25y-or-age-65); SSD (4 Jul 2025 schedule)
+encoded in `rules.json` and surfaced as the "exit lock"; 30% variable-income haircut and optional
+remaining-lease warnings (CPF-to-95 pro-rating, bank lease thresholds); buffer restated at the stress
+rate and including estimated running costs; year-one own-vs-rent card (the appreciation slider now
+drives it); live-fetch failures made visible (amber partial/stale pill, footer note, CI all-fail guard);
+GLS notes flag the mix-unadjusted average, two-sided supply effect and planning-area segment
+approximation; segment "read" labels made momentum-aware; landing-page hook copy and the $1.4m
+affordability note corrected. Engine re-verified against an independent Python recomputation
+(14 cases, exact agreement).
 
 _Last updated: 2026-07-10._
