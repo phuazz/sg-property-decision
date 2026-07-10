@@ -1,7 +1,9 @@
 {
  "_meta": {
-  "fetched": "2026-07-10T00:57:30Z",
-  "errors": {}
+  "fetched": "2026-07-10T01:01:15Z",
+  "errors": {
+   "hdb_resale": "HTTPError('429 Client Error: Too Many Requests for url: https://data.gov.sg/api/action/datastore_search?resource_id=d_8b84c4ee58e3cfc0ece0d773c8ca6abc&limit=6000&offset=229149')"
+  }
  },
  "ura_ppi": {
   "label": "URA Private Residential PPI (All Residential)",
@@ -117,39 +119,6 @@
    "yoy_est": 0.0515
   },
   "_source": "data.gov.sg d_f65e490a (URA non-landed by segment)"
- },
- "hdb_resale": {
-  "asof_month": "2026-07",
-  "n": 410,
-  "median_price": 640000,
-  "median_psf": 612,
-  "by_type": {
-   "2 ROOM": {
-    "n": 13,
-    "median_price": 370000
-   },
-   "3 ROOM": {
-    "n": 60,
-    "median_price": 478500
-   },
-   "4 ROOM": {
-    "n": 198,
-    "median_price": 628000
-   },
-   "5 ROOM": {
-    "n": 116,
-    "median_price": 730000
-   },
-   "EXECUTIVE": {
-    "n": 22,
-    "median_price": 932500
-   },
-   "MULTI-GENERATION": {
-    "n": 1,
-    "median_price": 1190000
-   }
-  },
-  "source": "data.gov.sg d_8b84c4ee (HDB resale register)"
  },
  "gls": {
   "tenders_recent": [
