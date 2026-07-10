@@ -125,6 +125,38 @@ footer b{color:var(--t2)}
 .disc{background:var(--a-bg);border:1px solid rgba(180,83,9,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#7c4406;margin-top:16px}
 h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .sec-sub{font-size:13px;color:var(--t2);margin-bottom:16px;max-width:820px}
+
+/* onboarding: overview, leads, collapsibles, next-nav */
+.overview{max-width:920px}
+.lead{font-size:14.5px;color:var(--t2);line-height:1.6;margin:2px 0 18px;max-width:840px}
+.lead b{color:var(--t1);font-weight:600}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:12px 0 20px}
+.step{text-align:left;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:16px 17px;cursor:pointer;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s,transform .15s;font-family:var(--sans)}
+.step:hover{border-color:var(--bd-strong);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.step-n{width:26px;height:26px;border-radius:50%;background:var(--t1);color:#fff;font-weight:700;font-family:var(--mono);font-size:13px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.step-t{font-weight:700;font-size:15px;margin-bottom:4px;color:var(--t1)}
+.step-d{font-size:12.5px;color:var(--t2);line-height:1.5;flex:1}
+.step-go{font-size:12px;font-weight:600;color:var(--b);margin-top:11px}
+.startrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:2px 0 20px}
+.btn-primary{font-family:var(--sans);font-size:14px;font-weight:600;color:#fff;background:var(--t1);border:none;border-radius:var(--radius);padding:11px 18px;cursor:pointer}
+.btn-primary:hover{background:#000}
+.startrow-note{font-size:12.5px;color:var(--t3);max-width:440px}
+.atglance{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:15px 18px;font-size:14px;color:var(--t2);line-height:1.65}
+.atglance b{color:var(--t1);font-family:var(--mono);font-weight:700}
+.fp{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);margin:0 0 16px}
+.fp>summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--t2);list-style:none;display:flex;align-items:center;gap:8px}
+.fp>summary::before{content:'▸';color:var(--b);transition:transform .15s;font-size:11px}
+.fp[open]>summary::before{transform:rotate(90deg)}
+.fp>summary::-webkit-details-marker{display:none}
+.fp-body{padding:0 16px 15px;font-size:13px;color:var(--t2);line-height:1.6}
+.fp.inline{border:none;background:none;margin:4px 0 0}
+.fp.inline>summary{padding:9px 0;color:var(--b)}
+.fp.inline .fp-body{padding:9px 0 2px}
+.nextnav{margin-top:24px;display:flex;justify-content:flex-end}
+.nextbtn{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--b);background:var(--b-bg);border:1px solid var(--b-bg2);border-radius:999px;padding:9px 16px;cursor:pointer}
+.nextbtn:hover{background:var(--b-bg2)}
+@media(max-width:700px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.steps{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -144,36 +176,60 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <div class="kpi-strip" id="kpis"></div>
 
   <nav class="tabs" id="tabs">
-    <button class="tab active" data-t="afford">1 · Affordability &amp; loan</button>
-    <button class="tab" data-t="leverage">2 · Buy vs rent · cash vs mortgage</button>
-    <button class="tab" data-t="type">3 · HDB vs condo vs landed</button>
-    <button class="tab" data-t="where">4 · Where to buy</button>
+    <button class="tab active" data-t="start">Start here</button>
+    <button class="tab" data-t="afford">1 · Can I afford it?</button>
+    <button class="tab" data-t="leverage">2 · Cash or loan?</button>
+    <button class="tab" data-t="type">3 · HDB, condo or landed?</button>
+    <button class="tab" data-t="where">4 · Where to buy?</button>
   </nav>
 
+  <!-- OVERVIEW -->
+  <section class="pane active" id="pane-start">
+    <div class="overview">
+      <h2 class="section">Buying a home in Singapore? Start with four questions.</h2>
+      <p class="lead">Big, vague decisions get easier when you break them up. This tool turns "should I buy, and what?" into four smaller questions you can actually answer — with today's rules, rates and prices already filled in. Work through them in order, or jump to the one on your mind. <b>Educational, not advice.</b></p>
+      <div class="steps">
+        <button class="step" onclick="switchTab('afford')"><span class="step-n">1</span><span class="step-t">Can I afford it?</span><span class="step-d">The biggest loan you can take at your age, the monthly repayment at today's rate, and the cash you need on day one.</span><span class="step-go">Work it out &rarr;</span></button>
+        <button class="step" onclick="switchTab('leverage')"><span class="step-n">2</span><span class="step-t">Pay cash, or take a loan?</span><span class="step-d">Rates are near 1%. See whether borrowing cheaply and keeping cash invested beats paying cash — and the buffer that keeps it safe.</span><span class="step-go">Weigh it up &rarr;</span></button>
+        <button class="step" onclick="switchTab('type')"><span class="step-n">3</span><span class="step-t">HDB, condo or landed?</span><span class="step-d">The three compared on price, how easily you can sell, rental yield, how much you can borrow, and the rules that bind each.</span><span class="step-go">Compare &rarr;</span></button>
+        <button class="step" onclick="switchTab('where')"><span class="step-n">4</span><span class="step-t">Where should I buy?</span><span class="step-d">What your budget reaches, what each area yields, and what developers' latest land bids signal about tomorrow's prices.</span><span class="step-go">Explore &rarr;</span></button>
+      </div>
+      <div class="startrow">
+        <button class="btn-primary" id="try-example">Try a worked example &rarr;</button>
+        <span class="startrow-note">Loads a 42-year-old buying a ~S$1.35m condo, so you can see it working before entering your own numbers.</span>
+      </div>
+      <div class="atglance" id="atglance"></div>
+    </div>
+  </section>
+
   <!-- TAB 1 -->
-  <section class="pane active" id="pane-afford">
-    <h2 class="section">Can you afford it — and what does age do to the loan?</h2>
-    <p class="sec-sub">The gate. Enter a profile and the engine applies the published rules — LTV, TDSR at the 4% stress floor, MSR for HDB/EC — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill. Defaults are set to the brief: a 42-year-old buying a ~S$1.35m condo.</p>
+  <section class="pane" id="pane-afford">
+    <h2 class="section">Can I afford it — and what does my age do to the loan?</h2>
+    <p class="lead">Enter a few details and see the biggest loan you can take, the monthly repayment, and the cash you need upfront. The one that catches people out: <b>your age quietly shrinks the loan</b>, because the best terms need it repaid by 65.</p>
+    <details class="fp"><summary>How the numbers are worked out</summary><div class="fp-body">The engine applies the published rules — the loan-to-value cap (LTV), the Total Debt Servicing Ratio tested at a 4% stress rate (TDSR), and the Mortgage Servicing Ratio for HDB/EC (MSR) — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill (downpayment, buyer's stamp duty, and ABSD where it applies). It is an illustration of the rules, not a bank's approval.</div></details>
+    <p class="label" style="margin:6px 0 8px">New here? Load an example, then edit it</p>
     <div class="presets" id="presets"></div>
     <div class="two-col">
       <div class="card">
-        <h3>Your profile</h3>
+        <h3>Your details</h3>
         <div class="field"><label>Age of (main) borrower</label><input id="i-age" type="number" min="21" max="70" value="42"></div>
-        <div class="field"><label>Gross monthly income <span class="hint">— combined, all borrowers</span></label><input id="i-income" type="number" step="500" value="11000"></div>
-        <div class="field"><label>Existing monthly debt <span class="hint">— car, other loans</span></label><input id="i-debt" type="number" step="100" value="0"></div>
-        <div class="field"><label>Cash + CPF available <span class="hint">— for downpayment, stamp duty, buffer</span></label><input id="i-cash" type="number" step="10000" value="500000"></div>
-        <div class="field"><label>Target purchase price</label><input id="i-price" type="number" step="10000" value="1350000"></div>
-        <div class="field-row">
-          <div class="field"><label>Property type</label><select id="i-type"><option value="private">Private condo</option><option value="ec">EC (from developer)</option><option value="hdb">HDB resale</option></select></div>
-          <div class="field"><label>Buyer profile</label><select id="i-cz"><option value="SC">Citizen</option><option value="PR">PR</option><option value="Foreigner">Foreigner</option></select></div>
-        </div>
-        <div class="field"><label>This is my … residential property</label><select id="i-count"><option value="0">1st (no other property)</option><option value="1">2nd</option><option value="2">3rd or more</option></select></div>
-        <div class="field"><label>Loan tenure <span class="hint" id="ten-hint"></span></label>
-          <div class="slider-row"><input id="i-tenure" type="range" min="5" max="35" value="23"><span class="slider-val mono" id="ten-val">23 yr</span></div>
-        </div>
-        <div class="field"><label>Package interest rate <span class="hint">— actual rate you would pay</span></label>
-          <div class="slider-row"><input id="i-rate" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="rate-val">1.60%</span></div>
-        </div>
+        <div class="field"><label>Gross monthly income <span class="hint">— combined, all borrowers</span></label><input id="i-income" type="text" inputmode="numeric" autocomplete="off" value="11,000"></div>
+        <div class="field"><label>Target purchase price</label><input id="i-price" type="text" inputmode="numeric" autocomplete="off" value="1,350,000"></div>
+        <div class="field"><label>Cash + CPF available <span class="hint">— for downpayment, stamp duty, buffer</span></label><input id="i-cash" type="text" inputmode="numeric" autocomplete="off" value="500,000"></div>
+        <div class="field"><label>Property type</label><select id="i-type"><option value="private">Private condo</option><option value="ec">EC (from developer)</option><option value="hdb">HDB resale</option></select></div>
+        <details class="fp inline"><summary>More options — buyer profile, existing debt, tenure, interest rate</summary><div class="fp-body">
+          <div class="field-row">
+            <div class="field"><label>Buyer profile</label><select id="i-cz"><option value="SC">Citizen</option><option value="PR">PR</option><option value="Foreigner">Foreigner</option></select></div>
+            <div class="field"><label>This is my …</label><select id="i-count"><option value="0">1st property</option><option value="1">2nd</option><option value="2">3rd or more</option></select></div>
+          </div>
+          <div class="field"><label>Existing monthly debt <span class="hint">— car, other loans</span></label><input id="i-debt" type="text" inputmode="numeric" autocomplete="off" value="0"></div>
+          <div class="field"><label>Loan tenure <span class="hint" id="ten-hint"></span></label>
+            <div class="slider-row"><input id="i-tenure" type="range" min="5" max="35" value="23"><span class="slider-val mono" id="ten-val">23 yr</span></div>
+          </div>
+          <div class="field"><label>Package interest rate <span class="hint">— actual rate you would pay</span></label>
+            <div class="slider-row"><input id="i-rate" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="rate-val">1.60%</span></div>
+          </div>
+        </div></details>
       </div>
       <div>
         <div id="verdict"></div>
@@ -184,26 +240,27 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <div class="bars" id="tenure-bars"></div>
           <div class="note" id="age-note"></div>
         </div>
-        <div class="card">
-          <h3>Upfront cash — where it goes</h3>
+        <details class="fp"><summary>Upfront cash — where every dollar goes</summary><div class="fp-body">
           <div class="bars" id="upfront-bars"></div>
-          <div class="note">LTV downpayment splits into a minimum cash portion and a CPF-or-cash portion. BSD is the buyer's stamp duty; ABSD is nil for a citizen's first property. Legal and valuation are estimated at ~S$4,000.</div>
-        </div>
+          <div class="note">The downpayment splits into a minimum cash portion and a CPF-or-cash portion. BSD is the buyer's stamp duty; ABSD is nil for a citizen's first property. Legal and valuation are estimated at ~S$4,000.</div>
+        </div></details>
       </div>
     </div>
+    <div class="nextnav"><button class="nextbtn" onclick="switchTab('leverage')">Next: pay cash, or take a loan? &rarr;</button></div>
   </section>
 
   <!-- TAB 2 -->
   <section class="pane" id="pane-leverage">
-    <h2 class="section">No mortgage is less stress — but cheap debt on a good asset is hard to beat</h2>
-    <p class="sec-sub">With 3-month SORA near 1% and packages around 1.3–1.7%, the mortgage rate sits below both property's long-run return and a balanced portfolio. So the expected-value answer is to borrow and keep cash invested — provided you hold enough liquid reserve never to be a forced seller. This module makes that trade-off explicit; it does not pretend the future is known.</p>
+    <h2 class="section">Pay cash for peace of mind, or borrow cheaply?</h2>
+    <p class="lead">With interest rates near 1%, the loan costs <b>less</b> than what your cash could earn elsewhere — so on the maths, borrowing and keeping cash invested usually wins. But "no mortgage, less stress" is real too. This weighs both, and the <b>safety buffer</b> that matters more than either.</p>
+    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.3–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known.</div></details>
     <div class="two-col">
       <div class="card">
         <h3>Assumptions</h3>
         <div class="field"><label>Mortgage rate</label><div class="slider-row"><input id="l-m" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="l-m-val">1.60%</span></div></div>
         <div class="field"><label>Expected return on invested cash <span class="hint">— balanced portfolio, long-run</span></label><div class="slider-row"><input id="l-p" type="range" min="1.0" max="9.0" step="0.25" value="5.0"><span class="slider-val mono" id="l-p-val">5.00%</span></div></div>
         <div class="field"><label>Property appreciation <span class="hint">— long-run, nominal</span></label><div class="slider-row"><input id="l-g" type="range" min="0" max="6" step="0.25" value="3.0"><span class="slider-val mono" id="l-g-val">3.00%</span></div></div>
-        <div class="field"><label>Surplus cash you could prepay or invest</label><input id="l-surplus" type="number" step="10000" value="120000"></div>
+        <div class="field"><label>Surplus cash you could prepay or invest</label><input id="l-surplus" type="text" inputmode="numeric" autocomplete="off" value="120,000"></div>
         <div class="field"><label>Horizon</label><div class="slider-row"><input id="l-n" type="range" min="1" max="25" value="10"><span class="slider-val mono" id="l-n-val">10 yr</span></div></div>
       </div>
       <div>
@@ -222,21 +279,24 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         </div>
       </div>
     </div>
+    <div class="nextnav"><button class="nextbtn" onclick="switchTab('type')">Next: HDB, condo or landed? &rarr;</button></div>
   </section>
 
   <!-- TAB 3 -->
   <section class="pane" id="pane-type">
-    <h2 class="section">HDB, condo or landed — matched to what you want</h2>
-    <p class="sec-sub">The brief is a home that holds value and stays liquid, bought with cheap leverage while the loan window is still open. That points to a resale condo in a good suburban location — but the scorecard lays out the trade-offs so the choice is yours.</p>
+    <h2 class="section">HDB, condo or landed — which suits you?</h2>
+    <p class="lead">Each strikes a different balance between <b>price, how easily you can sell, rental yield, how much you can borrow, and the rules</b>. For a home you want to hold yet still sell easily, bought with cheap leverage, a resale condo tends to fit — but the scorecard lays it out so the choice is yours.</p>
     <div class="tbl-wrap" style="margin-bottom:16px"><table id="type-table"></table></div>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))" id="type-cards"></div>
     <div class="callout" id="ec-callout"></div>
+    <div class="nextnav"><button class="nextbtn" onclick="switchTab('where')">Next: where to buy? &rarr;</button></div>
   </section>
 
   <!-- TAB 4 -->
   <section class="pane" id="pane-where">
-    <h2 class="section">Where — segments, yields and what the land bids are telling you</h2>
-    <p class="sec-sub">A winning land bid is a forward signal: developers are pricing tomorrow's launches, and a competitive bid sets a floor under nearby future prices. Read the segment table for value and yield, the land-bid table for developer conviction, and the brief map for where S$1.2–1.5m actually reaches.</p>
+    <h2 class="section">Where to buy — and what the land bids are telling you</h2>
+    <p class="lead">Where your budget actually reaches, what each area yields, and a forward signal most buyers miss: <b>developers' winning land bids</b>. A high, competitive bid prices tomorrow's launches and sets a floor under nearby prices.</p>
+    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space — so the eventual launch price is roughly that bid × 1.8–2.0 (to cover construction, financing and margin). A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
       <div class="card">
         <h3>Segments — price, yield, momentum</h3>
@@ -250,10 +310,11 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="note" id="gls-note"></div>
       </div>
       <div class="card">
-        <h3>What S$1.2–1.5m buys — the brief mapped</h3>
+        <h3>What S$1.2–1.5m buys today</h3>
         <div id="brief-map"></div>
       </div>
     </div>
+    <div class="nextnav"><button class="nextbtn" onclick="switchTab('afford')">Put it together: check affordability &rarr;</button></div>
   </section>
 
   <footer id="footer"></footer>
@@ -279,6 +340,25 @@ const fmt0=n=>n.toLocaleString('en-SG',{maximumFractionDigits:0});
 const sgd=n=>'S$'+fmt0(Math.round(n));
 const sgdk=n=>n>=1e6?('S$'+(n/1e6).toFixed(2)+'m'):('S$'+fmt0(Math.round(n/1000))+'k');
 const pct=(n,d=1)=>(n*100).toFixed(d)+'%';
+// money inputs: display with thousands separators, read as plain numbers
+const numVal=id=>{const v=$(id).value.replace(/[^\d.]/g,'');return v?+v:0;};
+const commafy=s=>{const d=s.replace(/[^\d]/g,'');return d?(+d).toLocaleString('en-SG'):'';};
+const setMoney=(id,val)=>{$(id).value=(+val).toLocaleString('en-SG');};
+function attachMoney(id){
+  const el=$(id);
+  el.addEventListener('input',()=>{
+    const caret=el.selectionStart, digitsLeft=el.value.slice(0,caret).replace(/[^\d]/g,'').length;
+    el.value=commafy(el.value);
+    let pos=0,seen=0; while(pos<el.value.length&&seen<digitsLeft){if(/\d/.test(el.value[pos]))seen++;pos++;}
+    el.setSelectionRange(pos,pos);
+  });
+}
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+  const p=$('pane-'+t); if(p)p.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
 // monthly payment
 function pmt(rateAnnual, years, principal){
@@ -358,8 +438,8 @@ function computeLoan(inp){
 
 function readInputs(){
   return {
-    age:+$('i-age').value, income:+$('i-income').value, debt:+$('i-debt').value,
-    cash:+$('i-cash').value, price:+$('i-price').value, type:$('i-type').value,
+    age:+$('i-age').value, income:numVal('i-income'), debt:numVal('i-debt'),
+    cash:numVal('i-cash'), price:numVal('i-price'), type:$('i-type').value,
     cz:$('i-cz').value, count:+$('i-count').value, tenure:+$('i-tenure').value, rate:+$('i-rate').value/100
   };
 }
@@ -435,7 +515,7 @@ function renderAfford(){
 
 /* ---------- render tab 2 ---------- */
 function syncLev(){
-  const m=+$('l-m').value/100, p=+$('l-p').value/100, g=+$('l-g').value/100, N=+$('l-n').value, surplus=+$('l-surplus').value;
+  const m=+$('l-m').value/100, p=+$('l-p').value/100, g=+$('l-g').value/100, N=+$('l-n').value, surplus=numVal('l-surplus');
   $('l-m-val').textContent=(m*100).toFixed(2)+'%'; $('l-p-val').textContent=(p*100).toFixed(2)+'%';
   $('l-g-val').textContent=(g*100).toFixed(2)+'%'; $('l-n-val').textContent=N+' yr';
   const spread=p-m;
@@ -539,36 +619,43 @@ function renderKPIs(){
     `<br>Built on the vault dashboard convention · Personal project · ${M._meta.asof}.`;
 }
 
+/* ---------- overview at-a-glance ---------- */
+function renderAtGlance(){
+  const R=D.rules, M=D.market, ppi=M.indices.ura_ppi, hdb=M.indices.hdb_rpi;
+  const priceWord=Math.abs(ppi.qoq)<0.003?'roughly flat':(ppi.qoq>0?'edging up':'softening');
+  const hdbWord=hdb.qoq>=0?'holding':'easing';
+  $('atglance').innerHTML=`<b>Right now:</b> the 3-month SORA benchmark is about <b>${pct(R.rates.sora_3m.value,1)}</b> and the best fixed home loans start near <b>${pct(R.rates.fixed_best.value,1)}</b> — the cheapest borrowing since 2021. Private home prices are <b>${priceWord}</b> (${ppi.asof}) and HDB resale is <b>${hdbWord}</b>, while developers' land bids are <b>${(M.gls.yoy>=0?'up ':'down ')+pct(Math.abs(M.gls.yoy),0)}</b> on a year ago — cheap money meeting a firm price floor. ${M.live&&M.live.present?'These figures refresh automatically.':''}`;
+}
+
 /* ---------- wiring ---------- */
 function wire(){
-  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active'); $('pane-'+t.dataset.t).classList.add('active');
-  }));
+  ['i-income','i-price','i-cash','i-debt','l-surplus'].forEach(attachMoney);
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.t)));
   ['i-age','i-income','i-debt','i-cash','i-price','i-type','i-cz','i-count','i-tenure','i-rate'].forEach(id=>{
     $(id).addEventListener('input',renderAfford);
   });
   ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
   const presets=[
-    {n:'42 · S$1.35m condo (the brief)',v:{age:42,income:11000,debt:0,cash:500000,price:1350000,type:'private',cz:'SC',count:0,tenure:23,rate:1.6}},
+    {n:'42 · S$1.35m condo (example)',v:{age:42,income:11000,debt:0,cash:500000,price:1350000,type:'private',cz:'SC',count:0,tenure:23,rate:1.6}},
     {n:'35 · S$1.5m condo, longer loan',v:{age:35,income:13000,debt:0,cash:520000,price:1500000,type:'private',cz:'SC',count:0,tenure:30,rate:1.6}},
     {n:'45 · S$1.2m resale, cash-rich',v:{age:45,income:9000,debt:0,cash:700000,price:1200000,type:'private',cz:'SC',count:0,tenure:20,rate:1.6}},
     {n:'40 · HDB resale S$0.75m',v:{age:40,income:8000,debt:0,cash:250000,price:750000,type:'hdb',cz:'SC',count:0,tenure:25,rate:2.6}}
   ];
+  const applyPreset=v=>{
+    $('i-age').value=v.age; setMoney('i-income',v.income); setMoney('i-debt',v.debt);
+    setMoney('i-cash',v.cash); setMoney('i-price',v.price); $('i-type').value=v.type;
+    $('i-cz').value=v.cz; $('i-count').value=v.count; $('i-tenure').value=v.tenure; $('i-rate').value=v.rate;
+    renderAfford();
+  };
   $('presets').innerHTML=presets.map((p,i)=>`<button class="preset" data-i="${i}">${p.n}</button>`).join('');
-  $('presets').querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>{
-    const v=presets[+btn.dataset.i].v;
-    $('i-age').value=v.age;$('i-income').value=v.income;$('i-debt').value=v.debt;$('i-cash').value=v.cash;
-    $('i-price').value=v.price;$('i-type').value=v.type;$('i-cz').value=v.cz;$('i-count').value=v.count;
-    $('i-tenure').value=v.tenure;$('i-rate').value=v.rate;renderAfford();
-  }));
+  $('presets').querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>applyPreset(presets[+btn.dataset.i].v)));
+  $('try-example').addEventListener('click',()=>{applyPreset(presets[0].v);switchTab('afford');});
 }
 
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); wire(); renderAfford(); renderType(); renderWhere();
+    renderKPIs(); renderAtGlance(); wire(); renderAfford(); renderType(); renderWhere();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
