@@ -42,11 +42,11 @@
   "tenure_cap_years": {
     "private_bank": 35,
     "hdb_bank": 30,
-    "ec_bank": 30,
+    "ec_bank": 35,
     "hdb_concessionary": 25,
-    "note": "Absolute maximum loan tenures. Separate from the LTV cliff at 30y/25y/age-65 above. For a borrower of age A wanting full 75% LTV on a private purchase, usable tenure = min(30, 65 - A). An EC bought from a developer is grouped with public housing at 30y.",
-    "flag": "ec_bank 30y is the consistent industry reading of MAS Notice 632; the MAS site was unavailable at review time (Jul 2026) - confirm against the notice text.",
-    "source": "MAS / MoneySense (Jul 2026); EC: DollarBack Mortgage / EC-specialist guides (Jul 2026)"
+    "note": "Absolute maximum loan tenures. Separate from the LTV cliff at 30y/25y/age-65 above. For a borrower of age A wanting full 75% LTV on a private purchase, usable tenure = min(30, 65 - A). An EC bought from a developer follows the private 35y cap: Notice 632 para 22 applies the 30y cap to 'HDB Flat' as defined via the Housing and Development Act, and para 8(a)(i) lists ECs separately from HDB Flats - so ECs fall under the para 21 general 35y cap.",
+    "flag": "Many banks nonetheless cap EC tenure at 30y in practice; beyond 30y the reduced LTV tier applies in any case.",
+    "source": "MAS Notice 632 (last revised 21 Aug 2025), paras 8(a)(i), 21, 22 and the HDB Flat definition; MAS/MoneySense explainers (Jul 2026)"
   },
 
   "absd": {

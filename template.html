@@ -538,7 +538,7 @@ function renderAfford(){
     if(c.incomeEff>D.rules.ltv.hdb_concessionary.income_ceiling_monthly) extra.push(`entered income is above the HDB-loan ceiling (S$${fmt0(D.rules.ltv.hdb_concessionary.income_ceiling_monthly)}) — a bank loan is the likely route`);
   }
   if(c.isEC){
-    extra.push('new ECs need a Singapore-Citizen family nucleus; bank loan only, 30-year tenure cap, MSR applies');
+    extra.push('new ECs need a Singapore-Citizen family nucleus; bank loan only and MSR applies; beyond 30 years the LTV drops to the reduced tier, and many banks cap EC tenure at 30 years in practice');
     if(c.incomeEff>D.market.ec_policy_2026.changes.income_ceiling_sgd) extra.push(`entered income is above the EC ceiling (S$${fmt0(D.market.ec_policy_2026.changes.income_ceiling_sgd)})`);
   }
   if(inp.cz==='Foreigner') extra.push('US nationals, and nationals/PRs of Iceland, Liechtenstein, Norway and Switzerland, get Citizen ABSD treatment under FTAs — choose Citizen if that applies (IRAS)');

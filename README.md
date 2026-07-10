@@ -39,10 +39,11 @@ All dashboard data is built from **primary public sources**, deliberately indepe
 broker research that informed the framework (see IP firewall below).
 
 - **Regulatory & loan constants** (`data/rules.json`) — MAS / MoneySense (TDSR 55% and MSR 30% at the
-  higher of the 4% floor or the actual rate; LTV 75/45/35 + the age-65 tenure cliff; tenure caps incl.
-  EC 30y; HDB concessionary loan 75% / no minimum cash / 3% floor / 25y-or-age-65; 30% variable-income
-  haircut), IRAS (ABSD, BSD, and SSD 16/12/8/4% within 4 years wef 4 Jul 2025). Verified in force
-  July 2026.
+  higher of the 4% floor or the actual rate; LTV 75/45/35 + the age-65 tenure cliff; tenure caps — an
+  EC from a developer follows the private 35y cap per MAS Notice 632, with the >30y reduced-LTV cliff
+  and a note that many banks cap EC tenure at 30y in practice; HDB concessionary loan 75% / no minimum
+  cash / 3% floor / 25y-or-age-65; 30% variable-income haircut), IRAS (ABSD, BSD, and SSD 16/12/8/4%
+  within 4 years wef 4 Jul 2025). Verified in force July 2026.
 - **Market snapshot** (`data/market.json`) — URA PPI + rental index and HDB RPI (levels + quarterly path),
   segment $psf and gross yields, 2-bed quantum by segment, the 2026 GLS tender table, and the 8 May 2026
   EC policy change. Every figure carries a source; portal aggregations and computed/flash values are flagged.
@@ -131,8 +132,10 @@ official segment $psf is gated on a free URA Data Service key. The licensed brok
 OneDrive (IP firewall).
 
 **Post-publication review + fix pass (2026-07-10, same day):** severity-ranked review memo, then patches —
-stress test corrected to the higher of the floor or the actual rate (was fixed 4%); EC tenure capped at
-30y (flagged pending confirmation against MAS Notice 632 text — MAS site was down at review); HDB
+stress test corrected to the higher of the floor or the actual rate (was fixed 4%); EC tenure resolved
+against the MAS Notice 632 text (21 Aug 2025 revision): the 30y cap covers "HDB Flat" only, so ECs
+follow the private 35y cap with the >30y reduced-LTV cliff — the widely quoted "30y max" is bank
+practice, shown as a note; HDB
 concessionary-loan mode added (75%, no minimum cash, 3% floor, 25y-or-age-65); SSD (4 Jul 2025 schedule)
 encoded in `rules.json` and surfaced as the "exit lock"; 30% variable-income haircut and optional
 remaining-lease warnings (CPF-to-95 pro-rating, bank lease thresholds); buffer restated at the stress
