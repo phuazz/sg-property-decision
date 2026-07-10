@@ -246,22 +246,24 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-afford">
     <h2 class="section">Can I afford it — and what does my age do to the loan?</h2>
     <p class="lead">Enter a few details and see the biggest loan you can take, the monthly repayment, and the cash you need upfront. The one that catches people out: <b>your age quietly shrinks the loan</b>, because the best terms need it repaid by 65.</p>
-    <details class="fp"><summary>How the numbers are worked out</summary><div class="fp-body">The engine applies the published rules — the loan-to-value cap (LTV), the Total Debt Servicing Ratio tested at a 4% stress rate (TDSR), and the Mortgage Servicing Ratio for HDB/EC (MSR) — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill (downpayment, buyer's stamp duty, and ABSD where it applies). It is an illustration of the rules, not a bank's approval.</div></details>
+    <details class="fp"><summary>How the numbers are worked out</summary><div class="fp-body">The engine applies the published rules — the loan-to-value cap (LTV), the Total Debt Servicing Ratio tested at the higher of the 4% floor or your actual rate (TDSR), and the Mortgage Servicing Ratio for HDB/EC (MSR, same floor; 3% for HDB loans) — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill (downpayment, buyer's stamp duty, and ABSD where it applies). Variable and rental income is counted at 70%. It is an illustration of the rules, not a bank's approval.</div></details>
     <p class="label" style="margin:6px 0 8px">New here? Load an example, then edit it</p>
     <div class="presets" id="presets"></div>
     <div class="two-col">
       <div class="card">
         <h3>Your details</h3>
-        <div class="field"><label>Age of (main) borrower</label><input id="i-age" type="number" min="21" max="70" value="42"></div>
-        <div class="field"><label>Gross monthly income <span class="hint">— combined, all borrowers</span></label><input id="i-income" type="text" inputmode="numeric" autocomplete="off" value="11,000"></div>
-        <div class="field"><label>Target purchase price</label><input id="i-price" type="text" inputmode="numeric" autocomplete="off" value="1,350,000"></div>
-        <div class="field"><label>Cash + CPF available <span class="hint">— for downpayment, stamp duty, buffer</span></label><input id="i-cash" type="text" inputmode="numeric" autocomplete="off" value="500,000"></div>
+        <div class="field"><label>Age of borrower <span class="hint">— joint loan? banks use the income-weighted average age</span></label><input id="i-age" type="number" min="21" max="70" value="42"></div>
+        <div class="field"><label>Gross monthly income — fixed <span class="hint">— combined, all borrowers; variable income under More options</span></label><input id="i-income" type="text" inputmode="numeric" autocomplete="off" value="11,000"></div>
+        <div class="field"><label>Target purchase price <span class="hint">— LTV applies to the lower of price and valuation</span></label><input id="i-price" type="text" inputmode="numeric" autocomplete="off" value="1,350,000"></div>
+        <div class="field"><label>Cash + CPF available <span class="hint">— downpayment, duties, buffer; keep renovation aside</span></label><input id="i-cash" type="text" inputmode="numeric" autocomplete="off" value="500,000"></div>
         <div class="field"><label>Property type</label><select id="i-type"><option value="private">Private condo</option><option value="ec">EC (from developer)</option><option value="hdb">HDB resale</option></select></div>
-        <details class="fp inline"><summary>More options — buyer profile, existing debt, tenure, interest rate</summary><div class="fp-body">
+        <div class="field" id="f-loan" style="display:none"><label>Financing <span class="hint">— HDB flats can use the HDB concessionary loan</span></label><select id="i-loan"><option value="bank">Bank loan</option><option value="hdb">HDB loan (2.6%)</option></select></div>
+        <details class="fp inline"><summary>More options — buyer profile, variable income, debt, tenure, rate, lease</summary><div class="fp-body">
           <div class="field-row">
             <div class="field"><label>Buyer profile</label><select id="i-cz"><option value="SC">Citizen</option><option value="PR">PR</option><option value="Foreigner">Foreigner</option></select></div>
             <div class="field"><label>This is my …</label><select id="i-count"><option value="0">1st property</option><option value="1">2nd</option><option value="2">3rd or more</option></select></div>
           </div>
+          <div class="field"><label>Variable / rental income <span class="hint">— monthly; banks count only 70% of it (MAS haircut)</span></label><input id="i-income-var" type="text" inputmode="numeric" autocomplete="off" value="0"></div>
           <div class="field"><label>Existing monthly debt <span class="hint">— car, other loans</span></label><input id="i-debt" type="text" inputmode="numeric" autocomplete="off" value="0"></div>
           <div class="field"><label>Loan tenure <span class="hint" id="ten-hint"></span></label>
             <div class="slider-row"><input id="i-tenure" type="range" min="5" max="35" value="23"><span class="slider-val mono" id="ten-val">23 yr</span></div>
@@ -269,6 +271,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <div class="field"><label>Package interest rate <span class="hint">— actual rate you would pay</span></label>
             <div class="slider-row"><input id="i-rate" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="rate-val">1.60%</span></div>
           </div>
+          <div class="field"><label>Remaining lease <span class="hint">— years, optional; blank for freehold / unknown</span></label><input id="i-lease" type="number" min="1" max="999" placeholder="e.g. 68"></div>
         </div></details>
       </div>
       <div>
@@ -282,7 +285,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         </div>
         <details class="fp"><summary>Upfront cash — where every dollar goes</summary><div class="fp-body">
           <div class="bars" id="upfront-bars"></div>
-          <div class="note">The downpayment splits into a minimum cash portion and a CPF-or-cash portion. BSD is the buyer's stamp duty; ABSD is nil for a citizen's first property. Legal and valuation are estimated at ~S$4,000.</div>
+          <div class="note">The downpayment splits into a minimum cash portion and a CPF-or-cash portion (an HDB loan needs no minimum cash). BSD is the buyer's stamp duty; ABSD is nil for a citizen's first property. Legal and valuation are estimated at ~S$4,000. Buying a new launch? Payment is progressive — BSD falls due within 14 days of exercising the option, and instalments ramp with construction rather than starting in full. Paying above valuation? That gap is extra cash on top of everything here.</div>
         </div></details>
       </div>
     </div>
@@ -293,7 +296,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-leverage">
     <h2 class="section">Pay cash for peace of mind, or borrow cheaply?</h2>
     <p class="lead">With interest rates near 1%, the loan costs <b>less</b> than what your cash could earn elsewhere — so on the maths, borrowing and keeping cash invested usually wins. But "no mortgage, less stress" is real too. This weighs both, and the <b>safety buffer</b> that matters more than either.</p>
-    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.3–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known.</div></details>
+    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.3–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
     <div class="two-col">
       <div class="card">
         <h3>Assumptions</h3>
@@ -306,10 +309,16 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       <div>
         <div class="tiles" id="lev-tiles"></div>
         <div class="card" style="margin-bottom:16px">
-          <h3>The forced-seller buffer</h3>
-          <p class="intro">The one rule that keeps leverage safe: hold enough liquid cash to cover the instalment through a spell of unemployment or a rate spike, so a bad market never forces a sale. The brief set this at 2–3 years.</p>
+          <h3>The forced-seller buffer — and the exit lock</h3>
+          <p class="intro">The one rule that keeps leverage safe: hold enough liquid reserve to cover the instalment through a spell of unemployment or a rate spike, so a bad market never forces a sale. The brief set this at 2–3 years. CPF can pay instalments, but maintenance, tax and living costs need actual cash.</p>
           <div class="bars" id="buffer-bars"></div>
           <div class="note" id="buffer-note"></div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <h3>Own versus rent — year one, at your assumptions</h3>
+          <p class="intro" id="ovr-intro"></p>
+          <div class="bars" id="ovr-bars"></div>
+          <div class="note" id="ovr-note"></div>
         </div>
         <div class="card">
           <h3>Prepay versus stay invested</h3>
@@ -429,35 +438,39 @@ let D; // {rules, market}
 function computeLoan(inp){
   const R=D.rules;
   const isHDB=inp.type==='hdb', isEC=inp.type==='ec', isPrivate=inp.type==='private';
+  const hdbLoan=isHDB&&inp.loan==='hdb';
   const msrApplies=isHDB||isEC;
-  // tenure caps
-  const absCap=isHDB?R.tenure_cap_years.hdb_bank:R.tenure_cap_years.private_bank;
+  // income recognised in the debt tests: fixed + 70% of variable/rental (MAS haircut)
+  const incomeEff=inp.income+0.7*(inp.incomeVar||0);
+  // tenure caps (EC bought from a developer is grouped with public housing at 30y)
+  const absCap=hdbLoan?R.ltv.hdb_concessionary.tenure_cap_years
+              :isHDB?R.tenure_cap_years.hdb_bank
+              :isEC?R.tenure_cap_years.ec_bank
+              :R.tenure_cap_years.private_bank;
   const cliffTenure=isHDB?R.ltv.reduction_trigger.tenure_gt_years_hdb:R.ltv.reduction_trigger.tenure_gt_years_private;
-  const fullLtvMaxTenure=Math.max(5,Math.min(cliffTenure, R.ltv.reduction_trigger.age_plus_tenure_gt-inp.age));
-  const tenure=Math.min(inp.tenure, absCap);
-  // LTV tier
+  const fullLtvMaxTenure=Math.min(cliffTenure, R.ltv.reduction_trigger.age_plus_tenure_gt-inp.age); // can be <5: no slider tenure keeps full LTV
+  let tenure=Math.min(inp.tenure, absCap);
+  if(hdbLoan) tenure=Math.max(1,Math.min(tenure, R.ltv.reduction_trigger.age_plus_tenure_gt-inp.age)); // HDB loan must end by 65
+  // LTV tier (HDB loan: flat 75%, no reduced tier, no minimum cash)
   const loanKey=inp.count==0?'loan1':(inp.count==1?'loan2':'loan3plus');
   const ltvSpec=R.ltv.bank_individual[loanKey];
-  const reduced = (tenure>cliffTenure) || ((inp.age+tenure)>R.ltv.reduction_trigger.age_plus_tenure_gt);
-  const ltv = reduced?ltvSpec.reduced:ltvSpec.max;
-  const cashMinFrac = reduced?(ltvSpec.cash_min_reduced||ltvSpec.cash_min):ltvSpec.cash_min;
-  // caps on loan
+  const reduced = !hdbLoan && ((tenure>cliffTenure) || ((inp.age+tenure)>R.ltv.reduction_trigger.age_plus_tenure_gt));
+  const ltv = hdbLoan?R.ltv.hdb_concessionary.max:(reduced?ltvSpec.reduced:ltvSpec.max);
+  const cashMinFrac = hdbLoan?R.ltv.hdb_concessionary.cash_min:(reduced?(ltvSpec.cash_min_reduced||ltvSpec.cash_min):ltvSpec.cash_min);
+  // debt tests at the floor or the actual rate, whichever is higher (MAS; HDB loans use a 3% floor)
+  const floor=hdbLoan?R.ltv.hdb_concessionary.stress_floor:R.tdsr.stress_rate;
+  const stress=Math.max(floor, inp.rate);
   const byLTV = inp.price*ltv;
-  const stress=R.tdsr.stress_rate;
-  const tdsrCeil = R.tdsr.limit*inp.income - inp.debt;
+  const tdsrCeil = R.tdsr.limit*incomeEff - inp.debt;
   const byTDSR = loanFromInstalment(tdsrCeil, stress, tenure);
   let byMSR=Infinity;
-  if(msrApplies) byMSR=loanFromInstalment(R.msr.limit*inp.income, stress, tenure);
+  if(msrApplies) byMSR=loanFromInstalment(R.msr.limit*incomeEff, stress, tenure);
   const maxLoan=Math.max(0,Math.min(byLTV,byTDSR,byMSR));
   const bind = maxLoan===byLTV?'LTV (cash)':(maxLoan===byTDSR?'TDSR (income)':'MSR (income)');
-  // apply
+  // apply: min cash floor = cashMinFrac x price; the rest of the downpayment can be CPF or cash
   const loan=maxLoan;
   const downpay=inp.price-loan;
   const cashMin=inp.price*cashMinFrac;
-  const cashPortion=Math.max(cashMin, downpay-(inp.price*ltv- (inp.price*ltv))); // min cash floor; rest cpf/cash
-  const minCash=Math.min(downpay, Math.max(cashMin, downpay-(inp.price - cashMin - loan)));
-  // simpler: min cash floor = cashMin; cpf/cash = downpay - cashMin (>=0)
-  const reqCash=Math.max(cashMin, downpay>=cashMin?cashMin:downpay);
   const cpfOrCash=Math.max(0,downpay-cashMin);
   // duties
   const absdRates=R.absd.rates[inp.cz]||R.absd.rates.SC;
@@ -468,34 +481,43 @@ function computeLoan(inp){
   // instalments
   const instActual=pmt(inp.rate, tenure, loan);
   const instStress=pmt(stress, tenure, loan);
-  const tdsrUsed=(instStress+inp.debt)/inp.income;
-  const msrUsed=msrApplies?instStress/inp.income:null;
+  const tdsrUsed=(instStress+inp.debt)/incomeEff;
+  const msrUsed=msrApplies?instStress/incomeEff:null;
   const bufferAfter=inp.cash-upfront;
   const bufferMonths=instActual>0?bufferAfter/instActual:0;
-  return {isHDB,isEC,isPrivate,msrApplies,tenure,absCap,fullLtvMaxTenure,cliffTenure,reduced,ltv,cashMinFrac,
+  const bufferMonthsStress=instStress>0?bufferAfter/instStress:0;
+  return {isHDB,isEC,isPrivate,hdbLoan,msrApplies,incomeEff,tenure,absCap,fullLtvMaxTenure,cliffTenure,reduced,ltv,cashMinFrac,stress,
     byLTV,byTDSR,byMSR,maxLoan,bind,loan,downpay,cashMin,cpfOrCash,absd,absdRate:absdRates[Math.min(2,inp.count)],
-    stampBSD,legal,upfront,instActual,instStress,tdsrUsed,msrUsed,bufferAfter,bufferMonths};
+    stampBSD,legal,upfront,instActual,instStress,tdsrUsed,msrUsed,bufferAfter,bufferMonths,bufferMonthsStress};
 }
 
 function readInputs(){
   return {
-    age:+$('i-age').value, income:numVal('i-income'), debt:numVal('i-debt'),
-    cash:numVal('i-cash'), price:numVal('i-price'), type:$('i-type').value,
-    cz:$('i-cz').value, count:+$('i-count').value, tenure:+$('i-tenure').value, rate:+$('i-rate').value/100
+    age:+$('i-age').value, income:numVal('i-income'), incomeVar:numVal('i-income-var'), debt:numVal('i-debt'),
+    cash:numVal('i-cash'), price:numVal('i-price'), type:$('i-type').value, loan:$('i-loan').value,
+    cz:$('i-cz').value, count:+$('i-count').value, tenure:+$('i-tenure').value, rate:+$('i-rate').value/100,
+    lease:$('i-lease').value?+$('i-lease').value:null
   };
 }
 
 /* ---------- render tab 1 ---------- */
 function renderAfford(){
   const inp=readInputs();
-  // sync tenure ceiling to type
-  const absCap=inp.type==='hdb'?D.rules.tenure_cap_years.hdb_bank:D.rules.tenure_cap_years.private_bank;
+  // sync tenure ceiling + financing selector to type
+  $('f-loan').style.display=inp.type==='hdb'?'':'none';
+  const hdbLoanSel=inp.type==='hdb'&&inp.loan==='hdb';
+  const absCap=hdbLoanSel?D.rules.ltv.hdb_concessionary.tenure_cap_years
+              :inp.type==='hdb'?D.rules.tenure_cap_years.hdb_bank
+              :inp.type==='ec'?D.rules.tenure_cap_years.ec_bank
+              :D.rules.tenure_cap_years.private_bank;
   $('i-tenure').max=absCap;
   if(inp.tenure>absCap){inp.tenure=absCap;$('i-tenure').value=absCap;}
-  $('ten-val').textContent=inp.tenure+' yr';
   $('rate-val').textContent=(inp.rate*100).toFixed(2)+'%';
   const c=computeLoan(inp);
-  $('ten-hint').textContent='— full '+pct(D.rules.ltv.bank_individual.loan1.max,0)+' LTV needs ≤ '+c.fullLtvMaxTenure+' yr at age '+inp.age;
+  $('ten-val').textContent=c.tenure+' yr';
+  $('ten-hint').textContent=c.hdbLoan?'— HDB loan: shorter of 25 yr and age 65 → '+c.tenure+' yr for you'
+    :(c.fullLtvMaxTenure>=5?'— full '+pct(D.rules.ltv.bank_individual.loan1.max,0)+' LTV needs ≤ '+c.fullLtvMaxTenure+' yr at age '+inp.age
+    :'— at age '+inp.age+' every tenure of 5+ yr runs past 65, so only the reduced LTV is available');
 
   // verdict
   let vClass='good', vMsg='';
@@ -508,34 +530,60 @@ function renderAfford(){
     `You can borrow up to <b>${sgd(c.maxLoan)}</b> (${pct(c.maxLoan/inp.price,0)} of price) over ${c.tenure} years. `+
     `Upfront you need <b>${sgd(c.upfront)}</b>; you have ${sgd(inp.cash)} `+
     (affordable?`— leaving ${sgd(c.bufferAfter)}, ${bufTxt} <b>${c.bufferMonths.toFixed(0)}-month</b> instalment buffer.`
-      :`— <b>short by ${sgd(c.upfront-inp.cash)}</b>. Lower the price or raise cash.`)+
-    (c.reduced?` <span class="flag">Note: this tenure pushes past the age-65 / ${c.cliffTenure}-year limit, so LTV drops to ${pct(c.ltv,0)} and minimum cash rises to ${pct(c.cashMinFrac,0)}.</span>`:``);
+      :`— <b>short by ${sgd(c.upfront-inp.cash)}</b>. Lower the price or raise cash.`);
+  const extra=[];
+  if(c.reduced) extra.push(`this tenure pushes past the age-65 / ${c.cliffTenure}-year limit, so LTV drops to ${pct(c.ltv,0)} and minimum cash rises to ${pct(c.cashMinFrac,0)}`);
+  if(c.hdbLoan){
+    extra.push('HDB loan: the downpayment can be fully CPF (no minimum cash) and the eligible loan is sized at a 3% floor');
+    if(c.incomeEff>D.rules.ltv.hdb_concessionary.income_ceiling_monthly) extra.push(`entered income is above the HDB-loan ceiling (S$${fmt0(D.rules.ltv.hdb_concessionary.income_ceiling_monthly)}) — a bank loan is the likely route`);
+  }
+  if(c.isEC){
+    extra.push('new ECs need a Singapore-Citizen family nucleus; bank loan only, 30-year tenure cap, MSR applies');
+    if(c.incomeEff>D.market.ec_policy_2026.changes.income_ceiling_sgd) extra.push(`entered income is above the EC ceiling (S$${fmt0(D.market.ec_policy_2026.changes.income_ceiling_sgd)})`);
+  }
+  if(inp.cz==='Foreigner') extra.push('US nationals, and nationals/PRs of Iceland, Liechtenstein, Norway and Switzerland, get Citizen ABSD treatment under FTAs — choose Citizen if that applies (IRAS)');
+  if(inp.lease){
+    const need95=95-inp.age;
+    if(inp.lease<20) extra.push('remaining lease under 20 years: CPF cannot be used at all');
+    else if(inp.lease<need95) extra.push(`remaining lease of ${inp.lease} yr does not cover you to age 95 (needs ≥ ${need95} yr) — CPF usage is pro-rated (CPF Board rule)`);
+    if(inp.lease<30) extra.push('most banks will not lend below ~30 years of remaining lease');
+    else if(inp.lease<60) extra.push('many banks trim LTV or tenure below ~60 years of remaining lease (varies by bank)');
+  }
+  if(extra.length) vMsg+=` <span class="flag">Note: ${extra.join('; ')}.</span>`;
   $('verdict').innerHTML=`<div class="verdict ${vClass}">${vMsg}</div>`;
 
   // tiles
+  const stressLbl=(c.stress*100).toFixed(2).replace(/\.?0+$/,'');
   const tiles=[
     {l:'Max loan',v:sgdk(c.maxLoan),s:pct(c.maxLoan/inp.price,0)+' of price · '+c.bind,cls:'hl'},
-    {l:'Monthly instalment',v:sgd(c.instActual),s:'at '+(inp.rate*100).toFixed(2)+'% · '+pct(c.instActual/inp.income,0)+' of income'},
-    {l:'Instalment at 4% stress',v:sgd(c.instStress),s:'TDSR test = '+pct(c.tdsrUsed,0)+(tdsrOk?' ✓':' ✗ over 55%'),cls:tdsrOk?'':'warn'},
+    {l:'Monthly instalment',v:sgd(c.instActual),s:'at '+(inp.rate*100).toFixed(2)+'% · '+pct(c.instActual/c.incomeEff,0)+' of income'},
+    {l:'Instalment at '+stressLbl+'% stress',v:sgd(c.instStress),s:(c.msrApplies?'MSR '+pct(c.msrUsed,0)+' · ':'')+'TDSR = '+pct(c.tdsrUsed,0)+(tdsrOk?' ✓':' ✗ over 55%'),cls:tdsrOk?'':'warn'},
     {l:'Upfront cash needed',v:sgd(c.upfront),s:'downpay + '+sgd(c.stampBSD+c.absd)+' duties'},
-    {l:'Forced-seller buffer',v:c.bufferMonths.toFixed(0)+' mo',s:sgd(Math.max(0,c.bufferAfter))+' left after purchase',cls:c.bufferMonths>=24?'good':(c.bufferMonths>=12?'warn':'warn')}
+    {l:'Forced-seller buffer',v:c.bufferMonths.toFixed(0)+' mo',s:sgd(Math.max(0,c.bufferAfter))+' left · '+Math.max(0,c.bufferMonthsStress).toFixed(0)+' mo at stress',cls:c.bufferMonths>=24?'good':(c.bufferMonths>=12?'warn':'warn')}
   ];
   $('afford-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
 
   // age effect — instalment by tenure at the constrained loan
   const loan=c.maxLoan;
-  const tset=[15,20,c.fullLtvMaxTenure,25,30].filter((v,i,a)=>v>=5&&v<=absCap&&a.indexOf(v)===i).sort((a,b)=>a-b);
+  const capT=(!c.hdbLoan&&c.fullLtvMaxTenure>=5)?c.fullLtvMaxTenure:null;
+  const tset=[15,20,capT,25,30].filter((v,i,a)=>v&&v>=5&&v<=absCap&&a.indexOf(v)===i).sort((a,b)=>a-b);
   const maxInst=Math.max(...tset.map(t=>pmt(inp.rate,t,loan)));
-  $('age-intro').textContent=`Same ${sgd(loan)} loan at ${(inp.rate*100).toFixed(2)}%, over different tenures. At age ${inp.age}, full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV caps you at ${c.fullLtvMaxTenure} years — stretch longer and the LTV falls, so the practical choice is a shorter loan and a higher monthly.`;
+  $('age-intro').textContent=c.hdbLoan
+    ?`Same ${sgd(loan)} HDB loan at ${(inp.rate*100).toFixed(2)}%: tenure is a hard cap — the shorter of 25 years and age 65 (${c.tenure} years for you) — rather than an LTV step-down.`
+    :(capT?`Same ${sgd(loan)} loan at ${(inp.rate*100).toFixed(2)}%, over different tenures. At age ${inp.age}, full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV caps you at ${capT} years — stretch longer and the LTV falls, so the practical choice is a shorter loan and a higher monthly.`
+    :`Same ${sgd(loan)} loan at ${(inp.rate*100).toFixed(2)}%, over different tenures. At age ${inp.age} every tenure of 5+ years runs past 65, so the reduced LTV applies whichever you pick — the bars show what each costs monthly.`);
   $('tenure-bars').innerHTML=tset.map(t=>{
     const inst=pmt(inp.rate,t,loan);
-    const isCap=t===c.fullLtvMaxTenure;
+    const isCap=t===capT;
     const over=(inp.age+t)>D.rules.ltv.reduction_trigger.age_plus_tenure_gt || t>c.cliffTenure;
-    return `<div class="bar-row"><span>${t} yr${isCap?' · your cap':''}${over&&!isCap?' · 55% LTV only':''}</span>`+
+    return `<div class="bar-row"><span>${t} yr${isCap?' · your cap':''}${over&&!isCap?' · reduced LTV':''}</span>`+
       `<div class="bar-track"><div class="bar-fill" style="width:${inst/maxInst*100}%;background:${isCap?'var(--b)':(over?'var(--a)':'var(--bd-strong)')}"></div></div>`+
       `<span class="bar-num">${sgd(inst)}</span></div>`;
   }).join('');
-  $('age-note').innerHTML=`Read the bars as "same ${sgd(loan)} loan, different tenure". At age ${inp.age} you cannot both keep the full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV and stretch past ${c.fullLtvMaxTenure} years — the amber bars are only reachable by dropping to ${pct(c.ltv===D.rules.ltv.bank_individual.loan1.reduced?c.ltv:D.rules.ltv.bank_individual.loan1.reduced,0)} LTV (much more cash down) or by being younger. That lower monthly a 30-year loan would give is the age cost: the window closes at 65 minus tenure, so borrowing while it is open is the "use the good loan" point.`;
+  $('age-note').innerHTML=c.hdbLoan
+    ?`HDB loans have no LTV cliff: 75% applies throughout, but the tenure itself stops at the shorter of 25 years and age 65, and the downpayment can be fully CPF.`
+    :(capT?`Read the bars as "same ${sgd(loan)} loan, different tenure". At age ${inp.age} you cannot both keep the full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV and stretch past ${capT} years — the amber bars are only reachable by dropping to ${pct(D.rules.ltv.bank_individual.loan1.reduced,0)} LTV (much more cash down) or by being younger. That lower monthly a 30-year loan would give is the age cost: the window closes at 65 minus tenure, so borrowing while it is open is the "use the good loan" point.`
+    :`Amber bars run past the age-65 / ${c.cliffTenure}-year line, where LTV steps down to ${pct(D.rules.ltv.bank_individual.loan1.reduced,0)} for a first loan (later loans step lower still) and minimum cash rises to 10%.`);
 
   // upfront breakdown
   const parts=[
@@ -561,23 +609,55 @@ function syncLev(){
   $('l-g-val').textContent=(g*100).toFixed(2)+'%'; $('l-n-val').textContent=N+' yr';
   const spread=p-m;
   const c=window._afford, inp=window._inp;
+  const oc=D.market.ownership_costs;
+  const runYr=(oc.maintenance_monthly_2br_condo[0]+oc.maintenance_monthly_2br_condo[1])/2*12
+             +(oc.property_tax_owner_occ_annual_at_brief[0]+oc.property_tax_owner_occ_annual_at_brief[1])/2;
+  const priceRef=inp?inp.price:D.market.brief.budget_sgd[1]-150000;
+  const yG=D.market.segments.OCR.yield_pt, yN=yG-runYr/priceRef;
   // tiles
   const investGrow=surplus*Math.pow(1+p,N), prepayEquiv=surplus*Math.pow(1+m,N);
   const edge=investGrow-prepayEquiv;
   const tiles=[
     {l:'Rate spread (invest − borrow)',v:(spread>=0?'+':'')+pct(spread,2),s:spread>0?'leverage adds expected value':'prepaying wins',cls:spread>0?'good':'warn'},
-    {l:'Carry vs a suburban rent',v:(function(){const y=D.market.segments.OCR.yield_pt;return (y-m>=0?'+':'')+pct(y-m,2);})(),s:'OCR gross yield '+pct(D.market.segments.OCR.yield_pt,1)+' − rate'},
+    {l:'Carry vs a suburban rent (net)',v:(yN-m>=0?'+':'')+pct(yN-m,2),s:'net yield ≈ '+pct(yN,1)+' (gross '+pct(yG,1)+' − est. costs) − rate'},
     {l:'Give-up from prepaying',v:sgd(edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus',cls:'hl'},
   ];
   $('lev-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
-  // buffer bars
-  if(c){
-    const months=c.bufferMonths;
-    const segs=[{l:'Your buffer',m:months,col:months>=24?'var(--g)':'var(--a)'},{l:'Brief target (2–3 yr)',m:30,col:'var(--bd-strong)'}];
+  // buffer bars + the exit lock
+  if(c&&inp){
+    const months=c.bufferMonths, monthsS=Math.max(0,c.bufferMonthsStress);
+    const monthsRun=(c.instActual+runYr/12)>0?Math.max(0,c.bufferAfter/(c.instActual+runYr/12)):0;
+    const stressLbl=(c.stress*100).toFixed(2).replace(/\.?0+$/,'');
+    const segs=[
+      {l:'Your buffer',m:months,col:months>=24?'var(--g)':'var(--a)'},
+      {l:'At '+stressLbl+'% stress',m:monthsS,col:monthsS>=24?'var(--g2)':'var(--a)'},
+      {l:'Incl. ~'+sgd(runYr/12)+'/mo costs',m:monthsRun,col:monthsRun>=24?'var(--g2)':'var(--a)'},
+      {l:'Brief target (2–3 yr)',m:30,col:'var(--bd-strong)'}
+    ];
     const bmax=Math.max(36,months);
-    $('buffer-bars').innerHTML=segs.map(s=>`<div class="bar-row"><span>${s.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,s.m/bmax*100)}%;background:${s.col}"></div></div><span class="bar-num">${s.m.toFixed(0)} mo</span></div>`).join('');
-    $('buffer-note').innerHTML=`After buying, you hold ${sgd(Math.max(0,c.bufferAfter))} — about <b>${months.toFixed(0)} months</b> of instalments at ${sgd(c.instActual)}. `+
-      (months>=24?`That clears the 2–3-year rule: a job loss or a rate spike does not force a sale.`:`That is below the 2–3-year rule — trim the price, borrow a touch less, or hold more cash before committing.`);
+    $('buffer-bars').innerHTML=segs.map(s=>`<div class="bar-row"><span>${s.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,Math.max(0,s.m)/bmax*100)}%;background:${s.col}"></div></div><span class="bar-num">${s.m.toFixed(0)} mo</span></div>`).join('');
+    const ssd=D.rules.ssd;
+    $('buffer-note').innerHTML=`After buying, you hold ${sgd(Math.max(0,c.bufferAfter))} — about <b>${months.toFixed(0)} months</b> of instalments at ${sgd(c.instActual)} (${monthsS.toFixed(0)} at the ${stressLbl}% stress rate; ${monthsRun.toFixed(0)} counting ~${sgd(runYr/12)}/month maintenance and property tax, estimates). `+
+      (months>=24?`That clears the 2–3-year rule: a job loss or a rate spike does not force a sale.`:`That is below the 2–3-year rule — trim the price, borrow a touch less, or hold more cash before committing.`)+
+      ` <b>The exit lock:</b> selling within ${ssd.holding_period_years} years of buying costs Seller's Stamp Duty of ${ssd.rates_by_year.map(r=>pct(r,0)).join(' / ')} by year of sale — ${sgd(inp.price*ssd.rates_by_year[0])} in year one, ${sgd(inp.price*ssd.rates_by_year[3])} in year four, nil after (purchases from 4 Jul 2025; plus roughly 2% agent fee). Real liquidity begins after year ${ssd.holding_period_years}.`;
+  }
+  // own vs rent — year one at current assumptions (uses the appreciation slider)
+  if(c&&inp&&inp.price>0){
+    const rent=yG*inp.price, interest=m*c.maxLoan, foregone=p*c.upfront, appre=g*inp.price;
+    const net=rent-interest-runYr-foregone+appre;
+    $('ovr-intro').textContent=`Renting a comparable home would cost about ${sgd(rent)} a year (gross-yield proxy). Owning swaps that for interest, running costs and tied-up capital — plus whatever the property does at your ${pct(g,1)} appreciation assumption.`;
+    const rows=[
+      {l:'Rent you avoid',v:rent,col:'var(--g)'},
+      {l:'Expected appreciation',v:appre,col:'var(--g2)'},
+      {l:'Interest (year 1)',v:-interest,col:'var(--r2)'},
+      {l:'Maintenance + tax (est.)',v:-runYr,col:'var(--r2)'},
+      {l:'Returns forgone on upfront',v:-foregone,col:'var(--r2)'}
+    ];
+    const omax=Math.max(...rows.map(r=>Math.abs(r.v)),1);
+    $('ovr-bars').innerHTML=rows.map(r=>`<div class="bar-row"><span>${r.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.abs(r.v)/omax*100}%;background:${r.col}"></div></div><span class="bar-num">${r.v>=0?'+':'−'}${sgd(Math.abs(r.v))}</span></div>`).join('')
+      +`<div class="bar-row" style="border-top:1px solid var(--bd);padding-top:6px;margin-top:2px"><span><b>Net, year one</b></span><div></div><span class="bar-num"><b>${net>=0?'+':'−'}${sgd(Math.abs(net))} ${net>=0?'to owning':'to renting'}</b></span></div>`;
+    const cpfBack=c.cpfOrCash*(Math.pow(1+D.rules.cpf.oa_rate,N)-1);
+    $('ovr-note').innerHTML=`A one-year expected-value snapshot, not a forecast: rent is proxied by the OCR gross yield (portal-sourced, flagged), interest is approximated on the opening balance, and principal repayments are excluded on both sides (they are saving, not cost). Two exit frictions to remember: SSD applies within 4 years, and CPF used for the home flows back to your own CPF with accrued interest at sale — roughly ${sgd(cpfBack)} after ${N} years if the ${sgd(c.cpfOrCash)} CPF-or-cash portion were fully CPF — so cash-in-hand at exit is less than the equity you see.`;
   }
   // prepay vs invest projection bars (net worth delta narrative)
   const yrs=[Math.round(N/2),N];
@@ -594,9 +674,9 @@ function syncLev(){
 function renderType(){
   const S=D.market.segments;
   const rows=[
-    {t:'HDB resale',quantum:'S$0.5–0.8m',liq:'Highest',yield:pct(S.HDB.yield_pt,1),app:'+0–2%',lev:'HDB loan 75% / bank; MSR 30%',restr:'Citizenship, MOP, ethnic quota, income ceiling',hedge:'Moderate',fit:'chip-a'},
-    {t:'Private condo',quantum:'S$1.0m+',liq:'High',yield:pct(S.OCR.yield_pt,1)+' (OCR)',app:'+1–3%',lev:'Bank only; TDSR 55%',restr:'ABSD on 2nd+; few use restrictions',hedge:'Strong',fit:'chip-g'},
-    {t:'Landed',quantum:'S$3.5m+',liq:'Lowest',yield:pct(S.Landed.yield_pt,1),app:'+0–1% (scarce)',lev:'Bank only; TDSR 55%',restr:'Citizens only; large quantum',hedge:'Strongest (land-scarce)',fit:'chip-n'}
+    {t:'HDB resale',quantum:'S$0.5–0.8m',liq:'Highest',yield:pct(S.HDB.yield_pt,1),app:'+0–2%',lev:'HDB loan 75% / bank; MSR 30%',restr:'Citizenship, MOP, ethnic quota; income ceilings for grants/HDB loan',hedge:'Moderate',fit:'chip-a'},
+    {t:'Private condo',quantum:'S$1.0m+',liq:'High',yield:pct(S.OCR.yield_pt,1)+' (OCR)',app:'+1–3%',lev:'Bank only; TDSR 55%',restr:'ABSD on 2nd+; SSD within 4 yr; few use restrictions',hedge:'Strong',fit:'chip-g'},
+    {t:'Landed',quantum:'S$3.5m+',liq:'Lowest',yield:pct(S.Landed.yield_pt,1),app:'+0–1% (scarce)',lev:'Bank only; TDSR 55%',restr:'Citizens only (PRs need LDAU approval); large quantum',hedge:'Strongest (land-scarce)',fit:'chip-n'}
   ];
   $('type-table').innerHTML=`<thead><tr><th>Type</th><th>Entry quantum</th><th>Liquidity</th><th class="num">Gross yield</th><th>2026 outlook</th><th>Leverage</th><th>Key restrictions</th><th>Inflation hedge</th></tr></thead><tbody>`+
     rows.map(r=>`<tr><td><b>${r.t}</b> <span class="chip ${r.fit}">${r.fit==='chip-g'?'brief fit':(r.fit==='chip-a'?'possible':'—')}</span></td><td class="num">${r.quantum}</td><td>${r.liq}</td><td class="num">${r.yield}</td><td>${r.app}</td><td>${r.lev}</td><td>${r.restr}</td><td>${r.hedge}</td></tr>`).join('')+`</tbody>`;
@@ -607,7 +687,7 @@ function renderType(){
   ];
   $('type-cards').innerHTML=cards.map(c=>`<div class="card" style="border-left:3px solid ${c.cls==='good'?'var(--g)':'var(--bd2)'}"><h3>${c.t}</h3><p style="font-size:13px;color:var(--t2)">${c.b}</p></div>`).join('');
   const ec=D.market.ec_policy_2026;
-  $('ec-callout').innerHTML=`<b>Considering an EC?</b> From ${ec.effective} the rules tightened for new sites: MOP ${ec.changes.mop_years[0]}→${ec.changes.mop_years[1]} years, full privatisation ${ec.changes.full_privatisation_years[0]}→${ec.changes.full_privatisation_years[1]} years, first-timer quota ${pct(ec.changes.first_timer_quota[0],0)}→${pct(ec.changes.first_timer_quota[1],0)}, and the deferred-payment scheme abolished. Existing pipeline ECs keep the old 5-year MOP. An EC is cheaper than a condo but locks you in far longer — weigh that against the "stay liquid" brief.`;
+  $('ec-callout').innerHTML=`<b>Considering an EC?</b> From ${ec.effective} the rules tightened for new sites: MOP ${ec.changes.mop_years[0]}→${ec.changes.mop_years[1]} years, full privatisation ${ec.changes.full_privatisation_years[0]}→${ec.changes.full_privatisation_years[1]} years, first-timer quota ${pct(ec.changes.first_timer_quota[0],0)}→${pct(ec.changes.first_timer_quota[1],0)}, and the deferred-payment scheme abolished. The household income ceiling stays S$${fmt0(ec.changes.income_ceiling_sgd)}. Existing pipeline ECs keep the old 5-year MOP. An EC is cheaper than a condo but locks you in far longer — weigh that against the "stay liquid" brief.`;
 }
 
 /* ---------- render tab 4 ---------- */
@@ -616,7 +696,10 @@ function renderWhere(){
   const order=['OCR','RCR','CCR','Landed','HDB'];
   $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Latest q/q</th><th>2026 outlook</th><th>Read</th></tr></thead><tbody>`+
     order.map(k=>{const s=S[k];const mo=s.momentum_qoq;const psf=s.median_psf?('$'+fmt0(s.median_psf)):'—';
-      const read=k==='OCR'?'Best yield · brief fits here':k==='CCR'?'Prime leading on price':k==='HDB'?'Highest yield · rule-bound':k==='RCR'?'Fringe value in D14':'Scarce · off-brief';
+      const lead=['CCR','RCR','OCR'].reduce((a,b)=>S[a].momentum_qoq>=S[b].momentum_qoq?a:b);
+      const read=k==='OCR'?('Best yield · brief fits here'+(lead==='OCR'?' · leading q/q':''))
+        :k==='CCR'?(lead==='CCR'?'Prime · leading q/q':'Prime · trailing q/q this print')
+        :k==='HDB'?'Highest yield · rule-bound':k==='RCR'?('Fringe value in D14'+(lead==='RCR'?' · leading q/q':'')):'Scarce · off-brief';
       return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}" title="${s.momentum_asof||''}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_qoq_range[0],0)+'…'+pct(s.outlook_2026_qoq_range[1],0)} q/q</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
 
   // live HDB resale median (present only when live.json is overlaid)
@@ -628,7 +711,7 @@ function renderWhere(){
   $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
     G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
       return `<tr><td>${t.site}${t.note?' <span class="chip chip-n" title="'+String(t.note).replace(/"/g,'')+'">i</span>':''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
-  $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) on a handful of disciplined bids per tender — developers are still paying up. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
+  $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) — but the average is <b>mix-unadjusted</b>: a year with more prime sites lifts it without any like-for-like inflation, so read it with the segment column. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there. Supply cuts both ways, though: the same nearby pipeline that floors prices also competes with your unit when you sell. Segment tags are approximated from the planning area — Bukit Timah-area sites can be CCR by postal district. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
 
   const b=D.market.brief, f=b.fit_summary;
   $('brief-map').innerHTML=`
@@ -647,15 +730,26 @@ function renderKPIs(){
     {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'curated · '+R.rates.sora_3m.asof},
     {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'curated · promo 1–3 yr'},
     {l:'TDSR stress floor',v:pct(R.tdsr.stress_rate,0),s:'loans sized at this rate'},
-    {l:'Private PPI',v:'+'+pct(ppi.yoy,1),s:ppi.asof+' · q/q '+(ppi.qoq>=0?'+':'')+pct(ppi.qoq,1)},
+    {l:'Private PPI',v:(ppi.yoy>=0?'+':'')+pct(ppi.yoy,1),s:ppi.asof+' · q/q '+(ppi.qoq>=0?'+':'')+pct(ppi.qoq,1)},
     {l:'HDB resale RPI',v:(hdb.yoy>=0?'+':'')+pct(hdb.yoy,1),s:hdb.asof+' · q/q '+(hdb.qoq>=0?'+':'')+pct(hdb.qoq,1)},
     {l:'GLS land bids',v:(M.gls.yoy>=0?'+':'')+pct(M.gls.yoy,0),s:'YoY · '+M.gls.asof.replace(' (live)','')}
   ];
   $('kpis').innerHTML=k.map(x=>`<div class="kpi"><div class="label">${x.l}</div><div class="kpi-val">${x.v}</div><div class="kpi-sub">${x.s}</div></div>`).join('');
-  if(live){ $('pill-live').innerHTML='<span class="dot"></span>LIVE'; $('pill-asof').textContent='data '+M.live.fetched.slice(0,10)+' · rules '+M._meta.asof; }
+  const failed=(M.live&&M.live.failed)||[];
+  if(live){
+    // staleness in whole days via pure ms arithmetic (no month/day components are
+    // computed by hand; JS Date months are 0-indexed but are not used here)
+    const ageDays=Math.floor((Date.now()-Date.parse(M.live.fetched))/86400000);
+    const stale=isFinite(ageDays)&&ageDays>14;
+    const el=$('pill-live');
+    if(stale){ el.textContent='LIVE · stale ('+ageDays+'d)'; el.className='pill pill-warn'; el.title='The weekly refresh has not landed for '+ageDays+' days — figures below carry their own as-of dates.'; }
+    else if(failed.length){ el.textContent='LIVE · partial'; el.className='pill pill-warn'; el.title='Feeds failed at the last refresh: '+failed.join(', ')+' — curated baseline values stand for these.'; }
+    else { el.innerHTML='<span class="dot"></span>LIVE'; el.title='All live feeds refreshed.'; }
+    $('pill-asof').textContent='data '+M.live.fetched.slice(0,10)+' · rules '+M._meta.asof;
+  }
   else { $('pill-asof').textContent='snapshot '+M._meta.asof; }
-  const liveTxt=live?`Indices, segment momentum, GLS land bids and HDB resale medians refreshed live ${M.live.fetched.slice(0,10)} from data.gov.sg + the URA GLS workbook; SORA and package rates are curated (no public feed); official segment $psf lights up when a URA Data Service key is supplied. `:``;
-  $('footer').innerHTML=`<b>Sources.</b> Rules — MAS / MoneySense / IRAS (in force July 2026). Market — URA (PPI, rental index, GLS), HDB (RPI, resale register), MAS (SORA), SingStat; segment $psf and yields are partly portal aggregations, flagged in the data. `+liveTxt+
+  const liveTxt=live?`Indices, segment momentum, GLS land bids and HDB resale medians refreshed live ${M.live.fetched.slice(0,10)} from data.gov.sg + the URA GLS workbook; SORA and package rates are curated (no public feed); official segment $psf lights up when a URA Data Service key is supplied. `+(failed.length?`Feeds that failed at the last refresh (curated baseline stands for them): ${failed.join(', ')}. `:``):``;
+  $('footer').innerHTML=`<b>Sources.</b> Rules — MAS / MoneySense / IRAS (in force July 2026; last cooling-measure changes: HDB LTV 75% on 20 Aug 2024 · SSD 4-year 16/12/8/4% on 4 Jul 2025 · EC package on 8 May 2026). Market — URA (PPI, rental index, GLS), HDB (RPI, resale register), MAS (SORA), SingStat; segment $psf and yields are partly portal aggregations, flagged in the data. `+liveTxt+
     `<br><b>Not financial, mortgage or tax advice.</b> This is an educational illustration of published rules and public data. A bank's actual assessment (income recognition, CPF limits, guarantor rules) will differ; confirm with a licensed banker or broker before committing. Figures are a snapshot as of ${M._meta.asof} and date quickly. `+
     `<br>Built on the vault dashboard convention · Personal project · ${M._meta.asof}.`;
 }
@@ -677,46 +771,53 @@ function renderHook(){
       `<div class="buy-what">${bed(size)}</div><div class="buy-size">~${fmt0(size)} sqft · at $${fmt0(psf)} psf</div></div>`;
   }).join('');
   const bsdAmt=bsd(B, R.bsd.brackets);
-  $('buys-note').innerHTML=`Same <b>${sgd(B)}</b>, three very different homes — sized at each area's median $psf. Suburban stretches furthest and still leaves ~<b>${sgd(bsdAmt)}</b> for the stamp duty, plus room for a cash buffer; prime buys the least space per dollar. A rough teaser — <b>Where to buy</b> has the real detail.`;
+  $('buys-note').innerHTML=`Same <b>${sgd(B)}</b>, three very different homes — sized at each area's median $psf. Suburban stretches furthest; prime buys the least space per dollar. On top of the price, budget ~<b>${sgd(bsdAmt)}</b> buyer's stamp duty, legal fees and a cash buffer. A rough teaser — <b>Where to buy</b> has the real detail.`;
   const loan=R.rates.fixed_best.value, cpf=R.cpf.oa_rate, land=M.gls.yoy;
   const hooks=[
     {num:'23 vs 30 yrs',txt:'At 42 the best loan terms cap you near 23 years, not 30 — the loan must clear by age 65. Shorter loan, higher monthly: the window to borrow well closes with age.',go:'See your number →',t:'afford',col:'var(--b)'},
-    {num:pct(loan,1)+' vs '+pct(cpf,1),txt:'Your home loan now costs less than your CPF even earns — the cheapest borrowing since 2021. That quietly flips the old "just pay cash" instinct.',go:'Cash or loan? →',t:'leverage',col:'var(--g)'},
+    {num:pct(loan,1)+' vs '+pct(cpf,1),txt:'Your home loan now costs less than your CPF even earns. That quietly flips the old "just pay cash" instinct.',go:'Cash or loan? →',t:'leverage',col:'var(--g)'},
     {num:(land>=0?'+':'')+pct(land,0)+' on land',txt:"What developers paid for land this year versus last. Every winning bid sets a floor under tomorrow's launch and resale prices nearby.",go:'Where to buy? →',t:'where',col:'var(--a)'}
   ];
   $('hooks').innerHTML=hooks.map(h=>`<button class="hookcard" style="border-left-color:${h.col}" onclick="switchTab('${h.t}')"><div class="hook-num">${h.num}</div><div class="hook-txt">${h.txt}</div><div class="hook-go">${h.go}</div></button>`).join('');
 }
 
+/* ---------- worked example at a glance (data-driven, uses the engine) ---------- */
+const PRESETS=[
+  {n:'42 · S$1.35m condo (example)',v:{age:42,income:11000,incomeVar:0,debt:0,cash:500000,price:1350000,type:'private',loan:'bank',cz:'SC',count:0,tenure:23,rate:1.6}},
+  {n:'35 · S$1.5m condo, longer loan',v:{age:35,income:13000,incomeVar:0,debt:0,cash:520000,price:1500000,type:'private',loan:'bank',cz:'SC',count:0,tenure:30,rate:1.6}},
+  {n:'45 · S$1.2m resale, cash-rich',v:{age:45,income:9000,incomeVar:0,debt:0,cash:700000,price:1200000,type:'private',loan:'bank',cz:'SC',count:0,tenure:20,rate:1.6}},
+  {n:'40 · HDB resale S$0.75m (HDB loan)',v:{age:40,income:8000,incomeVar:0,debt:0,cash:250000,price:750000,type:'hdb',loan:'hdb',cz:'SC',count:0,tenure:25,rate:2.6}}
+];
+function renderAtGlance(){
+  const p=PRESETS[0].v;
+  const c=computeLoan({...p, rate:p.rate/100, lease:null});
+  $('atglance').innerHTML=`<b>${sgd(p.price)}</b> suburban condo at 42, S$${fmt0(p.income)}/month income, ${sgdk(p.cash)} set aside: borrow <b>${sgdk(c.maxLoan)}</b> over <b>${c.tenure} years</b> (the age-42 cap for full 75% LTV), pay <b>${sgd(c.instActual)}</b> a month at ${p.rate.toFixed(2)}%, put <b>${sgdk(c.upfront)}</b> down upfront, and keep a <b>${c.bufferMonths.toFixed(0)}-month</b> buffer. That is the worked example — load it above, then make it yours.`;
+}
+
 /* ---------- wiring ---------- */
 function wire(){
-  ['i-income','i-price','i-cash','i-debt','l-surplus'].forEach(attachMoney);
+  ['i-income','i-income-var','i-price','i-cash','i-debt','l-surplus'].forEach(attachMoney);
   document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.t)));
-  ['i-age','i-income','i-debt','i-cash','i-price','i-type','i-cz','i-count','i-tenure','i-rate'].forEach(id=>{
+  ['i-age','i-income','i-income-var','i-debt','i-cash','i-price','i-type','i-loan','i-cz','i-count','i-tenure','i-rate','i-lease'].forEach(id=>{
     $(id).addEventListener('input',renderAfford);
   });
   ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
   $('hook-budget').addEventListener('input',()=>{renderHook(); setMoney('i-price',$('hook-budget').value); renderAfford();});
-  const presets=[
-    {n:'42 · S$1.35m condo (example)',v:{age:42,income:11000,debt:0,cash:500000,price:1350000,type:'private',cz:'SC',count:0,tenure:23,rate:1.6}},
-    {n:'35 · S$1.5m condo, longer loan',v:{age:35,income:13000,debt:0,cash:520000,price:1500000,type:'private',cz:'SC',count:0,tenure:30,rate:1.6}},
-    {n:'45 · S$1.2m resale, cash-rich',v:{age:45,income:9000,debt:0,cash:700000,price:1200000,type:'private',cz:'SC',count:0,tenure:20,rate:1.6}},
-    {n:'40 · HDB resale S$0.75m',v:{age:40,income:8000,debt:0,cash:250000,price:750000,type:'hdb',cz:'SC',count:0,tenure:25,rate:2.6}}
-  ];
   const applyPreset=v=>{
-    $('i-age').value=v.age; setMoney('i-income',v.income); setMoney('i-debt',v.debt);
-    setMoney('i-cash',v.cash); setMoney('i-price',v.price); $('i-type').value=v.type;
-    $('i-cz').value=v.cz; $('i-count').value=v.count; $('i-tenure').value=v.tenure; $('i-rate').value=v.rate;
+    $('i-age').value=v.age; setMoney('i-income',v.income); setMoney('i-income-var',v.incomeVar||0); setMoney('i-debt',v.debt);
+    setMoney('i-cash',v.cash); setMoney('i-price',v.price); $('i-type').value=v.type; $('i-loan').value=v.loan||'bank';
+    $('i-cz').value=v.cz; $('i-count').value=v.count; $('i-tenure').value=v.tenure; $('i-rate').value=v.rate; $('i-lease').value='';
     renderAfford();
   };
-  $('presets').innerHTML=presets.map((p,i)=>`<button class="preset" data-i="${i}">${p.n}</button>`).join('');
-  $('presets').querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>applyPreset(presets[+btn.dataset.i].v)));
-  $('try-example').addEventListener('click',()=>{applyPreset(presets[0].v);switchTab('afford');});
+  $('presets').innerHTML=PRESETS.map((p,i)=>`<button class="preset" data-i="${i}">${p.n}</button>`).join('');
+  $('presets').querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>applyPreset(PRESETS[+btn.dataset.i].v)));
+  $('try-example').addEventListener('click',()=>{applyPreset(PRESETS[0].v);switchTab('afford');});
 }
 
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere();
+    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
