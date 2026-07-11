@@ -82,8 +82,7 @@ h1,h2,h3{font-weight:400}
 .preset{font-size:11.5px;padding:5px 10px;border:1px solid var(--bd2);border-radius:999px;background:var(--bg2);cursor:pointer;color:var(--t2)}
 .preset:hover{border-color:var(--b);color:var(--b)}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
-th.dsort:hover{color:var(--t1)}
-th.psort{cursor:pointer} th.psort:hover{color:var(--t1);text-decoration:underline}
+th.dsort,th.psort{cursor:pointer} th.dsort:hover,th.psort:hover{color:var(--t1);text-decoration:underline}
 #projects-table th{z-index:2}
 #projects-table td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
 #projects-table th:first-child{left:0;z-index:3}
@@ -790,7 +789,7 @@ function renderType(){
 
 /* ---------- render tab 4 ---------- */
 /* ---------- most attractive areas (live URA district data) ---------- */
-let _dlens='Balanced', _dsort='score', _dtipWired=false;
+let _dlens='Balanced', _dsort='score', _dasc=false, _dtipWired=false;
 const D_LENS={Balanced:{y:1,m:1,l:1,v:1},Yield:{y:3,m:1,l:1,v:1},Growth:{y:1,m:3,l:1,v:1},Liquidity:{y:1,m:1,l:3,v:1},Value:{y:1,m:1,l:1,v:3}};
 const _xa=(href,txt)=>`<a class="xlink" target="_blank" rel="noopener noreferrer" href="${href}">${txt}</a>`;
 const _gmap=q=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+' Singapore')}`;
@@ -848,12 +847,13 @@ function renderDistricts(){
   $('district-lenses').innerHTML=Object.keys(D_LENS).map(k=>`<button class="preset${k===_dlens?' active':''}" data-lens="${k}">${k}</button>`).join('');
   $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3)">&mdash; bubble size = score &middot; hover for details</span>`;
   const scored=_scoreDistricts(DS.rows);
-  const val=r=>_dsort==='name'?r.name:(_dsort==='district'?+r.d:(r[_dsort]==null?-1:r[_dsort]));
-  scored.sort((a,b)=>_dsort==='name'?val(a).localeCompare(val(b)):val(b)-val(a));
+  const val=r=>_dsort==='name'?r.name:(_dsort==='district'?+r.d:(r[_dsort]==null?-Infinity:r[_dsort]));
+  const _dd=_dasc?1:-1;
+  scored.sort((a,b)=>{const va=val(a),vb=val(b),c=(typeof va==='string'||typeof vb==='string')?String(va).localeCompare(String(vb)):(va-vb);return _dd*c;});
   $('district-svg').innerHTML=_valueMap(scored); _wireTip();
   const cols=[['district','Dist'],['name','Area'],['region','Seg'],['median_psf','Resale $psf'],['momentum','1yr'],['yield','Gross yld'],['vol_12m','Resale vol'],['score','Score']];
   const numk=['median_psf','momentum','yield','vol_12m','score'];
-  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}dsort" data-k="${k}">${l}${_dsort===k?' ▾':''}</th>`).join('')+`<th>Explore</th>`;
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}dsort" data-k="${k}">${l}${_dsort===k?(_dasc?' ▴':' ▾'):''}</th>`).join('')+`<th>Explore</th>`;
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   const body=scored.map((r,i)=>{const area=r.name.split('/')[0].trim(), n=r.district.slice(1);
     return `<tr${i<3?' style="background:var(--g-bg)"':''}><td class="mono">${r.district}</td><td>${r.name}</td>`+
@@ -866,12 +866,12 @@ function renderDistricts(){
     `<td class="xlinks">${_xa(_pguru(n),'Listings')} &middot; ${_xa(_gmap(area),'Map')} &middot; ${_xa(_yt(area+' condo review'),'Video')}</td></tr>`;}).join('');
   $('district-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   $('district-lenses').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{_dlens=b.dataset.lens; renderDistricts();});
-  $('district-table').querySelectorAll('.dsort').forEach(h=>h.onclick=()=>{_dsort=h.dataset.k; renderDistricts();});
+  $('district-table').querySelectorAll('.dsort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_dsort===k){_dasc=!_dasc;}else{_dsort=k;_dasc=(k==='name'||k==='district'||k==='region');} renderDistricts();});
   $('district-note').innerHTML=`<b>Resale condo/apartment, last 12 months, from URA caveats (official).</b> The Score blends yield, one-year resale-price momentum, transaction volume (liquidity) and cheapness, re-weighted by the lens above — transparent, not a black box. Momentum is the change in resale median $psf: indicative of direction, not a constant-quality index. Gross yield = median resale rent &divide; median resale price, before maintenance, tax and vacancy (net ~0.8&ndash;1.2pp lower). Top three shaded. As of ${DS.asof}.`;
 }
 
 /* ---------- feature 2: project scorecard (turnover / lease / value) ---------- */
-let _psort='score', _pq='', _pdists=new Set();
+let _psort='score', _pasc=false, _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
@@ -949,23 +949,22 @@ function renderProjects(){
   // percentile-rank each factor so equal weight is truly equal — min-max let wide-spread liquidity dominate and compressed value
   const _prank=vals=>{const o=vals.map((v,i)=>i).sort((a,b)=>vals[a]-vals[b]),rk=[];o.forEach((i,k)=>rk[i]=vals.length>1?k/(vals.length-1):0.5);return rk;};
   const pV=_prank(AV),pL=_prank(AL),pLe=_prank(ALe),pM=_prank(AM);
-  allP.forEach((r,i)=>{r.score=Math.round(100*(pV[i]+pL[i]+pLe[i]+pM[i])/4);});
+  allP.forEach((r,i)=>{r.score=Math.round(100*(pV[i]+pL[i]+pLe[i]+pM[i])/4); r._sc=[Math.round(pV[i]*100),Math.round(pL[i]*100),Math.round(pLe[i]*100),Math.round(pM[i]*100)];});
   let rows=P.rows.filter(r=>r.median_psf);
   if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
-  rows=rows.slice().sort((a,b)=>_psort==='project'?(a.project||'').localeCompare(b.project||''):
-    _psort==='lease'?_leaseNum(b.lease)-_leaseNum(a.lease):
-    _psort==='mrt_m'?((a.mrt_m==null?1e9:a.mrt_m)-(b.mrt_m==null?1e9:b.mrt_m)):
-    ((b[_psort]==null?-1e9:b[_psort])-(a[_psort]==null?-1e9:a[_psort])));
+  const _pkey=r=>_psort==='project'?(r.project||'').toLowerCase():_psort==='district'?(+String(r.district||'').replace(/\D/g,'')||0):_psort==='lease'?_leaseNum(r.lease):_psort==='mrt_m'?(r.mrt_m==null?Infinity:r.mrt_m):(r[_psort]==null?-Infinity:r[_psort]);
+  const _pd=_pasc?1:-1;
+  rows=rows.slice().sort((a,b)=>{const ka=_pkey(a),kb=_pkey(b);return _pd*((typeof ka==='string')?ka.localeCompare(kb):(ka-kb));});
   const total=rows.length, shown=rows.slice(0,40);
   const hasMrt=(D.market.projects||{}).mrt_ok;
   const cols=[['project','Project'],['score','Score'],['district','Dist'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
   const numk=['median_psf','momentum','vol_12m','lease','price','size','score'];
-  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}"${k==='score'?' title="Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across all projects"':''}>${l}${_psort===k?' ▾':''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}"${k==='score'?' title="Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across all projects"':''}>${l}${_psort===k?(_pasc?' ▴':' ▾'):''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
   const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
     leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td>`+
-      `<td class="num" style="background:rgba(26,135,84,${((r.score||0)/100*0.22).toFixed(3)})" title="broad attractiveness (higher = better)"><b>${r.score!=null?r.score:'—'}</b></td>`+
+      `<td class="num" style="background:rgba(26,135,84,${((r.score||0)/100*0.22).toFixed(3)})" title="Score ${r.score!=null?r.score:'—'} = mean of four percentile ranks vs all projects (0 = lowest, 100 = highest):&#10;Value — cheaper vs area: ${r._sc?r._sc[0]:'—'}&#10;Liquidity — resale turnover: ${r._sc?r._sc[1]:'—'}&#10;Remaining lease: ${r._sc?r._sc[2]:'—'}&#10;MRT proximity: ${r._sc?r._sc[3]:'—'}"><b>${r.score!=null?r.score:'—'}</b></td>`+
       `<td class="mono">${r.district||'—'}</td>`+
       `<td class="num">${r.price?sgdk(r.price):'—'}</td>`+
       `<td class="num" title="${r.size_r?'typical '+fmt0(r.size_r[0])+'–'+fmt0(r.size_r[1])+' sqft':''}">${r.size?fmt0(r.size)+' sf':'—'}</td>`+
@@ -978,7 +977,7 @@ function renderProjects(){
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   $('projects-count').textContent=`${total} project${total===1?'':'s'} match${total===1?'es':''}${total>40?' — showing the top 40':''}`;
-  $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{_psort=h.dataset.k; renderProjects();});
+  $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_psort===k){_pasc=!_pasc;}else{_psort=k;_pasc=(k==='project'||k==='district'||k==='mrt_m');} renderProjects();});
   $('p-districts').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{const d=b.dataset.d;_pdists.has(d)?_pdists.delete(d):_pdists.add(d);renderProjects();renderDistrictMap();});
   $('p-clear').onclick=e=>{e.preventDefault();_pdists.clear();renderProjects();renderDistrictMap();};
 }
