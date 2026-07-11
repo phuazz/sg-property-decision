@@ -81,6 +81,9 @@ h1,h2,h3{font-weight:400}
 .presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .preset{font-size:11.5px;padding:5px 10px;border:1px solid var(--bd2);border-radius:999px;background:var(--bg2);cursor:pointer;color:var(--t2)}
 .preset:hover{border-color:var(--b);color:var(--b)}
+.preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
+th.dsort:hover{color:var(--t1)}
+#district-map{margin:6px 0 14px}
 
 /* result tiles */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
@@ -347,6 +350,14 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <p class="lead">Where your budget actually reaches, what each area yields, and a forward signal most buyers miss: <b>developers' winning land bids</b>. A high, competitive bid prices tomorrow's launches and sets a floor under nearby prices.</p>
     <details class="fp"><summary>How to read a land bid</summary><div class="fp-body">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space — so the eventual launch price is roughly that bid × 1.8–2.0 (to cover construction, financing and margin). A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
+      <div class="card" id="district-card">
+        <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3)">live URA resale data</em></h3>
+        <p class="intro" id="district-intro"></p>
+        <div class="presets" id="district-lenses"></div>
+        <div id="district-map"></div>
+        <div class="tbl-wrap"><table id="district-table"></table></div>
+        <div class="note" id="district-note"></div>
+      </div>
       <div class="card">
         <h3>Segments — price, yield, momentum</h3>
         <div class="tbl-wrap"><table id="seg-table"></table></div>
@@ -691,6 +702,67 @@ function renderType(){
 }
 
 /* ---------- render tab 4 ---------- */
+/* ---------- most attractive areas (live URA district data) ---------- */
+let _dlens='Balanced', _dsort='score';
+const D_LENS={Balanced:{y:1,m:1,l:1,v:1},Yield:{y:3,m:1,l:1,v:1},Growth:{y:1,m:3,l:1,v:1},Liquidity:{y:1,m:1,l:3,v:1},Value:{y:1,m:1,l:1,v:3}};
+const _nz=(arr,v)=>{const lo=Math.min(...arr),hi=Math.max(...arr);return hi>lo?(v-lo)/(hi-lo):0.5;};
+function _scoreDistricts(rows){
+  const ys=rows.map(r=>r.yield||0), ms=rows.map(r=>r.momentum==null?0:r.momentum),
+        ls=rows.map(r=>Math.log(r.vol_12m||1)), ps=rows.map(r=>r.median_psf||0);
+  const w=D_LENS[_dlens], wsum=w.y+w.m+w.l+w.v;
+  return rows.map(r=>{
+    const s=100*(w.y*_nz(ys,r.yield||0)+w.m*_nz(ms,r.momentum==null?0:r.momentum)+
+                 w.l*_nz(ls,Math.log(r.vol_12m||1))+w.v*(1-_nz(ps,r.median_psf||0)))/wsum;
+    return {...r, score:Math.round(s)};
+  });
+}
+function _valueMap(rows){
+  const W=720,H=356,m={t:26,r:22,b:46,l:54}, col={OCR:'var(--g)',RCR:'var(--a)',CCR:'var(--b)'};
+  const xs=rows.map(r=>r.median_psf), ys=rows.map(r=>(r.yield||0)*100);
+  const xlo=Math.min(...xs)*0.97,xhi=Math.max(...xs)*1.03,ylo=Math.min(...ys)*0.94,yhi=Math.max(...ys)*1.06;
+  const X=v=>m.l+(v-xlo)/(xhi-xlo)*(W-m.l-m.r), Y=v=>H-m.b-(v-ylo)/(yhi-ylo)*(H-m.t-m.b);
+  let g=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" font-family="var(--sans)">`;
+  for(let i=0;i<=4;i++){const xv=xlo+(xhi-xlo)*i/4,x=X(xv);g+=`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H-m.b}" stroke="var(--bg4)"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="10" fill="var(--t3)" font-family="var(--mono)">$${fmt0(Math.round(xv/10)*10)}</text>`;}
+  for(let i=0;i<=4;i++){const yv=ylo+(yhi-ylo)*i/4,y=Y(yv);g+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="var(--bg4)"/><text x="${m.l-8}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--t3)" font-family="var(--mono)">${yv.toFixed(1)}%</text>`;}
+  g+=`<text x="${(m.l+W-m.r)/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--t2)">Resale median $psf (cheaper &larr;)</text>`;
+  g+=`<text x="16" y="${(m.t+H-m.b)/2}" text-anchor="middle" font-size="11" fill="var(--t2)" transform="rotate(-90 16 ${(m.t+H-m.b)/2})">Gross yield &rarr;</text>`;
+  g+=`<text x="${m.l+6}" y="${m.t+2}" font-size="10.5" fill="var(--g)" font-weight="700">&#8598; more attractive: cheaper + higher yield</text>`;
+  rows.forEach(r=>{const x=X(r.median_psf),y=Y((r.yield||0)*100);
+    g+=`<circle cx="${x}" cy="${y}" r="5" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.85"><title>${r.district} ${r.name}</title></circle>`+
+       `<text x="${x+7}" y="${y+3}" font-size="9.5" fill="var(--t2)" font-family="var(--mono)">${r.district}</text>`;});
+  return g+`</svg>`;
+}
+function renderDistricts(){
+  const card=$('district-card'); if(!card) return;
+  const DS=D.market.districts;
+  if(!DS||!DS.rows||!DS.rows.length){
+    $('district-intro').innerHTML='This live layer needs the free URA Data Service key. Once the <span class="mono">URA_ACCESS_KEY</span> secret is set, every district is ranked here on real resale transactions.';
+    $('district-lenses').innerHTML=''; $('district-map').innerHTML=''; $('district-table').innerHTML=''; $('district-note').innerHTML='';
+    return;
+  }
+  $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield, price, recent trend, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3)">${DS.n} districts · ${DS.basis}</span>`;
+  $('district-lenses').innerHTML=Object.keys(D_LENS).map(k=>`<button class="preset${k===_dlens?' active':''}" data-lens="${k}">${k}</button>`).join('');
+  const scored=_scoreDistricts(DS.rows);
+  const val=r=>_dsort==='name'?r.name:(_dsort==='district'?+r.d:(r[_dsort]==null?-1:r[_dsort]));
+  scored.sort((a,b)=>_dsort==='name'?val(a).localeCompare(val(b)):val(b)-val(a));
+  $('district-map').innerHTML=_valueMap(scored);
+  const cols=[['district','Dist'],['name','Area'],['region','Seg'],['median_psf','Resale $psf'],['momentum','1yr'],['yield','Gross yld'],['vol_12m','Resale vol'],['score','Score']];
+  const numk=['median_psf','momentum','yield','vol_12m','score'];
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}dsort" data-k="${k}">${l}${_dsort===k?' ▾':''}</th>`).join('');
+  const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
+  const body=scored.map((r,i)=>`<tr${i<3?' style="background:var(--g-bg)"':''}><td class="mono">${r.district}</td><td>${r.name}</td>`+
+    `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
+    `<td class="num">$${fmt0(r.median_psf)}</td>`+
+    `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
+    `<td class="num">${r.yield?pct(r.yield,1):'—'}</td>`+
+    `<td class="num">${fmt0(r.vol_12m)}</td>`+
+    `<td class="num"><b>${r.score}</b></td></tr>`).join('');
+  $('district-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
+  $('district-lenses').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{_dlens=b.dataset.lens; renderDistricts();});
+  $('district-table').querySelectorAll('.dsort').forEach(h=>h.onclick=()=>{_dsort=h.dataset.k; renderDistricts();});
+  $('district-note').innerHTML=`<b>Resale condo/apartment, last 12 months, from URA caveats (official).</b> The Score blends yield, one-year resale-price momentum, transaction volume (liquidity) and cheapness, re-weighted by the lens above — transparent, not a black box. Momentum is the change in resale median $psf: indicative of direction, not a constant-quality index. Gross yield = median resale rent &divide; median resale price, before maintenance, tax and vacancy (net ~0.8&ndash;1.2pp lower). Top three shaded. As of ${DS.asof}.`;
+}
+
 function renderWhere(){
   const S=D.market.segments, G=D.market.gls;
   const order=['OCR','RCR','CCR','Landed','HDB'];
@@ -817,7 +889,7 @@ function wire(){
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderAtGlance();
+    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
