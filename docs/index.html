@@ -799,7 +799,7 @@ function renderType(){
 /* ---------- render tab 4 ---------- */
 /* ---------- most attractive areas (live URA district data) ---------- */
 let _dlens='Balanced', _dsort='score', _dasc=false, _dtipWired=false;
-const D_LENS={Balanced:{y:1,m:1,l:1,v:1},Yield:{y:3,m:1,l:1,v:1},Growth:{y:1,m:3,l:1,v:1},Liquidity:{y:1,m:1,l:3,v:1},Value:{y:1,m:1,l:1,v:3}};
+const D_LENS={Balanced:{y:1,l:1,v:1},Yield:{y:3,l:1,v:1},Liquidity:{y:1,l:3,v:1},Value:{y:1,l:1,v:3}};
 const _xa=(href,txt)=>`<a class="xlink" target="_blank" rel="noopener noreferrer" href="${href}">${txt}</a>`;
 const _gmap=q=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+' Singapore')}`;
 const _yt=q=>`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
@@ -817,11 +817,11 @@ function _wireTip(){
 }
 const _nz=(arr,v)=>{const lo=Math.min(...arr),hi=Math.max(...arr);return hi>lo?(v-lo)/(hi-lo):0.5;};
 function _scoreDistricts(rows){
-  const ys=rows.map(r=>r.yield||0), ms=rows.map(r=>r.momentum==null?0:r.momentum),
+  const ys=rows.map(r=>r.yield||0),
         ls=rows.map(r=>Math.log(r.vol_12m||1)), ps=rows.map(r=>r.median_psf||0);
-  const w=D_LENS[_dlens], wsum=w.y+w.m+w.l+w.v;
+  const w=D_LENS[_dlens], wsum=w.y+w.l+w.v;
   return rows.map(r=>{
-    const s=100*(w.y*_nz(ys,r.yield||0)+w.m*_nz(ms,r.momentum==null?0:r.momentum)+
+    const s=100*(w.y*_nz(ys,r.yield||0)+
                  w.l*_nz(ls,Math.log(r.vol_12m||1))+w.v*(1-_nz(ps,r.median_psf||0)))/wsum;
     return {...r, score:Math.round(s)};
   });
@@ -852,7 +852,7 @@ function renderDistricts(){
     $('district-lenses').innerHTML=''; $('district-map').innerHTML=''; $('district-table').innerHTML=''; $('district-note').innerHTML='';
     return;
   }
-  $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield, price, recent trend, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3)">${DS.n} districts · ${DS.basis}</span>`;
+  $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield (valuation), price, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3)">${DS.n} districts · ${DS.basis}</span>`;
   $('district-lenses').innerHTML=Object.keys(D_LENS).map(k=>`<button class="preset${k===_dlens?' active':''}" data-lens="${k}">${k}</button>`).join('');
   $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3)">&mdash; bubble size = score &middot; hover for details</span>`;
   const scored=_scoreDistricts(DS.rows);
@@ -876,7 +876,7 @@ function renderDistricts(){
   $('district-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   $('district-lenses').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{_dlens=b.dataset.lens; renderDistricts();});
   $('district-table').querySelectorAll('.dsort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_dsort===k){_dasc=!_dasc;}else{_dsort=k;_dasc=(k==='name'||k==='district'||k==='region');} renderDistricts();});
-  $('district-note').innerHTML=`<b>Resale condo/apartment, last 12 months, from URA caveats (official).</b> The Score blends yield, one-year resale-price momentum, transaction volume (liquidity) and cheapness, re-weighted by the lens above — transparent, not a black box. Momentum is the change in resale median $psf: indicative of direction, not a constant-quality index. Gross yield = median resale rent &divide; median resale price, before maintenance, tax and vacancy (net ~0.8&ndash;1.2pp lower). Top three shaded. As of ${DS.asof}.`;
+  $('district-note').innerHTML=`<b>Resale condo/apartment, last 12 months, from URA caveats (official).</b> The Score blends <b>yield</b> (a valuation read — rent relative to price), <b>transaction volume</b> (liquidity) and <b>relative cheapness</b> ($psf against the other districts), equal-weight and re-weighted by the lens above — transparent, not a black box. One-year price momentum is shown in the <b>1yr</b> column for context but is <b>deliberately excluded from the Score</b>: it is trailing and regime-driven (the recent prime-district lag was largely policy-led), so it ranks poorly as a forward attractiveness signal. Gross yield = median resale rent &divide; median resale price, before maintenance, tax and vacancy (net ~0.8&ndash;1.2pp lower). Top three shaded. As of ${DS.asof}.`;
 }
 
 /* ---------- feature 2: project scorecard (turnover / lease / value) ---------- */
@@ -896,8 +896,8 @@ function _districtMeta(){
   const dnm={}, dsc={}, dnfo={}, dc={};
   drows.forEach(r=>{dnm[r.district]=r.name; if(r.c)dc[r.district]=r.c;});
   if(drows.length){
-    const ys=drows.map(r=>r.yield||0),ms=drows.map(r=>r.momentum==null?0:r.momentum),ls=drows.map(r=>Math.log(r.vol_12m||1)),ps=drows.map(r=>r.median_psf||0);
-    drows.forEach(r=>{const s=Math.round(100*(_nz(ys,r.yield||0)+_nz(ms,r.momentum==null?0:r.momentum)+_nz(ls,Math.log(r.vol_12m||1))+(1-_nz(ps,r.median_psf||0)))/4);
+    const ys=drows.map(r=>r.yield||0),ls=drows.map(r=>Math.log(r.vol_12m||1)),ps=drows.map(r=>r.median_psf||0);
+    drows.forEach(r=>{const s=Math.round(100*(_nz(ys,r.yield||0)+_nz(ls,Math.log(r.vol_12m||1))+(1-_nz(ps,r.median_psf||0)))/3);
       dsc[r.district]=s; dnfo[r.district]=`${r.district} ${r.name} — score ${s} · yield ${r.yield?pct(r.yield,1):'—'} · $${fmt0(r.median_psf)} psf · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}`;});
   }
   const sv=Object.values(dsc), lo=sv.length?Math.min(...sv):0, hi=sv.length?Math.max(...sv):100;
