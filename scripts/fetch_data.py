@@ -375,7 +375,7 @@ def ura_project_scorecard():
     now_i = cur.year * 12 + cur.month
     out = []
     for proj in projs:
-        psf, psf_prev, leases, dist, last_mi, last_ym = [], [], collections.Counter(), None, 0, None
+        psf, psf_prev, leases, dist, last_mi, last_ym, sizes, prices = [], [], collections.Counter(), None, 0, None, [], []
         for t in proj.get("transaction", []):
             if t.get("propertyType") not in ("Condominium", "Apartment"):
                 continue
@@ -398,7 +398,7 @@ def ura_project_scorecard():
             if ll is not None:
                 leases[ll] += 1
             if mi > now_i - 12:
-                psf.append(p)
+                psf.append(p); sizes.append(area); prices.append(float(t["price"]))
                 if mi > last_mi:
                     cd = t.get("contractDate", ""); last_mi, last_ym = mi, "20" + cd[2:] + "-" + cd[:2]
             elif mi > now_i - 24:
@@ -410,6 +410,7 @@ def ura_project_scorecard():
         out.append({"project": proj.get("project"), "d": dist,
                     "district": ("D" + dist.lstrip("0")) if dist else None, "region": proj.get("marketSegment"),
                     "median_psf": med, "vol_12m": len(psf), "psf_p": _pctiles(psf),
+                    "size": _pctiles(sizes)[2], "size_r": [_pctiles(sizes)[0], _pctiles(sizes)[4]], "price": _pctiles(prices)[2],
                     "momentum": (round(med / prev - 1, 3) if prev else None),
                     "lease": (leases.most_common(1)[0][0] if leases else None), "last": last_ym,
                     "x": proj.get("x"), "y": proj.get("y")})

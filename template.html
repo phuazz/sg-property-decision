@@ -368,7 +368,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       </div>
       <div class="card" id="projects-card">
         <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
-        <p class="intro">Drill into individual condos: how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by district; click a column to sort.</p>
+        <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
         <div class="field" style="max-width:340px;margin-bottom:10px"><input id="p-search" placeholder="Search project name…"></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px">
           <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap any (pick as many as you like); ordered by attractiveness, greener = better, hover for detail</span></span>
@@ -863,12 +863,14 @@ function renderProjects(){
     ((b[_psort]==null?-1e9:b[_psort])-(a[_psort]==null?-1e9:a[_psort])));
   const total=rows.length, shown=rows.slice(0,40);
   const hasMrt=(D.market.projects||{}).mrt_ok;
-  const cols=[['project','Project'],['district','Dist'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
-  const numk=['median_psf','momentum','vol_12m','lease'];
+  const cols=[['project','Project'],['district','Dist'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
+  const numk=['median_psf','momentum','vol_12m','lease','price','size'];
   const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}">${l}${_psort===k?' ▾':''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
   const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
     leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td><td class="mono">${r.district||'—'}</td>`+
+      `<td class="num">${r.price?sgdk(r.price):'—'}</td>`+
+      `<td class="num" title="${r.size_r?'typical '+fmt0(r.size_r[0])+'–'+fmt0(r.size_r[1])+' sqft':''}">${r.size?fmt0(r.size)+' sf':'—'}</td>`+
       `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
       `<td class="num">${fmt0(r.vol_12m)}</td>`+
