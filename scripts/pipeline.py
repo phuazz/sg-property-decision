@@ -82,13 +82,16 @@ def main():
     rules = read("rules.json")
     market = read("market.json")
     live = read("live.json", required=False)
+    geo = read("sg_districts.geojson", required=False)   # static district polygons for the choropleth
     market = merge_live(market, live)
 
     rules_s = json.dumps(rules, ensure_ascii=False, separators=(",", ":"))
     market_s = json.dumps(market, ensure_ascii=False, separators=(",", ":"))
+    geo_s = json.dumps(geo, ensure_ascii=False, separators=(",", ":")) if geo else "null"
     html = TEMPLATE.read_text(encoding="utf-8")
     for token, payload, label in (("/*__RULES__*/ null", rules_s, "rules"),
-                                  ("/*__MARKET__*/ null", market_s, "market")):
+                                  ("/*__MARKET__*/ null", market_s, "market"),
+                                  ("/*__GEO__*/ null", geo_s, "geo")):
         if token not in html:
             sys.exit(f"ERROR: placeholder for {label} not found in template.html")
         html = html.replace(token, payload)

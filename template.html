@@ -94,6 +94,16 @@ th.psort{cursor:pointer} th.psort:hover{color:var(--t1);text-decoration:underlin
 .dlegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--t2);margin:2px 0 8px}
 .dlegend span{display:inline-flex;align-items:center;gap:5px}
 .dlegend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+#dmap-card{margin:4px 0 16px}
+.dmap-cap{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:8px}
+#dmap-wrap{position:relative;max-width:720px}
+#dmap svg{width:100%;height:auto;display:block;overflow:visible}
+#dmap path{cursor:pointer}
+#dmap path:hover{stroke:var(--t1);stroke-width:1.8}
+#dmap text{font-size:19px;font-weight:600;fill:#12261d;font-family:var(--mono);pointer-events:none;paint-order:stroke;stroke:rgba(255,255,255,0.92);stroke-width:3.5px;stroke-linejoin:round}
+#dmap-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:7px 10px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;max-width:240px}
+#dmap-legend{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3);margin-top:7px}
+#dmap-legend i{width:110px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgba(26,135,84,0.14),rgba(26,135,84,0.84))}
 .xlink{color:var(--b);text-decoration:none}
 .xlink:hover{text-decoration:underline}
 .xlinks{white-space:nowrap;font-size:11.5px}
@@ -367,6 +377,11 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       <div class="card" id="projects-card">
         <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
         <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
+        <div id="dmap-card">
+          <div class="dmap-cap">Tap a district on the map to filter the list &mdash; <b>deeper green = more attractive</b> (the Balanced score, matching the chips). Approximate zones around each district's resale activity, not official boundaries.</div>
+          <div id="dmap-wrap"><div id="dmap"></div><div id="dmap-tip"></div></div>
+          <div id="dmap-legend"><span>less attractive</span><i></i><span>more</span></div>
+        </div>
         <div class="field" style="max-width:340px;margin-bottom:10px"><input id="p-search" placeholder="Search project name…"></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px">
           <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap any (pick as many as you like); ordered by attractiveness, greener = better, hover for detail</span></span>
@@ -454,14 +469,16 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 /* ---------- data (pipeline inlines these; falls back to fetch for standalone dev) ---------- */
 const RULES = /*__RULES__*/ null;
 const MARKET = /*__MARKET__*/ null;
+const GEO = /*__GEO__*/ null;
 
 async function loadData(){
-  if(RULES && MARKET) return {rules:RULES, market:MARKET};
-  const [r,m] = await Promise.all([
+  if(RULES && MARKET) return {rules:RULES, market:MARKET, geo:GEO};
+  const [r,m,g] = await Promise.all([
     fetch('data/rules.json').then(x=>x.json()),
-    fetch('data/market.json').then(x=>x.json())
+    fetch('data/market.json').then(x=>x.json()),
+    fetch('data/sg_districts.geojson').then(x=>x.json()).catch(()=>null)
   ]);
-  return {rules:r, market:m};
+  return {rules:r, market:m, geo:g};
 }
 
 /* ---------- helpers ---------- */
@@ -858,21 +875,60 @@ let _psort='score', _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
-function renderProjects(){
-  const P=D.market.projects, card=$('projects-card'); if(!card) return;
-  if(!P||!P.rows||!P.rows.length){ card.style.display='none'; return; }
-  const drows=(D.market.districts||{}).rows||[], dmed={}; drows.forEach(r=>dmed[r.d]=r.median_psf);
-  const pasof=(P.asof||''), monthsOld=ym=>{if(!ym||!pasof)return null;const a=pasof.split('-').map(Number),l=ym.split('-').map(Number);return (a[0]*12+a[1])-(l[0]*12+l[1]);};
-  const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))];
-  // recognisable area name + attractiveness (Balanced score) per district, so the filter reads by place and cues value
-  const dnm={}, dsc={}, dnfo={};
-  drows.forEach(r=>dnm[r.district]=r.name);
+/* ---------- district attractiveness (shared by the chips, the choropleth and tooltips) ---------- */
+function _districtMeta(){
+  const drows=(D.market.districts||{}).rows||[];
+  const dnm={}, dsc={}, dnfo={}, dc={};
+  drows.forEach(r=>{dnm[r.district]=r.name; if(r.c)dc[r.district]=r.c;});
   if(drows.length){
     const ys=drows.map(r=>r.yield||0),ms=drows.map(r=>r.momentum==null?0:r.momentum),ls=drows.map(r=>Math.log(r.vol_12m||1)),ps=drows.map(r=>r.median_psf||0);
     drows.forEach(r=>{const s=Math.round(100*(_nz(ys,r.yield||0)+_nz(ms,r.momentum==null?0:r.momentum)+_nz(ls,Math.log(r.vol_12m||1))+(1-_nz(ps,r.median_psf||0)))/4);
       dsc[r.district]=s; dnfo[r.district]=`${r.district} ${r.name} — score ${s} · yield ${r.yield?pct(r.yield,1):'—'} · $${fmt0(r.median_psf)} psf · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}`;});
   }
   const shortNm=d=>(dnm[d]||d).split('/')[0].trim();
+  return {dnm,dsc,dnfo,dc,shortNm};
+}
+
+/* ---------- filled district choropleth (approximate Voronoi zones, coloured by attractiveness) ---------- */
+function renderDistrictMap(){
+  const wrap=$('dmap'), card=$('dmap-card'); if(!wrap||!card) return;
+  const geo=D.geo;
+  if(!geo||!geo.features||!geo.features.length){ card.style.display='none'; return; }
+  const {dsc,dnfo,dc}=_districtMeta();
+  const feats=geo.features;
+  let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+  const scan=c=>{ if(typeof c[0]==='number'){if(c[0]<minx)minx=c[0];if(c[0]>maxx)maxx=c[0];if(c[1]<miny)miny=c[1];if(c[1]>maxy)maxy=c[1];} else c.forEach(scan); };
+  feats.forEach(f=>scan(f.geometry.coordinates));
+  const W=1000, cos=Math.cos((miny+maxy)/2*Math.PI/180), spanx=(maxx-minx)*cos, spany=(maxy-miny);
+  const H=Math.max(1,Math.round(W*spany/spanx));
+  const px=lon=>((lon-minx)*cos/spanx)*W, py=lat=>(1-(lat-miny)/spany)*H;
+  const ringD=r=>'M'+r.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join('L')+'Z';
+  const pathD=coords=>{let d='';const walk=c=>{if(typeof c[0][0]==='number')d+=ringD(c);else c.forEach(walk);};walk(coords);return d;};
+  const col=s=>s==null?'#e9ecef':`rgba(26,135,84,${(0.14+Math.max(0,Math.min(100,s))/100*0.7).toFixed(3)})`;
+  const ordered=feats.slice().sort((a,b)=>(_pdists.has(a.properties.district)?1:0)-(_pdists.has(b.properties.district)?1:0)); // selected last = on top
+  const paths=ordered.map(f=>{const code=f.properties.district,s=dsc[code],act=_pdists.has(code);
+    return `<path d="${pathD(f.geometry.coordinates)}" data-d="${code}" fill="${col(s)}" stroke="${act?'#0b3d2e':'#fff'}" stroke-width="${act?2.4:0.7}" stroke-linejoin="round"/>`;}).join('');
+  const labels=feats.map(f=>{const code=f.properties.district,c=dc[code];if(!c)return '';
+    return `<text x="${px(c[0]).toFixed(1)}" y="${(py(c[1])+4).toFixed(1)}" text-anchor="middle">${code.slice(1)}</text>`;}).join('');
+  wrap.innerHTML=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Singapore districts shaded by attractiveness">${paths}${labels}</svg>`;
+  const tip=$('dmap-tip'), wrapEl=$('dmap-wrap');
+  wrap.querySelectorAll('path[data-d]').forEach(p=>{const code=p.dataset.d;
+    p.onclick=()=>{_pdists.has(code)?_pdists.delete(code):_pdists.add(code); renderProjects(); renderDistrictMap();};
+    p.onmousemove=e=>{if(!tip||!wrapEl)return;const wr=wrapEl.getBoundingClientRect();
+      tip.innerHTML=(dnfo[code]||code)+(_pdists.has(code)?' · <b>selected</b>':'');tip.style.opacity='1';
+      let x=e.clientX-wr.left+14,y=e.clientY-wr.top+14;
+      tip.style.left=Math.max(0,Math.min(x,wr.width-tip.offsetWidth-4))+'px';tip.style.top=y+'px';};
+    p.onmouseleave=()=>{if(tip)tip.style.opacity='0';};});
+}
+
+function renderProjects(){
+  const P=D.market.projects, card=$('projects-card'); if(!card) return;
+  if(!P||!P.rows||!P.rows.length){ card.style.display='none'; return; }
+  const drows=(D.market.districts||{}).rows||[], dmed={}; drows.forEach(r=>dmed[r.d]=r.median_psf);
+  const pasof=(P.asof||''), monthsOld=ym=>{if(!ym||!pasof)return null;const a=pasof.split('-').map(Number),l=ym.split('-').map(Number);return (a[0]*12+a[1])-(l[0]*12+l[1]);};
+  const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))];
+  // recognisable area name + Balanced attractiveness per district (shared with the choropleth map)
+  const {dnm,dsc,dnfo,shortNm}=_districtMeta();
   allD.sort((a,b)=>(dsc[b]||0)-(dsc[a]||0)||(+a.slice(1))-(+b.slice(1)));  // most attractive first
   $('p-districts').innerHTML=allD.map(d=>{const s=dsc[d], act=_pdists.has(d);
     const st=(!act&&s!=null)?` style="background:rgba(26,135,84,${(s/100*0.22).toFixed(3)});border-color:rgba(26,135,84,${(s/100*0.35+0.12).toFixed(3)})"`:'';
@@ -915,8 +971,8 @@ function renderProjects(){
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   $('projects-count').textContent=`${total} project${total===1?'':'s'} match${total===1?'es':''}${total>40?' — showing the top 40':''}`;
   $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{_psort=h.dataset.k; renderProjects();});
-  $('p-districts').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{const d=b.dataset.d;_pdists.has(d)?_pdists.delete(d):_pdists.add(d);renderProjects();});
-  $('p-clear').onclick=e=>{e.preventDefault();_pdists.clear();renderProjects();};
+  $('p-districts').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{const d=b.dataset.d;_pdists.has(d)?_pdists.delete(d):_pdists.add(d);renderProjects();renderDistrictMap();});
+  $('p-clear').onclick=e=>{e.preventDefault();_pdists.clear();renderProjects();renderDistrictMap();};
 }
 
 /* ---------- feature 4: is this asking price fair? ---------- */
@@ -1128,7 +1184,7 @@ function wire(){
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderNewLaunches(); renderFairValue(); renderAtGlance();
+    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderFairValue(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
