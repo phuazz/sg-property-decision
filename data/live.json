@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-07-11T06:18:43Z",
+  "fetched": "2026-07-11T06:29:13Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -28029,47 +28029,540 @@
   "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"
  },
  "new_launches": {
-  "tried": {
-   "0726": [
-    "Success",
-    0
-   ],
-   "0626": [
-    "Success",
-    0
-   ],
-   "0526": [
-    "Success",
-    111
-   ],
-   "0426": [
-    "Success",
-    113
-   ],
-   "0326": [
-    "Success",
-    114
-   ],
-   "0226": [
-    "Success",
-    114
-   ],
-   "0126": [
-    "Success",
-    112
-   ]
-  },
-  "working": "0526",
-  "n_projects": 111,
-  "_proj_keys": [
-   "street",
-   "district",
-   "propertyType",
-   "project",
-   "developer",
-   "developerSales",
-   "marketSegment"
+  "asof": "0526",
+  "n": 53,
+  "rows": [
+   {
+    "project": "PARKTOWN RESIDENCE",
+    "developer": "Topaz Residential Pte Ltd",
+    "region": "OCR",
+    "district": "D18",
+    "psf": 2314,
+    "units": 1193,
+    "sold": 1164,
+    "takeup": 0.976
+   },
+   {
+    "project": "SPRINGLEAF RESIDENCE",
+    "developer": "Springleaf Residence Pte. Ltd. ",
+    "region": "OCR",
+    "district": "D26",
+    "psf": 2175,
+    "units": 941,
+    "sold": 915,
+    "takeup": 0.972
+   },
+   {
+    "project": "GRAND DUNMAN",
+    "developer": "Grand Dunman Pte Ltd",
+    "region": "RCR",
+    "district": "D15",
+    "psf": 2425,
+    "units": 1008,
+    "sold": 910,
+    "takeup": 0.903
+   },
+   {
+    "project": "CHUAN PARK",
+    "developer": "Chuan Park Development Pte. Ltd.",
+    "region": "OCR",
+    "district": "D19",
+    "psf": 2641,
+    "units": 916,
+    "sold": 872,
+    "takeup": 0.952
+   },
+   {
+    "project": "TENGAH GARDEN RESIDENCES",
+    "developer": "TENGAH GARDEN DEVELOPMENT PTE. LTD./TGA DEVELOPMENT PTE. LTD.",
+    "region": "OCR",
+    "district": "D24",
+    "psf": 2230,
+    "units": 863,
+    "sold": 860,
+    "takeup": 0.997
+   },
+   {
+    "project": "THE CONTINUUM",
+    "developer": "Hoi Hup Sunway Katong Pte Ltd",
+    "region": "RCR",
+    "district": "D15",
+    "psf": 2752,
+    "units": 816,
+    "sold": 771,
+    "takeup": 0.945
+   },
+   {
+    "project": "SKYE AT HOLLAND",
+    "developer": "HOLLY DEVELOPMENT PTE. LTD.",
+    "region": "CCR",
+    "district": "D10",
+    "psf": 3316,
+    "units": 666,
+    "sold": 666,
+    "takeup": 1.0
+   },
+   {
+    "project": "ONE MARINA GARDENS",
+    "developer": "Kingsford Marina Development Pte. Ltd.",
+    "region": "RCR",
+    "district": "D1",
+    "psf": 2976,
+    "units": 937,
+    "sold": 637,
+    "takeup": 0.68
+   },
+   {
+    "project": "ZYON GRAND",
+    "developer": "CDL-MFA Altair Property Pte. Ltd. &amp; CDL-MFA Vega Property Pte. Ltd.",
+    "region": "RCR",
+    "district": "D3",
+    "psf": 3361,
+    "units": 706,
+    "sold": 630,
+    "takeup": 0.892
+   },
+   {
+    "project": "COASTAL CABANA",
+    "developer": "PASIR RIS DEVELOPMENT PTE. LTD.",
+    "region": "OCR",
+    "district": "D17",
+    "psf": 1827,
+    "units": 748,
+    "sold": 609,
+    "takeup": 0.814
+   },
+   {
+    "project": "OTTO PLACE",
+    "developer": "Hoi Hup Sunway Plantation Pte. Ltd.",
+    "region": "OCR",
+    "district": "D24",
+    "psf": 1850,
+    "units": 600,
+    "sold": 596,
+    "takeup": 0.993
+   },
+   {
+    "project": "RIVELLE TAMPINES",
+    "developer": "SIM LIAN JV (TAMPINES 7) PTE LTD",
+    "region": "OCR",
+    "district": "D18",
+    "psf": 1939,
+    "units": 572,
+    "sold": 564,
+    "takeup": 0.986
+   },
+   {
+    "project": "NAVA GROVE",
+    "developer": "Golden Ray Edge 3 Pte Ltd",
+    "region": "RCR",
+    "district": "D21",
+    "psf": 2770,
+    "units": 552,
+    "sold": 550,
+    "takeup": 0.996
+   },
+   {
+    "project": "PINERY RESIDENCES",
+    "developer": "HOI HUP SUNWAY TAMPINES RESIDENTIAL PTE. LTD.",
+    "region": "OCR",
+    "district": "D16",
+    "psf": 2552,
+    "units": 588,
+    "sold": 548,
+    "takeup": 0.932
+   },
+   {
+    "project": "RIVER GREEN",
+    "developer": "WINCHAMP INVESTMENT PTE LTD",
+    "region": "CCR",
+    "district": "D9",
+    "psf": 3482,
+    "units": 524,
+    "sold": 491,
+    "takeup": 0.937
+   },
+   {
+    "project": "PENRITH",
+    "developer": "Margaret Rise Development Pte. Ltd.",
+    "region": "RCR",
+    "district": "D3",
+    "psf": 2918,
+    "units": 462,
+    "sold": 452,
+    "takeup": 0.978
+   },
+   {
+    "project": "RIVER MODERN",
+    "developer": "River Modern Pte. Ltd.",
+    "region": "CCR",
+    "district": "D9",
+    "psf": 3464,
+    "units": 455,
+    "sold": 423,
+    "takeup": 0.93
+   },
+   {
+    "project": "PROMENADE PEAK",
+    "developer": "Valerian Residential Pte. Ltd.",
+    "region": "RCR",
+    "district": "D3",
+    "psf": 3438,
+    "units": 596,
+    "sold": 421,
+    "takeup": 0.706
+   },
+   {
+    "project": "PICCADILLY GRAND",
+    "developer": "Maximus Residential SG Pte Ltd/Maximus Commercial SG Pte Ltd",
+    "region": "RCR",
+    "district": "D8",
+    "psf": 2421,
+    "units": 407,
+    "sold": 407,
+    "takeup": 1.0
+   },
+   {
+    "project": "ELTA",
+    "developer": "HC LAND (CLEMENTI) PTE LTD",
+    "region": "OCR",
+    "district": "D5",
+    "psf": 2521,
+    "units": 501,
+    "sold": 406,
+    "takeup": 0.81
+   },
+   {
+    "project": "THE MYST",
+    "developer": "CDL Aries Pte Ltd",
+    "region": "OCR",
+    "district": "D23",
+    "psf": 2030,
+    "units": 408,
+    "sold": 388,
+    "takeup": 0.951
+   },
+   {
+    "project": "VELA BAY",
+    "developer": "BAYSHORE WALK PTE. LTD.",
+    "region": "OCR",
+    "district": "D16",
+    "psf": 2613,
+    "units": 515,
+    "sold": 371,
+    "takeup": 0.72
+   },
+   {
+    "project": "ALTURA",
+    "developer": "TQS (2) Development Pte Ltd",
+    "region": "OCR",
+    "district": "D23",
+    "psf": 1603,
+    "units": 360,
+    "sold": 359,
+    "takeup": 0.997
+   },
+   {
+    "project": "CANBERRA CRESCENT RESIDENCES",
+    "developer": "Peak Crescent Pte Ltd",
+    "region": "OCR",
+    "district": "D27",
+    "psf": 2038,
+    "units": 376,
+    "sold": 338,
+    "takeup": 0.899
+   },
+   {
+    "project": "NORWOOD GRAND",
+    "developer": "CDL STELLAR PTE. LTD.",
+    "region": "OCR",
+    "district": "D25",
+    "psf": 2072,
+    "units": 348,
+    "sold": 312,
+    "takeup": 0.897
+   },
+   {
+    "project": "BLOOMSBURY RESIDENCES",
+    "developer": "Media Circle Development Pte Ltd",
+    "region": "RCR",
+    "district": "D5",
+    "psf": 2575,
+    "units": 358,
+    "sold": 307,
+    "takeup": 0.858
+   },
+   {
+    "project": "THE LAKEGARDEN RESIDENCES",
+    "developer": "Winville Investment Pte Ltd",
+    "region": "OCR",
+    "district": "D22",
+    "psf": 2145,
+    "units": 306,
+    "sold": 302,
+    "takeup": 0.987
+   },
+   {
+    "project": "BLOSSOMS BY THE PARK",
+    "developer": "EL Development (Buona Vista) Pte Ltd/EL Development (One-North) Pte Ltd",
+    "region": "RCR",
+    "district": "D5",
+    "psf": 2017,
+    "units": 275,
+    "sold": 275,
+    "takeup": 1.0
+   },
+   {
+    "project": "LENTORIA",
+    "developer": "Lentor View Pte Ltd",
+    "region": "OCR",
+    "district": "D26",
+    "psf": 2392,
+    "units": 267,
+    "sold": 244,
+    "takeup": 0.914
+   },
+   {
+    "project": "UPPERHOUSE AT ORCHARD BOULEVARD",
+    "developer": "UNITED VENTURE DEVELOPMENT (NO. 7) PTE. LTD.",
+    "region": "CCR",
+    "district": "D10",
+    "psf": 3439,
+    "units": 301,
+    "sold": 240,
+    "takeup": 0.797
+   },
+   {
+    "project": "KASSIA",
+    "developer": "Tripartite Developers Pte Ltd",
+    "region": "OCR",
+    "district": "D17",
+    "psf": 2066,
+    "units": 276,
+    "sold": 227,
+    "takeup": 0.822
+   },
+   {
+    "project": "SORA",
+    "developer": "Lakeside Residential Pte Ltd",
+    "region": "OCR",
+    "district": "D22",
+    "psf": 2470,
+    "units": 440,
+    "sold": 223,
+    "takeup": 0.507
+   },
+   {
+    "project": "HUDSON PLACE RESIDENCES",
+    "developer": "MEDIA CIRCLE ALPHA DEVELOPMENT PTE. LTD.",
+    "region": "RCR",
+    "district": "D5",
+    "psf": 2465,
+    "units": 327,
+    "sold": 209,
+    "takeup": 0.639
+   },
+   {
+    "project": "THE ROBERTSON OPUS",
+    "developer": "RIVERSIDE PROPERTY PTE. LTD",
+    "region": "CCR",
+    "district": "D9",
+    "psf": 3455,
+    "units": 348,
+    "sold": 206,
+    "takeup": 0.592
+   },
+   {
+    "project": "TERRA HILL",
+    "developer": "Hoi Hup Sunway Kent Ridge Pte Ltd",
+    "region": "RCR",
+    "district": "D5",
+    "psf": 2690,
+    "units": 270,
+    "sold": 195,
+    "takeup": 0.722
+   },
+   {
+    "project": "NEWPORT RESIDENCES",
+    "developer": "CDL Pisces Commercial Pte Ltd/CDL Pisces Serviced Residences Pte Ltd/Hong Leong Properties Pte Ltd",
+    "region": "CCR",
+    "district": "D2",
+    "psf": 3150,
+    "units": 246,
+    "sold": 194,
+    "takeup": 0.789
+   },
+   {
+    "project": "NARRA RESIDENCES",
+    "developer": "DAIRY FARM WALK JV DEVELOPMENT PTE. LTD.",
+    "region": "OCR",
+    "district": "D23",
+    "psf": 2151,
+    "units": 540,
+    "sold": 188,
+    "takeup": 0.348
+   },
+   {
+    "project": "MEYER BLUE",
+    "developer": "UNITED VENTURE DEVELOPMENT (MEYER) PTE. LTD.",
+    "region": "RCR",
+    "district": "D15",
+    "psf": 3151,
+    "units": 226,
+    "sold": 176,
+    "takeup": 0.779
+   },
+   {
+    "project": "UNION SQUARE RESIDENCES",
+    "developer": "CDL Libra Pte. Ltd.",
+    "region": "RCR",
+    "district": "D1",
+    "psf": 2800,
+    "units": 366,
+    "sold": 167,
+    "takeup": 0.456
+   },
+   {
+    "project": "THE SEN",
+    "developer": "SL CAPITAL (8) PTE LTD",
+    "region": "RCR",
+    "district": "D21",
+    "psf": 2410,
+    "units": 347,
+    "sold": 127,
+    "takeup": 0.366
+   },
+   {
+    "project": "8@BT",
+    "developer": "Bukit One Pte. Ltd.",
+    "region": "RCR",
+    "district": "D21",
+    "psf": 2813,
+    "units": 158,
+    "sold": 110,
+    "takeup": 0.696
+   },
+   {
+    "project": "THE COLLECTIVE AT ONE SOPHIA",
+    "developer": "Sophia Residential Pte Ltd/Sophia Commercial Pte Ltd",
+    "region": "CCR",
+    "district": "D9",
+    "psf": 2732,
+    "units": 367,
+    "sold": 98,
+    "takeup": 0.267
+   },
+   {
+    "project": "THE ARCADY AT BOON KENG",
+    "developer": "KSH Ultra Unity Pte Ltd",
+    "region": "RCR",
+    "district": "D12",
+    "psf": 2674,
+    "units": 172,
+    "sold": 97,
+    "takeup": 0.564
+   },
+   {
+    "project": "ARINA EAST RESIDENCES",
+    "developer": "ZACD LV Development Pte Ltd",
+    "region": "RCR",
+    "district": "D15",
+    "psf": 2984,
+    "units": 107,
+    "sold": 82,
+    "takeup": 0.766
+   },
+   {
+    "project": "AMBER HOUSE",
+    "developer": "Urban Park Pte Ltd",
+    "region": "RCR",
+    "district": "D15",
+    "psf": 3162,
+    "units": 105,
+    "sold": 81,
+    "takeup": 0.771
+   },
+   {
+    "project": "AUREA",
+    "developer": "GMC Property Pte. Ltd.",
+    "region": "CCR",
+    "district": "D7",
+    "psf": 2907,
+    "units": 188,
+    "sold": 67,
+    "takeup": 0.356
+   },
+   {
+    "project": "PARK NOVA",
+    "developer": "Shun Tak Cuscaden Residential Pte Ltd",
+    "region": "CCR",
+    "district": "D10",
+    "psf": 4985,
+    "units": 54,
+    "sold": 54,
+    "takeup": 1.0
+   },
+   {
+    "project": "CLAYDENCE",
+    "developer": "Hong How Land Pte Ltd",
+    "region": "RCR",
+    "district": "D15",
+    "psf": 2500,
+    "units": 28,
+    "sold": 20,
+    "takeup": 0.714
+   },
+   {
+    "project": "JANSEN HOUSE",
+    "developer": "Mequity GS Pte Ltd",
+    "region": "OCR",
+    "district": "D19",
+    "psf": 2092,
+    "units": 21,
+    "sold": 19,
+    "takeup": 0.905
+   },
+   {
+    "project": "32 GILSTEAD",
+    "developer": "Peak Vista Pte Ltd",
+    "region": "CCR",
+    "district": "D11",
+    "psf": 3434,
+    "units": 14,
+    "sold": 14,
+    "takeup": 1.0
+   },
+   {
+    "project": "THE SHOREFRONT",
+    "developer": "165@Loyang Pte Ltd",
+    "region": "OCR",
+    "district": "D17",
+    "psf": 1958,
+    "units": 23,
+    "sold": 13,
+    "takeup": 0.565
+   },
+   {
+    "project": "HARBOUR RESIDENCES",
+    "developer": "White Hills Development Pte Ltd",
+    "region": "RCR",
+    "district": "D5",
+    "psf": 2365,
+    "units": 6,
+    "sold": 6,
+    "takeup": 1.0
+   },
+   {
+    "project": "SKYWATERS RESIDENCES",
+    "developer": "Shenton Residential Property Pte. Ltd",
+    "region": "CCR",
+    "district": "D1",
+    "psf": 5001,
+    "units": 146,
+    "sold": 5,
+    "takeup": 0.034
+   }
   ],
-  "_sample": "{\"street\": \"DUNMAN ROAD\", \"district\": \"15\", \"propertyType\": \"Non-Landed\", \"project\": \"GRAND DUNMAN\", \"developer\": \"Grand Dunman Pte Ltd\", \"developerSales\": [{\"refPeriod\": \"0526\", \"medianPrice\": 2425, \"highestPrice\": 2566, \"lowestPrice\": 2302, \"launchedToDate\": 1008, \"soldInMonth\": 3, \"launchedInMonth\": 0, \"soldToDate\": 910, \"unitsAvail\": 1008}], \"marketSegment\": \"RCR\"}"
+  "source": "URA PMI_Resi_Developer_Sales (new-sale median $psf, units, take-up, developer)"
  }
 }
