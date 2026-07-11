@@ -366,6 +366,26 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="tbl-wrap"><table id="district-table"></table></div>
         <div class="note" id="district-note"></div>
       </div>
+      <div class="card" id="projects-card">
+        <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
+        <p class="intro">Drill into individual condos: how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by district; click a column to sort.</p>
+        <div class="field-row" style="max-width:520px;margin-bottom:12px">
+          <div class="field" style="margin:0"><input id="p-search" placeholder="Search project name…"></div>
+          <div class="field" style="margin:0"><select id="p-district"></select></div>
+        </div>
+        <div class="tbl-wrap"><table id="projects-table"></table></div>
+        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits.</div>
+      </div>
+      <div class="card" id="fair-card">
+        <h3>Is this asking price fair?</h3>
+        <p class="intro">Paste a listing's numbers and see where its $psf sits against the last 12 months of resale transactions in that district — comparable context, never a valuation of the specific unit.</p>
+        <div class="field-row" style="max-width:660px;grid-template-columns:1.4fr 1fr 1fr">
+          <div class="field"><label>District</label><select id="f-district"></select></div>
+          <div class="field"><label>Unit size (sqft)</label><input id="f-size" inputmode="numeric" placeholder="e.g. 750"></div>
+          <div class="field"><label>Asking price (S$)</label><input id="f-price" inputmode="numeric" placeholder="e.g. 1,350,000"></div>
+        </div>
+        <div id="f-result"></div>
+      </div>
       <div class="card">
         <h3>Segments — price, yield, momentum</h3>
         <div class="tbl-wrap"><table id="seg-table"></table></div>
@@ -805,6 +825,72 @@ function renderDistricts(){
   $('district-note').innerHTML=`<b>Resale condo/apartment, last 12 months, from URA caveats (official).</b> The Score blends yield, one-year resale-price momentum, transaction volume (liquidity) and cheapness, re-weighted by the lens above — transparent, not a black box. Momentum is the change in resale median $psf: indicative of direction, not a constant-quality index. Gross yield = median resale rent &divide; median resale price, before maintenance, tax and vacancy (net ~0.8&ndash;1.2pp lower). Top three shaded. As of ${DS.asof}.`;
 }
 
+/* ---------- feature 2: project scorecard (turnover / lease / value) ---------- */
+let _psort='vol_12m', _pq='', _pdist='';
+const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
+const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
+const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?l+'yr':'—');
+function renderProjects(){
+  const P=D.market.projects, card=$('projects-card'); if(!card) return;
+  if(!P||!P.rows||!P.rows.length){ card.style.display='none'; return; }
+  const drows=(D.market.districts||{}).rows||[], dmed={}; drows.forEach(r=>dmed[r.d]=r.median_psf);
+  const psel=$('p-district');
+  if(psel && !psel.dataset.filled){
+    psel.innerHTML='<option value="">All districts</option>'+drows.slice().sort((a,b)=>(+a.d)-(+b.d)).map(r=>`<option value="${r.district}">${r.district} · ${r.name}</option>`).join('');
+    psel.dataset.filled='1';
+  }
+  let rows=P.rows.filter(r=>r.median_psf);
+  if(_pdist) rows=rows.filter(r=>r.district===_pdist);
+  if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
+  rows=rows.slice().sort((a,b)=>_psort==='project'?(a.project||'').localeCompare(b.project||''):
+    _psort==='lease'?_leaseNum(b.lease)-_leaseNum(a.lease):((b[_psort]==null?-1e9:b[_psort])-(a[_psort]==null?-1e9:a[_psort])));
+  const total=rows.length, shown=rows.slice(0,40);
+  const cols=[['project','Project'],['district','Dist'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover'],['lease','Lease']];
+  const numk=['median_psf','momentum','vol_12m','lease'];
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}">${l}${_psort===k?' ▾':''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
+  const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
+    leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'';
+    return `<tr><td>${nm}</td><td class="mono">${r.district||'—'}</td>`+
+      `<td class="num">$${fmt0(r.median_psf)}</td>`+
+      `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
+      `<td class="num">${fmt0(r.vol_12m)}</td>`+
+      `<td class="num ${leaseCls}">${_leaseTxt(r.lease)}</td>`+
+      `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
+      `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
+  $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
+  $('projects-count').textContent=`${total} project${total===1?'':'s'} match${total===1?'es':''}${total>40?' — showing the top 40':''}`;
+  $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{_psort=h.dataset.k; renderProjects();});
+}
+
+/* ---------- feature 4: is this asking price fair? ---------- */
+function renderFairValue(){
+  const DS=D.market.districts, card=$('fair-card'); if(!card) return;
+  if(!DS||!DS.rows||!DS.rows.length){ card.style.display='none'; return; }
+  const sel=$('f-district');
+  if(sel && !sel.dataset.filled){
+    sel.innerHTML='<option value="">Choose district…</option>'+DS.rows.slice().sort((a,b)=>(+a.d)-(+b.d)).map(r=>`<option value="${r.district}">${r.district} · ${r.name}</option>`).join('');
+    sel.dataset.filled='1';
+  }
+  const row=DS.rows.find(r=>r.district===$('f-district').value), size=numVal('f-size'), price=numVal('f-price');
+  if(!row||!row.psf_p||!size||!price){ $('f-result').innerHTML='<div class="note">Enter a district, unit size and asking price to see where its $psf sits against the last 12 months of resale caveats there.</div>'; return; }
+  const psf=price/size, p=row.psf_p;
+  let band,cls;
+  if(psf<p[0]){band='well below the market — check why (short lease, low floor, condition)';cls='good';}
+  else if(psf<p[1]){band='cheap for the area';cls='good';}
+  else if(psf<=p[3]){band='within the fair range';cls='';}
+  else if(psf<=p[4]){band='above the fair range';cls='warn';}
+  else {band='expensive — top of market for the area';cls='warn';}
+  const lo=Math.min(p[0],psf)*0.97, hi=Math.max(p[4],psf)*1.03, W=v=>(v-lo)/(hi-lo)*100, mc=cls==='warn'?'var(--r)':(cls==='good'?'var(--g)':'var(--b)');
+  const bar=`<svg viewBox="0 0 100 20" preserveAspectRatio="none" style="width:100%;height:46px;margin:4px 0 2px">`+
+    `<rect x="${W(p[0]).toFixed(2)}" y="7" width="${(W(p[4])-W(p[0])).toFixed(2)}" height="6" fill="var(--bg4)"/>`+
+    `<rect x="${W(p[1]).toFixed(2)}" y="7" width="${(W(p[3])-W(p[1])).toFixed(2)}" height="6" fill="var(--g-bg2)"/>`+
+    `<line x1="${W(p[2]).toFixed(2)}" y1="4.5" x2="${W(p[2]).toFixed(2)}" y2="15.5" stroke="var(--t2)" stroke-width="0.4"/>`+
+    `<line x1="${W(psf).toFixed(2)}" y1="1.5" x2="${W(psf).toFixed(2)}" y2="18.5" stroke="${mc}" stroke-width="0.9"/></svg>`;
+  $('f-result').innerHTML=`<div class="verdict ${cls||'good'}" style="margin-bottom:10px">At <b>$${fmt0(Math.round(psf))} psf</b> (${sgd(price)} ÷ ${fmt0(size)} sqft), this asking is <b>${band}</b> for ${row.district} ${row.name}.</div>`+bar+
+    `<div class="bars" style="font-size:12px;margin-top:4px">`+[['Cheapest 10% (p10)',p[0]],['p25',p[1]],['Median',p[2]],['p75',p[3]],['Dearest 10% (p90)',p[4]]].map(([k,v])=>`<div class="bar-row" style="grid-template-columns:180px 1fr"><span>${k}</span><span class="bar-num">$${fmt0(v)} psf</span></div>`).join('')+`</div>`+
+    `<div class="note">Where the district's resale condo/apartment caveats cleared over the last 12 months (URA, official). The green band is the fair p25–p75 range. Floor, facing, condition, layout and remaining lease move a specific unit within this band — this is market context, not a valuation of the unit.</div>`;
+}
+
 function renderWhere(){
   const S=D.market.segments, G=D.market.gls;
   const order=['OCR','RCR','CCR','Landed','HDB'];
@@ -917,6 +1003,11 @@ function wire(){
   });
   ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
   $('hook-budget').addEventListener('input',()=>{renderHook(); setMoney('i-price',$('hook-budget').value); renderAfford();});
+  if($('p-search')) $('p-search').addEventListener('input',e=>{_pq=e.target.value.trim(); renderProjects();});
+  if($('p-district')) $('p-district').addEventListener('change',e=>{_pdist=e.target.value; renderProjects();});
+  if($('f-district')) $('f-district').addEventListener('change',renderFairValue);
+  ['f-size','f-price'].forEach(id=>{if($(id)) $(id).addEventListener('input',renderFairValue);});
+  if($('f-price')) attachMoney('f-price');
   const applyPreset=v=>{
     $('i-age').value=v.age; setMoney('i-income',v.income); setMoney('i-income-var',v.incomeVar||0); setMoney('i-debt',v.debt);
     setMoney('i-cash',v.cash); setMoney('i-price',v.price); $('i-type').value=v.type; $('i-loan').value=v.loan||'bank';
@@ -931,7 +1022,7 @@ function wire(){
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderAtGlance();
+    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderFairValue(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
