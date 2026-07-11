@@ -378,12 +378,14 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       </div>
       <div class="card" id="fair-card">
         <h3>Is this asking price fair?</h3>
-        <p class="intro">Paste a listing's numbers and see where its $psf sits against the last 12 months of resale transactions in that district — comparable context, never a valuation of the specific unit.</p>
-        <div class="field-row" style="max-width:660px;grid-template-columns:1.4fr 1fr 1fr">
+        <p class="intro">See where a listing's $psf sits against the last 12 months of resale — conditioned on <b>tenure</b>, or (most precise) against the <b>specific project</b>, which holds location and lease constant. Comparable context, never a valuation of the unit.</p>
+        <div class="field-row" style="max-width:840px;grid-template-columns:1.3fr 1fr 1fr 1fr">
           <div class="field"><label>District</label><select id="f-district"></select></div>
+          <div class="field"><label>Tenure</label><select id="f-tenure"><option value="any">Any</option><option value="lh">Leasehold</option><option value="fh">Freehold</option></select></div>
           <div class="field"><label>Unit size (sqft)</label><input id="f-size" inputmode="numeric" placeholder="e.g. 750"></div>
           <div class="field"><label>Asking price (S$)</label><input id="f-price" inputmode="numeric" placeholder="e.g. 1,350,000"></div>
         </div>
+        <div class="field" style="max-width:840px"><label>Project <span class="hint">— optional, most precise: holds location &amp; lease constant</span></label><input id="f-project" list="f-projlist" placeholder="Start typing a condo name…" autocomplete="off"><datalist id="f-projlist"></datalist></div>
         <div id="f-result"></div>
       </div>
       <div class="card">
@@ -875,24 +877,44 @@ function renderFairValue(){
     sel.innerHTML='<option value="">Choose district…</option>'+DS.rows.slice().sort((a,b)=>(+a.d)-(+b.d)).map(r=>`<option value="${r.district}">${r.district} · ${r.name}</option>`).join('');
     sel.dataset.filled='1';
   }
-  const row=DS.rows.find(r=>r.district===$('f-district').value), size=numVal('f-size'), price=numVal('f-price');
-  if(!row||!row.psf_p||!size||!price){ $('f-result').innerHTML='<div class="note">Enter a district, unit size and asking price to see where its $psf sits against the last 12 months of resale caveats there.</div>'; return; }
-  const psf=price/size, p=row.psf_p;
+  const dl=$('f-projlist');
+  if(dl && !dl.dataset.filled && D.market.projects && D.market.projects.rows){
+    dl.innerHTML=D.market.projects.rows.slice().sort((a,b)=>(a.project||'').localeCompare(b.project||'')).map(r=>`<option value="${(r.project||'').replace(/"/g,'')}">`).join('');
+    dl.dataset.filled='1';
+  }
+  const PJ=D.market.projects, size=numVal('f-size'), price=numVal('f-price'), tenure=$('f-tenure').value, pq=($('f-project').value||'').trim().toUpperCase();
+  const drow=DS.rows.find(r=>r.district===$('f-district').value);
+  let pmatch=null;
+  if(pq && PJ && PJ.rows) pmatch=PJ.rows.find(r=>(r.project||'').toUpperCase()===pq) || PJ.rows.find(r=>pq.length>=4 && (r.project||'').toUpperCase().includes(pq));
+  let p=null, basis='', note2='';
+  if(pmatch && pmatch.psf_p){
+    p=pmatch.psf_p;
+    basis=`<b>${pmatch.project}</b> — its own resale over the last 12 months (${pmatch.vol_12m} deal${pmatch.vol_12m===1?'':'s'}${pmatch.lease?', '+_leaseTxt(pmatch.lease)+' lease':''}, ${pmatch.district}). The tightest benchmark: same location, same lease.`;
+    if(pmatch.vol_12m<10) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Only ${pmatch.vol_12m} resale deals in this project over 12 months — treat the band as indicative.</div>`;
+  } else if(drow){
+    const byt = tenure==='fh'?drow.psf_p_fh : tenure==='lh'?drow.psf_p_lh : null;
+    p = byt || drow.psf_p;
+    basis=`${drow.district} ${drow.name} · ${byt?(tenure==='fh'?'freehold':'leasehold')+' resale':'all resale'}, last 12 months.`;
+    if((tenure==='fh'||tenure==='lh') && !byt) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Too few ${tenure==='fh'?'freehold':'leasehold'} resale deals in ${drow.district} for a separate band — showing all tenures.</div>`;
+    if(pq) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">No project matched &ldquo;${$('f-project').value}&rdquo; — showing the district instead.</div>`+note2;
+  }
+  if(!p||!size||!price){ $('f-result').innerHTML='<div class="note">Enter a district (or the exact project), unit size and asking price. Add tenure or the project name to tighten the comparison.</div>'; return; }
+  const psf=price/size;
   let band,cls;
   if(psf<p[0]){band='well below the market — check why (short lease, low floor, condition)';cls='good';}
-  else if(psf<p[1]){band='cheap for the area';cls='good';}
+  else if(psf<p[1]){band='on the cheap side';cls='good';}
   else if(psf<=p[3]){band='within the fair range';cls='';}
   else if(psf<=p[4]){band='above the fair range';cls='warn';}
-  else {band='expensive — top of market for the area';cls='warn';}
+  else {band='expensive — top of the market here';cls='warn';}
   const lo=Math.min(p[0],psf)*0.97, hi=Math.max(p[4],psf)*1.03, W=v=>(v-lo)/(hi-lo)*100, mc=cls==='warn'?'var(--r)':(cls==='good'?'var(--g)':'var(--b)');
   const bar=`<svg viewBox="0 0 100 20" preserveAspectRatio="none" style="width:100%;height:46px;margin:4px 0 2px">`+
     `<rect x="${W(p[0]).toFixed(2)}" y="7" width="${(W(p[4])-W(p[0])).toFixed(2)}" height="6" fill="var(--bg4)"/>`+
     `<rect x="${W(p[1]).toFixed(2)}" y="7" width="${(W(p[3])-W(p[1])).toFixed(2)}" height="6" fill="var(--g-bg2)"/>`+
     `<line x1="${W(p[2]).toFixed(2)}" y1="4.5" x2="${W(p[2]).toFixed(2)}" y2="15.5" stroke="var(--t2)" stroke-width="0.4"/>`+
     `<line x1="${W(psf).toFixed(2)}" y1="1.5" x2="${W(psf).toFixed(2)}" y2="18.5" stroke="${mc}" stroke-width="0.9"/></svg>`;
-  $('f-result').innerHTML=`<div class="verdict ${cls||'good'}" style="margin-bottom:10px">At <b>$${fmt0(Math.round(psf))} psf</b> (${sgd(price)} ÷ ${fmt0(size)} sqft), this asking is <b>${band}</b> for ${row.district} ${row.name}.</div>`+bar+
+  $('f-result').innerHTML=`<div class="verdict ${cls||'good'}" style="margin-bottom:10px">At <b>$${fmt0(Math.round(psf))} psf</b> (${sgd(price)} ÷ ${fmt0(size)} sqft), this asking is <b>${band}</b>.<div style="font-weight:400;color:var(--t2);font-size:12px;margin-top:5px">Compared to ${basis}</div></div>`+note2+bar+
     `<div class="bars" style="font-size:12px;margin-top:4px">`+[['Cheapest 10% (p10)',p[0]],['p25',p[1]],['Median',p[2]],['p75',p[3]],['Dearest 10% (p90)',p[4]]].map(([k,v])=>`<div class="bar-row" style="grid-template-columns:180px 1fr"><span>${k}</span><span class="bar-num">$${fmt0(v)} psf</span></div>`).join('')+`</div>`+
-    `<div class="note">Where the district's resale condo/apartment caveats cleared over the last 12 months (URA, official). The green band is the fair p25–p75 range. Floor, facing, condition, layout and remaining lease move a specific unit within this band — this is market context, not a valuation of the unit.</div>`;
+    `<div class="note">Resale condo/apartment $psf (URA caveats, last 12 months). The green band is the fair p25–p75 range. Bigger units usually trade at a lower $psf, and floor, facing and condition still move a specific unit within the band — this is market context, not a valuation.</div>`;
 }
 
 function renderWhere(){
@@ -1010,6 +1032,8 @@ function wire(){
   if($('p-search')) $('p-search').addEventListener('input',e=>{_pq=e.target.value.trim(); renderProjects();});
   if($('p-district')) $('p-district').addEventListener('change',e=>{_pdist=e.target.value; renderProjects();});
   if($('f-district')) $('f-district').addEventListener('change',renderFairValue);
+  if($('f-tenure')) $('f-tenure').addEventListener('change',renderFairValue);
+  if($('f-project')) $('f-project').addEventListener('input',renderFairValue);
   ['f-size','f-price'].forEach(id=>{if($(id)) $(id).addEventListener('input',renderFairValue);});
   if($('f-price')) attachMoney('f-price');
   const applyPreset=v=>{
