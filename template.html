@@ -376,7 +376,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
         <div class="tbl-wrap"><table id="projects-table"></table></div>
-        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer.</div>
+        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
       </div>
       <div class="card" id="fair-card">
         <h3>Is this asking price fair?</h3>
@@ -838,6 +838,7 @@ function renderProjects(){
   const P=D.market.projects, card=$('projects-card'); if(!card) return;
   if(!P||!P.rows||!P.rows.length){ card.style.display='none'; return; }
   const drows=(D.market.districts||{}).rows||[], dmed={}; drows.forEach(r=>dmed[r.d]=r.median_psf);
+  const pasof=(P.asof||''), monthsOld=ym=>{if(!ym||!pasof)return null;const a=pasof.split('-').map(Number),l=ym.split('-').map(Number);return (a[0]*12+a[1])-(l[0]*12+l[1]);};
   const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))];
   // recognisable area name + attractiveness (Balanced score) per district, so the filter reads by place and cues value
   const dnm={}, dsc={}, dnfo={};
@@ -866,9 +867,9 @@ function renderProjects(){
   const numk=['median_psf','momentum','vol_12m','lease'];
   const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}">${l}${_psort===k?' ▾':''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
   const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
-    leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'';
+    leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td><td class="mono">${r.district||'—'}</td>`+
-      `<td class="num">$${fmt0(r.median_psf)}</td>`+
+      `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
       `<td class="num">${fmt0(r.vol_12m)}</td>`+
       (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+

@@ -369,7 +369,7 @@ def ura_project_scorecard():
     now_i = cur.year * 12 + cur.month
     out = []
     for proj in projs:
-        psf, psf_prev, leases, dist = [], [], collections.Counter(), None
+        psf, psf_prev, leases, dist, last_mi, last_ym = [], [], collections.Counter(), None, 0, None
         for t in proj.get("transaction", []):
             if t.get("propertyType") not in ("Condominium", "Apartment"):
                 continue
@@ -393,6 +393,8 @@ def ura_project_scorecard():
                 leases[ll] += 1
             if mi > now_i - 12:
                 psf.append(p)
+                if mi > last_mi:
+                    cd = t.get("contractDate", ""); last_mi, last_ym = mi, "20" + cd[2:] + "-" + cd[:2]
             elif mi > now_i - 24:
                 psf_prev.append(p)
         if len(psf) < 6:  # enough recent resale for a project-level median
@@ -403,7 +405,7 @@ def ura_project_scorecard():
                     "district": ("D" + dist.lstrip("0")) if dist else None, "region": proj.get("marketSegment"),
                     "median_psf": med, "vol_12m": len(psf), "psf_p": _pctiles(psf),
                     "momentum": (round(med / prev - 1, 3) if prev else None),
-                    "lease": (leases.most_common(1)[0][0] if leases else None),
+                    "lease": (leases.most_common(1)[0][0] if leases else None), "last": last_ym,
                     "x": proj.get("x"), "y": proj.get("y")})
     out.sort(key=lambda r: -r["vol_12m"])
     _add_mrt(out)
