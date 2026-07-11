@@ -274,8 +274,15 @@ def ura_districts():
     projs = _ura_projects(key)
     now_i = datetime.date.today().year * 12 + datetime.date.today().month
     D = collections.defaultdict(lambda: {"psf": [], "psf_prev": [], "psf_fh": [], "psf_lh": [], "psf_sz": [[], [], [], []], "fh": 0, "tot": 0, "seg": collections.Counter()})
+    cent = collections.defaultdict(lambda: [0.0, 0.0, 0])  # per-district SVY21 centroid (sum x, sum y, n) for the map
     for proj in projs:
         seg = proj.get("marketSegment")
+        pd = str(proj.get("district") or "").zfill(2)
+        if pd in DISTRICT_NAME:
+            try:
+                cent[pd][0] += float(proj["x"]); cent[pd][1] += float(proj["y"]); cent[pd][2] += 1
+            except (KeyError, TypeError, ValueError):
+                pass
         for t in proj.get("transaction", []):
             if t.get("propertyType") not in ("Condominium", "Apartment"):
                 continue
@@ -323,6 +330,20 @@ def ura_districts():
             "momentum": (round(med / prev - 1, 3) if prev else None),
             "fh_share": (round(r["fh"] / r["tot"], 2) if r["tot"] else None),
             "yield": (round(rent[d] * 12 / med, 4) if d in rent and med else None)})
+    # per-district centroid (mean of project SVY21 coords) -> lon/lat, for the choropleth map
+    cll = {}
+    try:
+        from pyproj import Transformer
+        _tf = Transformer.from_crs("EPSG:3414", "EPSG:4326", always_xy=True)
+        for d, (sx, sy, n) in cent.items():
+            if n:
+                lon, lat = _tf.transform(sx / n, sy / n)
+                cll[d] = [round(lon, 5), round(lat, 5)]
+    except Exception as e:
+        print(f"  note: district centroids skipped ({e!r})")
+    for row in rows:
+        if row["d"] in cll:
+            row["c"] = cll[row["d"]]
     rows.sort(key=lambda x: -x["vol_12m"])
     return {"asof": datetime.date.today().strftime("%Y-%m"), "n": len(rows), "rows": rows,
             "yield_ok": bool(rent), "basis": "resale condo, last 12 months",
