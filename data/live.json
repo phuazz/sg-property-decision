@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-07-11T06:12:17Z",
+  "fetched": "2026-07-11T06:16:00Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -28030,23 +28030,28 @@
  },
  "new_launches": {
   "tried": {
-   "1": [
+   "0726": [
+    "Success",
+    0
+   ],
+   "0626": [
+    "Success",
+    0
+   ],
+   "2607": [
+    "Success",
+    0
+   ],
+   "26q3": [
     "Error",
     0
    ],
-   "2": [
-    "Error",
-    0
-   ],
-   "3": [
-    "Error",
-    0
-   ],
-   "4": [
-    "Error",
+   "2606": [
+    "Success",
     0
    ]
   },
+  "working": null,
   "n_projects": 0
  }
 }
