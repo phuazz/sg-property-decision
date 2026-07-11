@@ -755,6 +755,7 @@ function _scoreDistricts(rows){
 }
 function _valueMap(rows){
   const W=720,H=356,m={t:26,r:22,b:46,l:54}, col={OCR:'var(--g)',RCR:'var(--a)',CCR:'var(--b)'};
+  const top3=new Set([...rows].sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3).map(r=>r.district));
   const xs=rows.map(r=>r.median_psf), ys=rows.map(r=>(r.yield||0)*100);
   const xlo=Math.min(...xs)*0.97,xhi=Math.max(...xs)*1.03,ylo=Math.min(...ys)*0.94,yhi=Math.max(...ys)*1.06;
   const X=v=>m.l+(v-xlo)/(xhi-xlo)*(W-m.l-m.r), Y=v=>H-m.b-(v-ylo)/(yhi-ylo)*(H-m.t-m.b);
@@ -764,10 +765,10 @@ function _valueMap(rows){
   g+=`<text x="${(m.l+W-m.r)/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--t2)">Resale median $psf (cheaper &larr;)</text>`;
   g+=`<text x="16" y="${(m.t+H-m.b)/2}" text-anchor="middle" font-size="11" fill="var(--t2)" transform="rotate(-90 16 ${(m.t+H-m.b)/2})">Gross yield &rarr;</text>`;
   g+=`<text x="${m.l+6}" y="${m.t+2}" font-size="10.5" fill="var(--g)" font-weight="700">&#8598; more attractive: cheaper + higher yield</text>`;
-  rows.forEach(r=>{const x=X(r.median_psf),y=Y((r.yield||0)*100);
+  rows.forEach(r=>{const x=X(r.median_psf),y=Y((r.yield||0)*100), rad=4+(r.score||0)/100*7, isTop=top3.has(r.district);
     const tip=`<b>${r.district} · ${r.name}</b><br>${r.region||'—'} · $${fmt0(r.median_psf)} psf<br>Yield ${r.yield?pct(r.yield,1):'—'} · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}<br>Vol ${fmt0(r.vol_12m)} · Score ${r.score}`.replace(/'/g,'');
-    g+=`<circle cx="${x}" cy="${y}" r="6" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.85" style="cursor:pointer" data-tip='${tip}'></circle>`+
-       `<text x="${x+8}" y="${y+3}" font-size="9.5" fill="var(--t2)" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
+    g+=`<circle cx="${x}" cy="${y}" r="${rad.toFixed(1)}" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.82"${isTop?' stroke="var(--t1)" stroke-width="1.5"':''} style="cursor:pointer" data-tip='${tip}'></circle>`+
+       `<text x="${x+rad+3}" y="${y+3}" font-size="9.5" fill="${isTop?'var(--t1)':'var(--t2)'}" font-weight="${isTop?'700':'400'}" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
   return g+`</svg>`;
 }
 function renderDistricts(){
@@ -780,7 +781,7 @@ function renderDistricts(){
   }
   $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield, price, recent trend, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3)">${DS.n} districts · ${DS.basis}</span>`;
   $('district-lenses').innerHTML=Object.keys(D_LENS).map(k=>`<button class="preset${k===_dlens?' active':''}" data-lens="${k}">${k}</button>`).join('');
-  $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3)">&mdash; hover a dot for details</span>`;
+  $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3)">&mdash; bubble size = score &middot; hover for details</span>`;
   const scored=_scoreDistricts(DS.rows);
   const val=r=>_dsort==='name'?r.name:(_dsort==='district'?+r.d:(r[_dsort]==null?-1:r[_dsort]));
   scored.sort((a,b)=>_dsort==='name'?val(a).localeCompare(val(b)):val(b)-val(a));

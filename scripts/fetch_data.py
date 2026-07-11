@@ -184,6 +184,22 @@ def _midx(mmyy):
     except (ValueError, TypeError, IndexError):
         return None
 
+def _pctiles(vals):
+    """[p10, p25, p50, p75, p90] of a numeric list (for the fair-value distribution)."""
+    v = sorted(vals)
+    n = len(v)
+    return [round(v[min(n - 1, int(p * n))]) for p in (0.10, 0.25, 0.50, 0.75, 0.90)]
+
+def _lease_left(tenure, cur_year):
+    """'Freehold' -> 'FH'; '99 yrs lease commencing from 1998' -> remaining years; else None."""
+    t = str(tenure or "")
+    if "Freehold" in t:
+        return "FH"
+    m = re.search(r"(\d+)\s*yr?s?\s*lease\s*commencing\s*from\s*(\d{4})", t, re.I)
+    if m:
+        return max(0, int(m.group(1)) - (cur_year - int(m.group(2))))
+    return None
+
 def _range_mid(s):
     """'700 to 800' / '700-800' / '750' -> midpoint float, or None."""
     if not s:
@@ -294,7 +310,7 @@ def ura_districts():
         rows.append({
             "district": "D" + d.lstrip("0"), "d": d, "name": DISTRICT_NAME[d],
             "region": (r["seg"].most_common(1)[0][0] if r["seg"] else None),
-            "median_psf": med, "vol_12m": len(r["psf"]),
+            "median_psf": med, "vol_12m": len(r["psf"]), "psf_p": _pctiles(r["psf"]),
             "momentum": (round(med / prev - 1, 3) if prev else None),
             "fh_share": (round(r["fh"] / r["tot"], 2) if r["tot"] else None),
             "yield": (round(rent[d] * 12 / med, 4) if d in rent and med else None)})
@@ -303,12 +319,63 @@ def ura_districts():
             "yield_ok": bool(rent), "basis": "resale condo, last 12 months",
             "source": "URA PMI_Resi_Transaction resale (12m median $psf / volume / momentum) + PMI_Resi_Rental (yield)"}
 
+def ura_project_scorecard():
+    """Per-project resale stats: median $psf (12m), volume (turnover), momentum, representative remaining
+    lease, and SVY21 x/y (for the OneMap distance step). Resale-only, projects with a usable recent sample."""
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    projs = _ura_projects(key)
+    cur = datetime.date.today()
+    now_i = cur.year * 12 + cur.month
+    out = []
+    for proj in projs:
+        psf, psf_prev, leases, dist = [], [], collections.Counter(), None
+        for t in proj.get("transaction", []):
+            if t.get("propertyType") not in ("Condominium", "Apartment"):
+                continue
+            if str(t.get("typeOfSale", "")).strip() != "3":  # resale
+                continue
+            d = str(t.get("district") or "").zfill(2)
+            if d in DISTRICT_NAME:
+                dist = d
+            mi = _midx(t.get("contractDate", ""))
+            if mi is None:
+                continue
+            try:
+                area = float(t["area"]) * 10.7639
+                p = float(t["price"]) / area if area else None
+            except (KeyError, ValueError, ZeroDivisionError):
+                continue
+            if not p:
+                continue
+            ll = _lease_left(t.get("tenure"), cur.year)
+            if ll is not None:
+                leases[ll] += 1
+            if mi > now_i - 12:
+                psf.append(p)
+            elif mi > now_i - 24:
+                psf_prev.append(p)
+        if len(psf) < 6:  # enough recent resale for a project-level median
+            continue
+        med = round(statistics.median(psf))
+        prev = round(statistics.median(psf_prev)) if len(psf_prev) >= 4 else None
+        out.append({"project": proj.get("project"), "d": dist,
+                    "district": ("D" + dist.lstrip("0")) if dist else None, "region": proj.get("marketSegment"),
+                    "median_psf": med, "vol_12m": len(psf),
+                    "momentum": (round(med / prev - 1, 3) if prev else None),
+                    "lease": (leases.most_common(1)[0][0] if leases else None),
+                    "x": proj.get("x"), "y": proj.get("y")})
+    out.sort(key=lambda r: -r["vol_12m"])
+    return {"asof": cur.strftime("%Y-%m"), "n": len(out), "rows": out,
+            "source": "URA PMI_Resi_Transaction resale, per project"}
+
 def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     live = {"_meta": {"fetched": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "errors": {}}}
     feeds = {"ura_ppi": ura_ppi, "hdb_rpi": hdb_rpi, "locality": ura_locality,
              "hdb_resale": hdb_resale, "gls": gls, "segments_official": ura_transactions,
-             "districts": ura_districts}
+             "districts": ura_districts, "projects": ura_project_scorecard}
     for name, fn in feeds.items():
         try:
             val = fn()
