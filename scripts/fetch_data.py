@@ -15,7 +15,7 @@ Every feed is wrapped so one failure does not abort the others; failures are
 recorded in live.json._meta.errors so a partial refresh is transparent.
 Usage: python scripts/fetch_data.py
 """
-import io, os, re, sys, json, time, statistics, datetime, pathlib
+import io, os, re, sys, json, time, collections, statistics, datetime, pathlib
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -149,37 +149,163 @@ def gls():
             "asof": recent.iloc[0]["award"].strftime("%Y-%m-%d"),
             "source": "URA Past-Sale-Sites .xlsx (residential awards)"}
 
-def ura_transactions():
-    key = os.environ.get("URA_ACCESS_KEY")
-    if not key:
-        return None
+DISTRICT_NAME = {
+    "01": "Raffles Place / Marina", "02": "Tanjong Pagar / Anson", "03": "Tiong Bahru / Queenstown",
+    "04": "Sentosa / Harbourfront", "05": "Buona Vista / Clementi / Dover", "06": "City Hall / Clarke Quay",
+    "07": "Bugis / Beach Road", "08": "Little India / Farrer Park", "09": "Orchard / River Valley",
+    "10": "Bukit Timah / Holland", "11": "Novena / Newton", "12": "Balestier / Toa Payoh",
+    "13": "Macpherson / Potong Pasir", "14": "Geylang / Eunos", "15": "East Coast / Marine Parade",
+    "16": "Bedok / Upper East Coast", "17": "Changi / Loyang", "18": "Tampines / Pasir Ris",
+    "19": "Serangoon / Hougang / Punggol", "20": "Bishan / Ang Mo Kio", "21": "Upper Bukit Timah / Clementi Pk",
+    "22": "Jurong", "23": "Bukit Batok / Choa Chu Kang", "24": "Lim Chu Kang / Tengah",
+    "25": "Woodlands / Kranji", "26": "Upper Thomson / Mandai", "27": "Sembawang / Yishun",
+    "28": "Seletar / Yio Chu Kang"}
+
+_URA_PROJECTS = None
+def _ura_projects(key):
+    """Pull PMI_Resi_Transaction once (4 district batches), cache for reuse across aggregations."""
+    global _URA_PROJECTS
+    if _URA_PROJECTS is not None:
+        return _URA_PROJECTS
     tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
               headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
     hdr = {**UA, "AccessKey": key, "Token": tok}
-    seg_psf = {"CCR": [], "RCR": [], "OCR": []}
-    seg_map = {"CCR": "CCR", "RCR": "RCR", "OCR": "OCR"}
+    projs = []
     for batch in (1, 2, 3, 4):
-        j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Transaction&batch={batch}",
-                headers=hdr, timeout=60).json()
-        for proj in j.get("Result", []):
-            seg = seg_map.get(proj.get("marketSegment"))
-            if not seg: continue
-            for t in proj.get("transaction", []):
-                if t.get("propertyType") not in ("Condominium", "Apartment"): continue
-                try:
-                    area = float(t["area"]) * 10.7639
-                    if area: seg_psf[seg].append(float(t["price"]) / area)
-                except (KeyError, ValueError, ZeroDivisionError):
-                    pass
+        projs += GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Transaction&batch={batch}",
+                     headers=hdr, timeout=60).json().get("Result", [])
+    _URA_PROJECTS = projs
+    return projs
+
+def _midx(mmyy):
+    """'mmyy' contract date -> month index (year*12+month) for windowing, or None."""
+    try:
+        return (2000 + int(mmyy[2:])) * 12 + int(mmyy[:2])
+    except (ValueError, TypeError, IndexError):
+        return None
+
+def _range_mid(s):
+    """'700 to 800' / '700-800' / '750' -> midpoint float, or None."""
+    if not s:
+        return None
+    nums = [float(n) for n in re.findall(r"\d+", str(s))]
+    return sum(nums) / len(nums) if nums else None
+
+def _district_rent_psf(key):
+    """Median monthly rent $psf by district over the last 4 quarters. Best-effort; {} on any trouble."""
+    try:
+        tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
+                  headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
+        hdr = {**UA, "AccessKey": key, "Token": tok}
+        today = datetime.date.today()
+        yy, qq, periods = today.year % 100, (today.month - 1) // 3 + 1, []
+        for _ in range(4):
+            periods.append(f"{yy:02d}q{qq}")
+            qq -= 1
+            if qq == 0:
+                qq, yy = 4, yy - 1
+        by = collections.defaultdict(list)
+        for rp in periods:
+            res = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Rental&refPeriod={rp}",
+                      headers=hdr, timeout=60).json().get("Result", [])
+            for proj in res:
+                for c in proj.get("rental", []):
+                    d = str(c.get("district") or proj.get("district") or "").zfill(2)
+                    mid, rent = _range_mid(c.get("areaSqft")), c.get("rent")
+                    if d in DISTRICT_NAME and mid and rent:
+                        by[d].append(float(rent) / mid)
+        return {d: statistics.median(v) for d, v in by.items() if len(v) >= 20}
+    except Exception:
+        return {}
+
+def ura_transactions():
+    """Official median condo/apartment $psf per market segment, last 12 months (current level)."""
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    projs = _ura_projects(key)
+    now_i = datetime.date.today().year * 12 + datetime.date.today().month
+    seg_psf = {"CCR": [], "RCR": [], "OCR": []}
+    for proj in projs:
+        seg = proj.get("marketSegment")
+        if seg not in seg_psf:
+            continue
+        for t in proj.get("transaction", []):
+            if t.get("propertyType") not in ("Condominium", "Apartment"):
+                continue
+            if (_midx(t.get("contractDate", "")) or 0) <= now_i - 12:
+                continue
+            try:
+                area = float(t["area"]) * 10.7639
+                if area:
+                    seg_psf[seg].append(float(t["price"]) / area)
+            except (KeyError, ValueError, ZeroDivisionError):
+                pass
     out = {s: {"median_psf": round(statistics.median(v)), "n": len(v)} for s, v in seg_psf.items() if v}
-    out["_source"] = "URA Data Service PMI_Resi_Transaction (rolling 5y, condo/apartment)"
+    out["_source"] = "URA PMI_Resi_Transaction (last 12 months, condo/apartment)"
     return out or None
+
+def ura_districts():
+    """Per-postal-district condo/apartment stats: median $psf (12m), volume, momentum, freehold share, gross yield."""
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    projs = _ura_projects(key)
+    now_i = datetime.date.today().year * 12 + datetime.date.today().month
+    D = collections.defaultdict(lambda: {"psf": [], "psf_prev": [], "fh": 0, "tot": 0, "seg": collections.Counter()})
+    for proj in projs:
+        seg = proj.get("marketSegment")
+        for t in proj.get("transaction", []):
+            if t.get("propertyType") not in ("Condominium", "Apartment"):
+                continue
+            d = str(t.get("district") or "").zfill(2)
+            if d not in DISTRICT_NAME:
+                continue
+            mi = _midx(t.get("contractDate", ""))
+            if mi is None:
+                continue
+            try:
+                area = float(t["area"]) * 10.7639
+                psf = float(t["price"]) / area if area else None
+            except (KeyError, ValueError, ZeroDivisionError):
+                continue
+            if not psf:
+                continue
+            r = D[d]
+            r["tot"] += 1
+            if seg:
+                r["seg"][seg] += 1
+            if "Freehold" in str(t.get("tenure", "")):
+                r["fh"] += 1
+            if mi > now_i - 12:
+                r["psf"].append(psf)
+            elif mi > now_i - 24:
+                r["psf_prev"].append(psf)
+    rent = _district_rent_psf(key)
+    rows = []
+    for d, r in D.items():
+        if len(r["psf"]) < 30:  # need a liquid recent sample for a stable median
+            continue
+        med = round(statistics.median(r["psf"]))
+        prev = round(statistics.median(r["psf_prev"])) if len(r["psf_prev"]) >= 20 else None
+        rows.append({
+            "district": "D" + d.lstrip("0"), "d": d, "name": DISTRICT_NAME[d],
+            "region": (r["seg"].most_common(1)[0][0] if r["seg"] else None),
+            "median_psf": med, "vol_12m": len(r["psf"]),
+            "momentum": (round(med / prev - 1, 3) if prev else None),
+            "fh_share": (round(r["fh"] / r["tot"], 2) if r["tot"] else None),
+            "yield": (round(rent[d] * 12 / med, 4) if d in rent and med else None)})
+    rows.sort(key=lambda x: -x["vol_12m"])
+    return {"asof": datetime.date.today().strftime("%Y-%m"), "n": len(rows), "rows": rows,
+            "yield_ok": bool(rent),
+            "source": "URA PMI_Resi_Transaction (12m median $psf / volume / momentum) + PMI_Resi_Rental (yield)"}
 
 def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     live = {"_meta": {"fetched": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "errors": {}}}
     feeds = {"ura_ppi": ura_ppi, "hdb_rpi": hdb_rpi, "locality": ura_locality,
-             "hdb_resale": hdb_resale, "gls": gls, "segments_official": ura_transactions}
+             "hdb_resale": hdb_resale, "gls": gls, "segments_official": ura_transactions,
+             "districts": ura_districts}
     for name, fn in feeds.items():
         try:
             val = fn()

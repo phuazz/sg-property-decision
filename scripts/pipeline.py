@@ -28,7 +28,7 @@ def merge_live(market, live):
     """Overlay live feeds onto the curated market baseline (canonical fields)."""
     if not live:
         return market
-    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official")
+    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official", "districts")
     ok = [f for f in feeds if live.get(f)]
     market["live"] = {"present": bool(ok), "fetched": live.get("_meta", {}).get("fetched"),
                       "ok": ok, "failed": sorted(live.get("_meta", {}).get("errors", {})),
@@ -69,6 +69,9 @@ def merge_live(market, live):
     # HDB resale live medians
     if live.get("hdb_resale"):
         market["hdb_resale"] = live["hdb_resale"]
+    # district-level attractiveness (URA transactions + rental; only present with the key)
+    if live.get("districts"):
+        market["districts"] = live["districts"]
     return market
 
 def main():
