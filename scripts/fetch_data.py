@@ -269,7 +269,7 @@ def ura_districts():
         return None
     projs = _ura_projects(key)
     now_i = datetime.date.today().year * 12 + datetime.date.today().month
-    D = collections.defaultdict(lambda: {"psf": [], "psf_prev": [], "fh": 0, "tot": 0, "seg": collections.Counter()})
+    D = collections.defaultdict(lambda: {"psf": [], "psf_prev": [], "psf_fh": [], "psf_lh": [], "fh": 0, "tot": 0, "seg": collections.Counter()})
     for proj in projs:
         seg = proj.get("marketSegment")
         for t in proj.get("transaction", []):
@@ -298,6 +298,7 @@ def ura_districts():
                 r["fh"] += 1
             if mi > now_i - 12:
                 r["psf"].append(psf)
+                (r["psf_fh"] if "Freehold" in str(t.get("tenure", "")) else r["psf_lh"]).append(psf)
             elif mi > now_i - 24:
                 r["psf_prev"].append(psf)
     rent = _district_rent_psf(key)
@@ -311,6 +312,8 @@ def ura_districts():
             "district": "D" + d.lstrip("0"), "d": d, "name": DISTRICT_NAME[d],
             "region": (r["seg"].most_common(1)[0][0] if r["seg"] else None),
             "median_psf": med, "vol_12m": len(r["psf"]), "psf_p": _pctiles(r["psf"]),
+            "psf_p_fh": (_pctiles(r["psf_fh"]) if len(r["psf_fh"]) >= 15 else None),
+            "psf_p_lh": (_pctiles(r["psf_lh"]) if len(r["psf_lh"]) >= 15 else None),
             "momentum": (round(med / prev - 1, 3) if prev else None),
             "fh_share": (round(r["fh"] / r["tot"], 2) if r["tot"] else None),
             "yield": (round(rent[d] * 12 / med, 4) if d in rent and med else None)})
@@ -398,7 +401,7 @@ def ura_project_scorecard():
         prev = round(statistics.median(psf_prev)) if len(psf_prev) >= 4 else None
         out.append({"project": proj.get("project"), "d": dist,
                     "district": ("D" + dist.lstrip("0")) if dist else None, "region": proj.get("marketSegment"),
-                    "median_psf": med, "vol_12m": len(psf),
+                    "median_psf": med, "vol_12m": len(psf), "psf_p": _pctiles(psf),
                     "momentum": (round(med / prev - 1, 3) if prev else None),
                     "lease": (leases.most_common(1)[0][0] if leases else None),
                     "x": proj.get("x"), "y": proj.get("y")})
