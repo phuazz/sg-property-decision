@@ -403,7 +403,7 @@ def ura_project_scorecard():
                     cd = t.get("contractDate", ""); last_mi, last_ym = mi, "20" + cd[2:] + "-" + cd[:2]
             elif mi > now_i - 24:
                 psf_prev.append(p)
-        if len(psf) < 6:  # enough recent resale for a project-level median
+        if len(psf) < 1:  # any recent resale (thin-data flagged in the UI when < 6)
             continue
         med = round(statistics.median(psf))
         prev = round(statistics.median(psf_prev)) if len(psf_prev) >= 4 else None
@@ -420,12 +420,35 @@ def ura_project_scorecard():
             "mrt_ok": any("mrt_m" in r for r in out),
             "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"}
 
+def ura_new_launches():
+    """URA developer sales (current new launches). Structure probe first — emits keys + a sample so the
+    real parse can be written; integrated into the projects table as new-launch pricing after inspection."""
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    try:
+        tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
+                  headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
+        hdr = {**UA, "AccessKey": key, "Token": tok}
+        j = GET("https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales",
+                headers=hdr, timeout=60).json()
+        res = j.get("Result", []) if isinstance(j, dict) else []
+        out = {"status": (j.get("Status") if isinstance(j, dict) else None), "n_projects": len(res)}
+        if res:
+            out["_proj_keys"] = list(res[0].keys())
+            out["_sample"] = json.dumps(res[0])[:1200]
+        else:
+            out["_raw"] = json.dumps(j)[:500]
+        return out
+    except Exception as e:
+        return {"error": repr(e)}
+
 def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     live = {"_meta": {"fetched": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "errors": {}}}
     feeds = {"ura_ppi": ura_ppi, "hdb_rpi": hdb_rpi, "locality": ura_locality,
              "hdb_resale": hdb_resale, "gls": gls, "segments_official": ura_transactions,
-             "districts": ura_districts, "projects": ura_project_scorecard}
+             "districts": ura_districts, "projects": ura_project_scorecard, "new_launches": ura_new_launches}
     for name, fn in feeds.items():
         try:
             val = fn()
