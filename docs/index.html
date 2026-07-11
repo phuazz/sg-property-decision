@@ -51,6 +51,7 @@ h1,h2,h3{font-weight:400}
 .kpi-sub{font-size:11px;color:var(--t3);margin-top:2px}
 .ksrc{color:var(--b);text-decoration:none;font-weight:600;white-space:nowrap} .ksrc:hover{text-decoration:underline}
 #sora-chart{margin:8px 0 2px}
+.pcount{font-size:12.5px;color:var(--t2);margin:2px 0 8px}
 
 /* tabs */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin:8px 0 22px;overflow-x:auto}
@@ -397,8 +398,9 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
         <div class="mob-hint">&#8596; Scroll the table sideways (the project name stays pinned), or rotate to landscape for every column.</div>
+        <div class="pcount" id="p-topcount"></div>
         <div class="tbl-wrap"><table id="projects-table"></table></div>
-        <div class="note"><span id="projects-count"></span> · Resale, last 12 months, every project with at least one resale; a project with fewer than 6 resales is marked <span style="color:var(--a)">thin</span> — its median is indicative, so weigh it lightly. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, each percentile-ranked across all projects so no single factor dominates, equal-weight; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
+        <div class="note"><span id="projects-count"></span> · Resale, last 12 months, every project with at least one resale; a project with fewer than 6 resales is marked <span style="color:var(--a)">thin</span> — its median is indicative, so weigh it lightly. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (the same 12-month turnover, log-scaled) + remaining lease + MRT proximity, each percentile-ranked across all projects so no single factor dominates, equal-weight; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
       </div>
       <div class="card" id="newlaunch-card">
         <h3>Current new launches — <em style="font-style:normal;color:var(--t3)">live URA developer sales</em></h3>
@@ -880,7 +882,7 @@ function renderDistricts(){
 }
 
 /* ---------- feature 2: project scorecard (turnover / lease / value) ---------- */
-let _psort='score', _pasc=false, _pq='', _pdists=new Set();
+let _psort='score', _pasc=false, _pall=false, _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
@@ -965,11 +967,12 @@ function renderProjects(){
   const _pkey=r=>_psort==='project'?(r.project||'').toLowerCase():_psort==='district'?(+String(r.district||'').replace(/\D/g,'')||0):_psort==='lease'?_leaseNum(r.lease):_psort==='mrt_m'?(r.mrt_m==null?Infinity:r.mrt_m):(r[_psort]==null?-Infinity:r[_psort]);
   const _pd=_pasc?1:-1;
   rows=rows.slice().sort((a,b)=>{const ka=_pkey(a),kb=_pkey(b);return _pd*((typeof ka==='string')?ka.localeCompare(kb):(ka-kb));});
-  const total=rows.length, shown=rows.slice(0,40);
+  const cap=_pall?rows.length:40, total=rows.length, shown=rows.slice(0,cap);
   const hasMrt=(D.market.projects||{}).mrt_ok;
-  const cols=[['project','Project'],['score','Score'],['district','Dist'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
+  const cols=[['project','Project'],['score','Score'],['district','Dist'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover 1y']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
   const numk=['median_psf','momentum','vol_12m','lease','price','size','score'];
-  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}"${k==='score'?' title="Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across all projects"':''}>${l}${_psort===k?(_pasc?' ▴':' ▾'):''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
+  const TIT={score:'Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across all projects',vol_12m:'Resale transactions in the last 12 months — the liquidity proxy used in the Score (log-scaled so large developments do not dominate)',momentum:'Change in the resale median $psf over the last 12 months — shown for context, not part of the Score'};
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}"${TIT[k]?` title="${TIT[k]}"`:''}>${l}${_psort===k?(_pasc?' ▴':' ▾'):''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
   const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
     leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td>`+
@@ -985,7 +988,13 @@ function renderProjects(){
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
-  $('projects-count').textContent=`${total} project${total===1?'':'s'} match${total===1?'es':''}${total>40?' — showing the top 40':''}`;
+  const filt=_pdists.size||_pq;
+  const capTxt=total>40?(_pall?` &middot; showing all ${total.toLocaleString()}`:` &middot; showing the top 40 of ${total.toLocaleString()} (sorted by ${_psort==='score'?'Score':'the chosen column'})`):'';
+  const toggle=total>40?` &middot; <a href="#" id="p-showall" class="xlink">${_pall?'show top 40 only':'show all '+total.toLocaleString()}</a>`:'';
+  const cnt=`<b>${total.toLocaleString()}</b> project${total===1?'':'s'} ${filt?'match your filter':'in the resale data'}${capTxt}`;
+  $('projects-count').innerHTML=cnt;
+  if($('p-topcount')) $('p-topcount').innerHTML=cnt+toggle;
+  const sa=$('p-showall'); if(sa) sa.onclick=e=>{e.preventDefault();_pall=!_pall;renderProjects();};
   $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_psort===k){_pasc=!_pasc;}else{_psort=k;_pasc=(k==='project'||k==='district'||k==='mrt_m');} renderProjects();});
   $('p-districts').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{const d=b.dataset.d;_pdists.has(d)?_pdists.delete(d):_pdists.add(d);renderProjects();renderDistrictMap();});
   $('p-clear').onclick=e=>{e.preventDefault();_pdists.clear();renderProjects();renderDistrictMap();};
