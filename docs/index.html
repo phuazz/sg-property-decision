@@ -884,6 +884,8 @@ function renderProjects(){
 }
 
 /* ---------- feature 4: is this asking price fair? ---------- */
+const _sizeband=s=>s<600?0:s<850?1:s<1150?2:3;
+const _bandLabel=b=>['≤600 sqft (compact)','600–850 sqft (2-bed)','850–1150 sqft (3-bed)','>1150 sqft (large)'][b];
 function renderFairValue(){
   const DS=D.market.districts, card=$('fair-card'); if(!card) return;
   if(!DS||!DS.rows||!DS.rows.length){ card.style.display='none'; return; }
@@ -907,10 +909,19 @@ function renderFairValue(){
     basis=`<b>${pmatch.project}</b> — its own resale over the last 12 months (${pmatch.vol_12m} deal${pmatch.vol_12m===1?'':'s'}${pmatch.lease?', '+_leaseTxt(pmatch.lease)+' lease':''}, ${pmatch.district}). The tightest benchmark: same location, same lease.`;
     if(pmatch.vol_12m<10) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Only ${pmatch.vol_12m} resale deals in this project over 12 months — treat the band as indicative.</div>`;
   } else if(drow){
+    const band = size?_sizeband(size):null;
+    const szp = (band!=null && drow.psf_sz && drow.psf_sz[band]) ? drow.psf_sz[band] : null;
     const byt = tenure==='fh'?drow.psf_p_fh : tenure==='lh'?drow.psf_p_lh : null;
-    p = byt || drow.psf_p;
-    basis=`${drow.district} ${drow.name} · ${byt?(tenure==='fh'?'freehold':'leasehold')+' resale':'all resale'}, last 12 months.`;
-    if((tenure==='fh'||tenure==='lh') && !byt) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Too few ${tenure==='fh'?'freehold':'leasehold'} resale deals in ${drow.district} for a separate band — showing all tenures.</div>`;
+    if(szp){
+      p=szp; basis=`${drow.district} ${drow.name} · ${_bandLabel(band)} resale, last 12 months (size-matched).`;
+      if(tenure!=='any') note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Size-matched, not additionally split by tenure (keeps the sample robust); your lease still shifts a unit within this band.</div>`;
+    } else if(byt){
+      p=byt; basis=`${drow.district} ${drow.name} · ${tenure==='fh'?'freehold':'leasehold'} resale, last 12 months.`;
+      if(band!=null) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Too few ${_bandLabel(band)} resale here for a size band — using ${tenure==='fh'?'freehold':'leasehold'}, all sizes.</div>`;
+    } else {
+      p=drow.psf_p; basis=`${drow.district} ${drow.name} · all resale, last 12 months.`;
+      if(band!=null) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Too few ${_bandLabel(band)} resale here for a size band — showing all sizes (larger units usually trade at a lower $psf).</div>`;
+    }
     if(pq) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">No project matched &ldquo;${$('f-project').value}&rdquo; — showing the district instead.</div>`+note2;
   }
   if(!p||!size||!price){ $('f-result').innerHTML='<div class="note">Enter a district (or the exact project), unit size and asking price. Add tenure or the project name to tighten the comparison.</div>'; return; }
@@ -929,7 +940,7 @@ function renderFairValue(){
     `<line x1="${W(psf).toFixed(2)}" y1="1.5" x2="${W(psf).toFixed(2)}" y2="18.5" stroke="${mc}" stroke-width="0.9"/></svg>`;
   $('f-result').innerHTML=`<div class="verdict ${cls||'good'}" style="margin-bottom:10px">At <b>$${fmt0(Math.round(psf))} psf</b> (${sgd(price)} ÷ ${fmt0(size)} sqft), this asking is <b>${band}</b>.<div style="font-weight:400;color:var(--t2);font-size:12px;margin-top:5px">Compared to ${basis}</div></div>`+note2+bar+
     `<div class="bars" style="font-size:12px;margin-top:4px">`+[['Cheapest 10% (p10)',p[0]],['p25',p[1]],['Median',p[2]],['p75',p[3]],['Dearest 10% (p90)',p[4]]].map(([k,v])=>`<div class="bar-row" style="grid-template-columns:180px 1fr"><span>${k}</span><span class="bar-num">$${fmt0(v)} psf</span></div>`).join('')+`</div>`+
-    `<div class="note">Resale condo/apartment $psf (URA caveats, last 12 months). The green band is the fair p25–p75 range. Bigger units usually trade at a lower $psf, and floor, facing and condition still move a specific unit within the band — this is market context, not a valuation.</div>`;
+    `<div class="note">Resale condo/apartment $psf (URA caveats, last 12 months). The green band is the fair p25–p75 range. The comparison is <b>size-matched</b> where the sample allows (larger units trade at a lower $psf); floor, facing, condition and remaining lease still move a specific unit within the band — market context, not a valuation.</div>`;
 }
 
 function renderWhere(){

@@ -190,6 +190,10 @@ def _pctiles(vals):
     n = len(v)
     return [round(v[min(n - 1, int(p * n))]) for p in (0.10, 0.25, 0.50, 0.75, 0.90)]
 
+def _sizeband(sqft):
+    """Condo size band for like-for-like fair value: 0 <600, 1 600-850, 2 850-1150, 3 >=1150 sqft. Boundaries mirror the template."""
+    return 0 if sqft < 600 else 1 if sqft < 850 else 2 if sqft < 1150 else 3
+
 def _lease_left(tenure, cur_year):
     """'Freehold' -> 'FH'; '99 yrs lease commencing from 1998' -> remaining years; else None."""
     t = str(tenure or "")
@@ -269,7 +273,7 @@ def ura_districts():
         return None
     projs = _ura_projects(key)
     now_i = datetime.date.today().year * 12 + datetime.date.today().month
-    D = collections.defaultdict(lambda: {"psf": [], "psf_prev": [], "psf_fh": [], "psf_lh": [], "fh": 0, "tot": 0, "seg": collections.Counter()})
+    D = collections.defaultdict(lambda: {"psf": [], "psf_prev": [], "psf_fh": [], "psf_lh": [], "psf_sz": [[], [], [], []], "fh": 0, "tot": 0, "seg": collections.Counter()})
     for proj in projs:
         seg = proj.get("marketSegment")
         for t in proj.get("transaction", []):
@@ -299,6 +303,7 @@ def ura_districts():
             if mi > now_i - 12:
                 r["psf"].append(psf)
                 (r["psf_fh"] if "Freehold" in str(t.get("tenure", "")) else r["psf_lh"]).append(psf)
+                r["psf_sz"][_sizeband(area)].append(psf)
             elif mi > now_i - 24:
                 r["psf_prev"].append(psf)
     rent = _district_rent_psf(key)
@@ -314,6 +319,7 @@ def ura_districts():
             "median_psf": med, "vol_12m": len(r["psf"]), "psf_p": _pctiles(r["psf"]),
             "psf_p_fh": (_pctiles(r["psf_fh"]) if len(r["psf_fh"]) >= 15 else None),
             "psf_p_lh": (_pctiles(r["psf_lh"]) if len(r["psf_lh"]) >= 15 else None),
+            "psf_sz": [(_pctiles(b) if len(b) >= 15 else None) for b in r["psf_sz"]],
             "momentum": (round(med / prev - 1, 3) if prev else None),
             "fh_share": (round(r["fh"] / r["tot"], 2) if r["tot"] else None),
             "yield": (round(rent[d] * 12 / med, 4) if d in rent and med else None)})
