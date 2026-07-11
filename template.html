@@ -103,7 +103,7 @@ th.psort{cursor:pointer} th.psort:hover{color:var(--t1);text-decoration:underlin
 #dmap text{font-size:19px;font-weight:600;fill:#12261d;font-family:var(--mono);pointer-events:none;paint-order:stroke;stroke:rgba(255,255,255,0.92);stroke-width:3.5px;stroke-linejoin:round}
 #dmap-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:7px 10px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;max-width:240px}
 #dmap-legend{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3);margin-top:7px}
-#dmap-legend i{width:110px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgba(26,135,84,0.14),rgba(26,135,84,0.84))}
+#dmap-legend i{width:130px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgb(201,93,73),rgb(239,233,219),rgb(26,135,84))}
 .xlink{color:var(--b);text-decoration:none}
 .xlink:hover{text-decoration:underline}
 .xlinks{white-space:nowrap;font-size:11.5px}
@@ -378,13 +378,13 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
         <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
         <div id="dmap-card">
-          <div class="dmap-cap">Tap a district on the map to filter the list &mdash; <b>deeper green = more attractive</b> (the Balanced score, matching the chips). Approximate zones around each district's resale activity, not official boundaries.</div>
+          <div class="dmap-cap">Tap a district on the map to filter the list &mdash; colour runs <b>clay (less attractive) &rarr; green (more)</b> on the Balanced score, matching the chips. Approximate zones around each district's resale activity, not official boundaries.</div>
           <div id="dmap-wrap"><div id="dmap"></div><div id="dmap-tip"></div></div>
           <div id="dmap-legend"><span>less attractive</span><i></i><span>more</span></div>
         </div>
         <div class="field" style="max-width:340px;margin-bottom:10px"><input id="p-search" placeholder="Search project name…"></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px">
-          <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap any (pick as many as you like); ordered by attractiveness, greener = better, hover for detail</span></span>
+          <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap any (pick as many as you like); ordered by attractiveness (clay = less, green = more), hover for detail</span></span>
           <span id="p-districts" style="display:contents"></span>
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
@@ -876,6 +876,12 @@ const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
 /* ---------- district attractiveness (shared by the chips, the choropleth and tooltips) ---------- */
+// diverging attractiveness colour: 0 = less attractive (muted clay), 0.5 = neutral, 1 = more attractive (green)
+function _attrRGB(u){
+  const L=(a,b,k)=>Math.round(a+(b-a)*k), A=[201,93,73], M=[239,233,219], G=[26,135,84];
+  const c=u<0.5?[A,M,u/0.5]:[M,G,(u-0.5)/0.5];
+  return `${L(c[0][0],c[1][0],c[2])},${L(c[0][1],c[1][1],c[2])},${L(c[0][2],c[1][2],c[2])}`;
+}
 function _districtMeta(){
   const drows=(D.market.districts||{}).rows||[];
   const dnm={}, dsc={}, dnfo={}, dc={};
@@ -885,8 +891,10 @@ function _districtMeta(){
     drows.forEach(r=>{const s=Math.round(100*(_nz(ys,r.yield||0)+_nz(ms,r.momentum==null?0:r.momentum)+_nz(ls,Math.log(r.vol_12m||1))+(1-_nz(ps,r.median_psf||0)))/4);
       dsc[r.district]=s; dnfo[r.district]=`${r.district} ${r.name} — score ${s} · yield ${r.yield?pct(r.yield,1):'—'} · $${fmt0(r.median_psf)} psf · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}`;});
   }
+  const sv=Object.values(dsc), lo=sv.length?Math.min(...sv):0, hi=sv.length?Math.max(...sv):100;
+  const t=s=>s==null?null:(hi>lo?(s-lo)/(hi-lo):0.5);   // normalise score across districts to span the full palette
   const shortNm=d=>(dnm[d]||d).split('/')[0].trim();
-  return {dnm,dsc,dnfo,dc,shortNm};
+  return {dnm,dsc,dnfo,dc,shortNm,t};
 }
 
 /* ---------- filled district choropleth (approximate Voronoi zones, coloured by attractiveness) ---------- */
@@ -894,7 +902,7 @@ function renderDistrictMap(){
   const wrap=$('dmap'), card=$('dmap-card'); if(!wrap||!card) return;
   const geo=D.geo;
   if(!geo||!geo.features||!geo.features.length){ card.style.display='none'; return; }
-  const {dsc,dnfo,dc}=_districtMeta();
+  const {dsc,dnfo,dc,t}=_districtMeta();
   const feats=geo.features;
   let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
   const scan=c=>{ if(typeof c[0]==='number'){if(c[0]<minx)minx=c[0];if(c[0]>maxx)maxx=c[0];if(c[1]<miny)miny=c[1];if(c[1]>maxy)maxy=c[1];} else c.forEach(scan); };
@@ -904,7 +912,7 @@ function renderDistrictMap(){
   const px=lon=>((lon-minx)*cos/spanx)*W, py=lat=>(1-(lat-miny)/spany)*H;
   const ringD=r=>'M'+r.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join('L')+'Z';
   const pathD=coords=>{let d='';const walk=c=>{if(typeof c[0][0]==='number')d+=ringD(c);else c.forEach(walk);};walk(coords);return d;};
-  const col=s=>s==null?'#e9ecef':`rgba(26,135,84,${(0.14+Math.max(0,Math.min(100,s))/100*0.7).toFixed(3)})`;
+  const col=s=>{const u=t(s);return u==null?'#e9ecef':`rgb(${_attrRGB(u)})`;};
   const ordered=feats.slice().sort((a,b)=>(_pdists.has(a.properties.district)?1:0)-(_pdists.has(b.properties.district)?1:0)); // selected last = on top
   const paths=ordered.map(f=>{const code=f.properties.district,s=dsc[code],act=_pdists.has(code);
     return `<path d="${pathD(f.geometry.coordinates)}" data-d="${code}" fill="${col(s)}" stroke="${act?'#0b3d2e':'#fff'}" stroke-width="${act?2.4:0.7}" stroke-linejoin="round"/>`;}).join('');
@@ -928,10 +936,10 @@ function renderProjects(){
   const pasof=(P.asof||''), monthsOld=ym=>{if(!ym||!pasof)return null;const a=pasof.split('-').map(Number),l=ym.split('-').map(Number);return (a[0]*12+a[1])-(l[0]*12+l[1]);};
   const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))];
   // recognisable area name + Balanced attractiveness per district (shared with the choropleth map)
-  const {dnm,dsc,dnfo,shortNm}=_districtMeta();
+  const {dnm,dsc,dnfo,shortNm,t}=_districtMeta();
   allD.sort((a,b)=>(dsc[b]||0)-(dsc[a]||0)||(+a.slice(1))-(+b.slice(1)));  // most attractive first
   $('p-districts').innerHTML=allD.map(d=>{const s=dsc[d], act=_pdists.has(d);
-    const st=(!act&&s!=null)?` style="background:rgba(26,135,84,${(s/100*0.22).toFixed(3)});border-color:rgba(26,135,84,${(s/100*0.35+0.12).toFixed(3)})"`:'';
+    const u=t(s), st=(!act&&u!=null)?` style="background:rgba(${_attrRGB(u)},0.42);border-color:rgba(${_attrRGB(u)},0.66)"`:'';
     return `<button class="preset${act?' active':''}" data-d="${d}"${st} title="${dnfo[d]||d}">${act?'&#10003; ':''}${shortNm(d)}</button>`;}).join('');
   $('p-clear').style.display=_pdists.size?'inline':'none';
   // broad attractiveness score across ALL projects (stable global normalisation): value (vs area) + liquidity + lease + MRT proximity
