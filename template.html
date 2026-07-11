@@ -84,6 +84,11 @@ h1,h2,h3{font-weight:400}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
 th.dsort:hover{color:var(--t1)}
 th.psort{cursor:pointer} th.psort:hover{color:var(--t1);text-decoration:underline}
+#projects-table th{z-index:2}
+#projects-table td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
+#projects-table th:first-child{left:0;z-index:3}
+.mob-hint{display:none;font-size:11.5px;color:var(--t3);margin:2px 0 8px}
+@media(max-width:640px){.mob-hint{display:block} #projects-table td,#projects-table th{padding:7px 8px}}
 #district-map{position:relative;margin:8px auto 16px;max-width:1080px}
 #district-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:8px 11px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;white-space:nowrap}
 .dlegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--t2);margin:2px 0 8px}
@@ -376,8 +381,9 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <span id="p-districts" style="display:contents"></span>
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
+        <div class="mob-hint">&#8596; Scroll the table sideways (the project name stays pinned), or rotate to landscape for every column.</div>
         <div class="tbl-wrap"><table id="projects-table"></table></div>
-        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight and normalised across all projects; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
+        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals — so brand-new or thinly-traded projects (e.g. The Woodleigh Residences) do not appear until they have enough resales to price reliably. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, each percentile-ranked across all projects so no single factor dominates, equal-weight; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
       </div>
       <div class="card" id="fair-card">
         <h3>Is this asking price fair?</h3>
@@ -859,7 +865,10 @@ function renderProjects(){
   const _lyr=r=>Math.min(r.lease==='FH'?105:(typeof r.lease==='number'?r.lease:80),105), _vsa=r=>dmed[r.d]?r.median_psf/dmed[r.d]-1:0;
   const allP=P.rows.filter(r=>r.median_psf);
   const AV=allP.map(r=>-_vsa(r)),AL=allP.map(r=>Math.log(r.vol_12m||1)),ALe=allP.map(r=>_lyr(r)),AM=allP.map(r=>-(r.mrt_m!=null?r.mrt_m:1500));
-  allP.forEach(r=>{r.score=Math.round(100*(_nz(AV,-_vsa(r))+_nz(AL,Math.log(r.vol_12m||1))+_nz(ALe,_lyr(r))+_nz(AM,-(r.mrt_m!=null?r.mrt_m:1500)))/4);});
+  // percentile-rank each factor so equal weight is truly equal — min-max let wide-spread liquidity dominate and compressed value
+  const _prank=vals=>{const o=vals.map((v,i)=>i).sort((a,b)=>vals[a]-vals[b]),rk=[];o.forEach((i,k)=>rk[i]=vals.length>1?k/(vals.length-1):0.5);return rk;};
+  const pV=_prank(AV),pL=_prank(AL),pLe=_prank(ALe),pM=_prank(AM);
+  allP.forEach((r,i)=>{r.score=Math.round(100*(pV[i]+pL[i]+pLe[i]+pM[i])/4);});
   let rows=P.rows.filter(r=>r.median_psf);
   if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
