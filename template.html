@@ -223,6 +223,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <button class="tab" data-t="leverage">2 · Cash or loan?</button>
     <button class="tab" data-t="type">3 · HDB, condo or landed?</button>
     <button class="tab" data-t="where">4 · Where to buy?</button>
+    <button class="tab" data-t="which">5 · Which condo?</button>
   </nav>
 
   <!-- OVERVIEW -->
@@ -230,7 +231,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <div class="overview">
       <div class="hook-kicker">🚗 In Singapore, S$200k barely buys a car — your home is the decision that really matters.</div>
       <h2 class="hook-h1">The same budget buys wildly different homes, and your age decides how much you can borrow.</h2>
-      <p class="lead">Property is the biggest number most of us ever sign for, and the rules are quietly stacked with catches — your age, the stress test, the stamp duties. This turns it into four questions you can answer, with today's real rates and prices. <b>Educational, not advice.</b></p>
+      <p class="lead">Property is the biggest number most of us ever sign for, and the rules are quietly stacked with catches — your age, the stress test, the stamp duties. This turns it into five questions you can answer, with today's real rates and prices. <b>Educational, not advice.</b></p>
 
       <div class="card hook-buys">
         <div class="hook-buys-head">
@@ -243,12 +244,13 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 
       <div class="hooks" id="hooks"></div>
 
-      <div class="goalq">Or work through the four questions &darr;</div>
+      <div class="goalq">Or work through the five questions &darr;</div>
       <div class="steps">
         <button class="step" onclick="switchTab('afford')"><span class="step-n">1</span><span class="step-t">Can I afford it?</span><span class="step-d">The biggest loan you can take at your age, the monthly repayment at today's rate, and the cash you need on day one.</span><span class="step-go">Work it out &rarr;</span></button>
         <button class="step" onclick="switchTab('leverage')"><span class="step-n">2</span><span class="step-t">Pay cash, or take a loan?</span><span class="step-d">Rates are near 1%. See whether borrowing cheaply and keeping cash invested beats paying cash — and the buffer that keeps it safe.</span><span class="step-go">Weigh it up &rarr;</span></button>
         <button class="step" onclick="switchTab('type')"><span class="step-n">3</span><span class="step-t">HDB, condo or landed?</span><span class="step-d">The three compared on price, how easily you can sell, rental yield, how much you can borrow, and the rules that bind each.</span><span class="step-go">Compare &rarr;</span></button>
         <button class="step" onclick="switchTab('where')"><span class="step-n">4</span><span class="step-t">Where should I buy?</span><span class="step-d">What your budget reaches, what each area yields, and what developers' latest land bids signal about tomorrow's prices.</span><span class="step-go">Explore &rarr;</span></button>
+        <button class="step" onclick="switchTab('which')"><span class="step-n">5</span><span class="step-t">Which specific condo?</span><span class="step-d">Compare individual condos on price, size, resale liquidity, remaining lease, nearest MRT and value versus their district — plus what is selling brand-new, and a fair-price check on any asking price.</span><span class="step-go">Find one &rarr;</span></button>
       </div>
       <div class="startrow">
         <button class="btn-primary" id="try-example">Try a worked example &rarr;</button>
@@ -358,20 +360,10 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   </section>
 
   <!-- TAB 4 -->
-  <section class="pane" id="pane-where">
-    <h2 class="section">Where to buy — and what the land bids are telling you</h2>
-    <p class="lead">Where your budget actually reaches, what each area yields, and a forward signal most buyers miss: <b>developers' winning land bids</b>. A high, competitive bid prices tomorrow's launches and sets a floor under nearby prices.</p>
-    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space — so the eventual launch price is roughly that bid × 1.8–2.0 (to cover construction, financing and margin). A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
+  <section class="pane" id="pane-which">
+    <h2 class="section">Which specific condo?</h2>
+    <p class="lead">Now the actual buildings, on live URA data. Compare individual condos on price, unit size, resale liquidity, remaining lease, nearest MRT and value versus their district; see what is selling brand-new from developers; and sense-check whether a given asking price is fair. <b>Comparable context, not a valuation.</b></p>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
-      <div class="card" id="district-card">
-        <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3)">live URA resale data</em></h3>
-        <p class="intro" id="district-intro"></p>
-        <div class="presets" id="district-lenses"></div>
-        <div class="dlegend" id="district-legend"></div>
-        <div id="district-map"><div id="district-svg"></div><div id="district-tip"></div></div>
-        <div class="tbl-wrap"><table id="district-table"></table></div>
-        <div class="note" id="district-note"></div>
-      </div>
       <div class="card" id="projects-card">
         <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
         <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
@@ -404,6 +396,24 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="field" style="max-width:840px"><label>Project <span class="hint">— optional, most precise: holds location &amp; lease constant</span></label><input id="f-project" list="f-projlist" placeholder="Start typing a condo name…" autocomplete="off"><datalist id="f-projlist"></datalist></div>
         <div id="f-result"></div>
       </div>
+    </div>
+    <div class="nextnav"><button class="nextbtn" onclick="switchTab('afford')">Back to the numbers: check affordability &rarr;</button></div>
+  </section>
+
+  <section class="pane" id="pane-where">
+    <h2 class="section">Where to buy — and what the land bids are telling you</h2>
+    <p class="lead">Where your budget actually reaches, what each area yields, and a forward signal most buyers miss: <b>developers' winning land bids</b>. A high, competitive bid prices tomorrow's launches and sets a floor under nearby prices.</p>
+    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space — so the eventual launch price is roughly that bid × 1.8–2.0 (to cover construction, financing and margin). A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
+    <div class="grid" style="grid-template-columns:1fr;gap:18px">
+      <div class="card" id="district-card">
+        <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3)">live URA resale data</em></h3>
+        <p class="intro" id="district-intro"></p>
+        <div class="presets" id="district-lenses"></div>
+        <div class="dlegend" id="district-legend"></div>
+        <div id="district-map"><div id="district-svg"></div><div id="district-tip"></div></div>
+        <div class="tbl-wrap"><table id="district-table"></table></div>
+        <div class="note" id="district-note"></div>
+      </div>
       <div class="card">
         <h3>Segments — price, yield, momentum</h3>
         <div class="tbl-wrap"><table id="seg-table"></table></div>
@@ -434,7 +444,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="note">External links open in a new tab for convenience — official sources and reputable explainers, not endorsements or listings we vet; verify independently. The per-district <b>Listings / Map / Video</b> links in the table above open PropertyGuru, Google Maps and a YouTube search for that area.</div>
       </div>
     </div>
-    <div class="nextnav"><button class="nextbtn" onclick="switchTab('afford')">Put it together: check affordability &rarr;</button></div>
+    <div class="nextnav"><button class="nextbtn" onclick="switchTab('which')">Next: which specific condo? &rarr;</button></div>
   </section>
 
   <footer id="footer"></footer>
