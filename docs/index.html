@@ -52,6 +52,8 @@ h1,h2,h3{font-weight:400}
 .ksrc{color:var(--b);text-decoration:none;font-weight:600;white-space:nowrap} .ksrc:hover{text-decoration:underline}
 #sora-chart{margin:8px 0 2px}
 .pcount{font-size:12.5px;color:var(--t2);margin:2px 0 8px}
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+.pf-grid .field{margin:0}
 
 /* tabs */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin:8px 0 22px;overflow-x:auto}
@@ -397,6 +399,17 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <span id="p-districts" style="display:contents"></span>
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
+        <details class="fp" id="pf-fold" style="margin-bottom:12px"><summary>More filters — price, turnover, lease, size, MRT</summary><div class="fp-body">
+          <div class="pf-grid">
+            <div class="field"><label>Max price (S$)</label><input id="pf-pmax" inputmode="numeric" placeholder="e.g. 1,500,000" oninput="renderProjects()"></div>
+            <div class="field"><label>Min turnover (1y)</label><input id="pf-tmin" inputmode="numeric" placeholder="e.g. 6" oninput="renderProjects()"></div>
+            <div class="field"><label>Min lease (years)</label><input id="pf-lmin" inputmode="numeric" placeholder="e.g. 60" oninput="renderProjects()"></div>
+            <div class="field"><label>Min size (sqft)</label><input id="pf-szmin" inputmode="numeric" placeholder="e.g. 700" oninput="renderProjects()"></div>
+            <div class="field"><label>Max $psf</label><input id="pf-psfmax" inputmode="numeric" placeholder="e.g. 1,800" oninput="renderProjects()"></div>
+            <div class="field"><label>Max MRT (m)</label><input id="pf-mrtmax" inputmode="numeric" placeholder="e.g. 500" oninput="renderProjects()"></div>
+          </div>
+          <div style="margin-top:8px;font-size:12px"><a href="#" class="xlink" onclick="pfReset();return false;">clear these filters</a> <span style="color:var(--t3)">— blank = no limit; freehold / 999-yr pass any minimum lease</span></div>
+        </div></details>
         <div class="mob-hint">&#8596; Scroll the table sideways (the project name stays pinned), or rotate to landscape for every column.</div>
         <div class="pcount" id="p-topcount"></div>
         <div class="tbl-wrap"><table id="projects-table"></table></div>
@@ -886,6 +899,7 @@ let _psort='score', _pasc=false, _pall=false, _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
+function pfReset(){['pf-pmax','pf-tmin','pf-lmin','pf-szmin','pf-psfmax','pf-mrtmax'].forEach(id=>{const el=$(id);if(el)el.value='';});renderProjects();}
 /* ---------- district attractiveness (shared by the chips, the choropleth and tooltips) ---------- */
 // diverging attractiveness colour: 0 = less attractive (muted clay), 0.5 = neutral, 1 = more attractive (green)
 function _attrRGB(u){
@@ -964,6 +978,18 @@ function renderProjects(){
   let rows=P.rows.filter(r=>r.median_psf);
   if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
+  const gvf=id=>{const el=$(id);return el?(+(el.value.replace(/[^\d.]/g,''))||0):0;};
+  const pmax=gvf('pf-pmax'),tmin=gvf('pf-tmin'),lmin=gvf('pf-lmin'),szmin=gvf('pf-szmin'),psfmax=gvf('pf-psfmax'),mrtmax=gvf('pf-mrtmax');
+  const nf=pmax||tmin||lmin||szmin||psfmax||mrtmax;
+  if(nf) rows=rows.filter(r=>{
+    if(pmax && (r.price||1e12)>pmax) return false;
+    if(tmin && (r.vol_12m||0)<tmin) return false;
+    if(lmin && _leaseNum(r.lease)<lmin) return false;
+    if(szmin && (r.size||0)<szmin) return false;
+    if(psfmax && (r.median_psf||1e9)>psfmax) return false;
+    if(mrtmax && (r.mrt_m==null||r.mrt_m>mrtmax)) return false;
+    return true;
+  });
   const _pkey=r=>_psort==='project'?(r.project||'').toLowerCase():_psort==='district'?(+String(r.district||'').replace(/\D/g,'')||0):_psort==='lease'?_leaseNum(r.lease):_psort==='mrt_m'?(r.mrt_m==null?Infinity:r.mrt_m):(r[_psort]==null?-Infinity:r[_psort]);
   const _pd=_pasc?1:-1;
   rows=rows.slice().sort((a,b)=>{const ka=_pkey(a),kb=_pkey(b);return _pd*((typeof ka==='string')?ka.localeCompare(kb):(ka-kb));});
@@ -988,13 +1014,14 @@ function renderProjects(){
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
-  const filt=_pdists.size||_pq;
+  const filt=_pdists.size||_pq||nf;
   const capTxt=total>40?(_pall?` &middot; showing all ${total.toLocaleString()}`:` &middot; showing the top 40 of ${total.toLocaleString()} (sorted by ${_psort==='score'?'Score':'the chosen column'})`):'';
   const toggle=total>40?` &middot; <a href="#" id="p-showall" class="xlink">${_pall?'show top 40 only':'show all '+total.toLocaleString()}</a>`:'';
-  const cnt=`<b>${total.toLocaleString()}</b> project${total===1?'':'s'} ${filt?'match your filter':'in the resale data'}${capTxt}`;
+  const cnt=`<b>${total.toLocaleString()}</b> project${total===1?'':'s'} ${filt?'match your filter':'in the resale data'}${capTxt}${total===0&&filt?' &middot; loosen the filters':''}`;
   $('projects-count').innerHTML=cnt;
   if($('p-topcount')) $('p-topcount').innerHTML=cnt+toggle;
   const sa=$('p-showall'); if(sa) sa.onclick=e=>{e.preventDefault();_pall=!_pall;renderProjects();};
+  const fsum=document.querySelector('#pf-fold>summary'); if(fsum) fsum.innerHTML='More filters — price, turnover, lease, size, MRT'+(nf?' <span style="color:var(--g);font-weight:700">&middot; on</span>':'');
   $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_psort===k){_pasc=!_pasc;}else{_psort=k;_pasc=(k==='project'||k==='district'||k==='mrt_m');} renderProjects();});
   $('p-districts').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{const d=b.dataset.d;_pdists.has(d)?_pdists.delete(d):_pdists.add(d);renderProjects();renderDistrictMap();});
   $('p-clear').onclick=e=>{e.preventDefault();_pdists.clear();renderProjects();renderDistrictMap();};
