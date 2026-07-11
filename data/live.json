@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-07-10T01:07:49Z",
+  "fetched": "2026-07-11T01:22:09Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -120,29 +120,29 @@
  },
  "hdb_resale": {
   "asof_month": "2026-07",
-  "n": 269,
-  "median_price": 638000,
-  "median_psf": 590,
+  "n": 299,
+  "median_price": 635888,
+  "median_psf": 587,
   "by_type": {
    "2 ROOM": {
     "n": 5,
     "median_price": 290000
    },
    "3 ROOM": {
-    "n": 39,
-    "median_price": 455000
+    "n": 46,
+    "median_price": 452500
    },
    "4 ROOM": {
-    "n": 121,
-    "median_price": 618000
+    "n": 130,
+    "median_price": 610500
    },
    "5 ROOM": {
-    "n": 82,
+    "n": 93,
     "median_price": 735000
    },
    "EXECUTIVE": {
-    "n": 21,
-    "median_price": 945000
+    "n": 24,
+    "median_price": 950000
    },
    "MULTI-GENERATION": {
     "n": 1,
@@ -251,5 +251,20 @@
   "yoy": 0.179,
   "asof": "2026-06-23",
   "source": "URA Past-Sale-Sites .xlsx (residential awards)"
+ },
+ "segments_official": {
+  "CCR": {
+   "median_psf": 2460,
+   "n": 18850
+  },
+  "RCR": {
+   "median_psf": 2103,
+   "n": 36680
+  },
+  "OCR": {
+   "median_psf": 1607,
+   "n": 51330
+  },
+  "_source": "URA Data Service PMI_Resi_Transaction (rolling 5y, condo/apartment)"
  }
 }
