@@ -246,7 +246,8 @@ def ura_transactions():
     return out or None
 
 def ura_districts():
-    """Per-postal-district condo/apartment stats: median $psf (12m), volume, momentum, freehold share, gross yield."""
+    """Per-postal-district RESALE condo/apartment stats: median $psf (12m), volume, momentum, freehold share, gross yield.
+    Resale-only (typeOfSale=3) so a district's median is not distorted by new-launch mix entering the sample."""
     key = os.environ.get("URA_ACCESS_KEY")
     if not key:
         return None
@@ -257,6 +258,8 @@ def ura_districts():
         seg = proj.get("marketSegment")
         for t in proj.get("transaction", []):
             if t.get("propertyType") not in ("Condominium", "Apartment"):
+                continue
+            if str(t.get("typeOfSale", "")).strip() != "3":   # resale only - strips new-launch mix distortion
                 continue
             d = str(t.get("district") or "").zfill(2)
             if d not in DISTRICT_NAME:
@@ -284,10 +287,10 @@ def ura_districts():
     rent = _district_rent_psf(key)
     rows = []
     for d, r in D.items():
-        if len(r["psf"]) < 30:  # need a liquid recent sample for a stable median
+        if len(r["psf"]) < 25:  # need a liquid recent resale sample for a stable median
             continue
         med = round(statistics.median(r["psf"]))
-        prev = round(statistics.median(r["psf_prev"])) if len(r["psf_prev"]) >= 20 else None
+        prev = round(statistics.median(r["psf_prev"])) if len(r["psf_prev"]) >= 15 else None
         rows.append({
             "district": "D" + d.lstrip("0"), "d": d, "name": DISTRICT_NAME[d],
             "region": (r["seg"].most_common(1)[0][0] if r["seg"] else None),
@@ -297,8 +300,8 @@ def ura_districts():
             "yield": (round(rent[d] * 12 / med, 4) if d in rent and med else None)})
     rows.sort(key=lambda x: -x["vol_12m"])
     return {"asof": datetime.date.today().strftime("%Y-%m"), "n": len(rows), "rows": rows,
-            "yield_ok": bool(rent),
-            "source": "URA PMI_Resi_Transaction (12m median $psf / volume / momentum) + PMI_Resi_Rental (yield)"}
+            "yield_ok": bool(rent), "basis": "resale condo, last 12 months",
+            "source": "URA PMI_Resi_Transaction resale (12m median $psf / volume / momentum) + PMI_Resi_Rental (yield)"}
 
 def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
