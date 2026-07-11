@@ -432,14 +432,18 @@ def ura_new_launches():
         tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
                   headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
         hdr = {**UA, "AccessKey": key, "Token": tok}
-        res, tried = [], {}
-        for b in (1, 2, 3, 4):
-            j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales&batch={b}",
+        t = datetime.date.today(); yy = t.year % 100; mm = t.month; q = (mm - 1) // 3 + 1
+        pm = mm - 1 or 12; pyy = yy if mm > 1 else yy - 1
+        cands = [f"{mm:02d}{yy:02d}", f"{pm:02d}{pyy:02d}", f"{yy:02d}{mm:02d}", f"{yy:02d}q{q}", f"{pyy:02d}{pm:02d}"]
+        tried, res, working = {}, [], None
+        for rp in cands:
+            j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales&refPeriod={rp}",
                     headers=hdr, timeout=60).json()
             r = j.get("Result", []) if isinstance(j, dict) else []
-            tried[b] = (j.get("Status") if isinstance(j, dict) else None, len(r))
-            res += r
-        out = {"tried": tried, "n_projects": len(res)}
+            tried[rp] = (j.get("Status") if isinstance(j, dict) else None, len(r))
+            if r and not res:
+                res, working = r, rp
+        out = {"tried": tried, "working": working, "n_projects": len(res)}
         if res:
             out["_proj_keys"] = list(res[0].keys())
             out["_sample"] = json.dumps(res[0])[:1400]
