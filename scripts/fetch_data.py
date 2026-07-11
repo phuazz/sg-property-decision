@@ -277,12 +277,7 @@ def ura_districts():
     cent = collections.defaultdict(lambda: [0.0, 0.0, 0])  # per-district SVY21 centroid (sum x, sum y, n) for the map
     for proj in projs:
         seg = proj.get("marketSegment")
-        pd = str(proj.get("district") or "").zfill(2)
-        if pd in DISTRICT_NAME:
-            try:
-                cent[pd][0] += float(proj["x"]); cent[pd][1] += float(proj["y"]); cent[pd][2] += 1
-            except (KeyError, TypeError, ValueError):
-                pass
+        proj_d = None  # district lives on the transactions, not the project object
         for t in proj.get("transaction", []):
             if t.get("propertyType") not in ("Condominium", "Apartment"):
                 continue
@@ -291,6 +286,8 @@ def ura_districts():
             d = str(t.get("district") or "").zfill(2)
             if d not in DISTRICT_NAME:
                 continue
+            if proj_d is None:
+                proj_d = d
             mi = _midx(t.get("contractDate", ""))
             if mi is None:
                 continue
@@ -313,6 +310,11 @@ def ura_districts():
                 r["psf_sz"][_sizeband(area)].append(psf)
             elif mi > now_i - 24:
                 r["psf_prev"].append(psf)
+        if proj_d:  # accumulate this project's location into its district centroid
+            try:
+                cent[proj_d][0] += float(proj["x"]); cent[proj_d][1] += float(proj["y"]); cent[proj_d][2] += 1
+            except (KeyError, TypeError, ValueError):
+                pass
     rent = _district_rent_psf(key)
     rows = []
     for d, r in D.items():
