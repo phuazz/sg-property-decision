@@ -88,6 +88,13 @@
     "floating_typical":   { "value": 0.0170, "range": [0.0140, 0.0210], "source": "3M SORA ~1.12% + spread 0.25-1.00%", "flag": "synthesised range" },
     "hdb_concessionary":  { "value": 0.0260, "source": "HDB (CPF OA + 0.1pp), unchanged" },
     "default_mortgage_rate": 0.0160,
+    "sora_history": {
+      "unit": "3-month compounded SORA, month-end (p.a., as decimals)",
+      "series": [["2025-08",0.0182],["2025-09",0.0155],["2025-10",0.0145],["2025-11",0.0131],["2025-12",0.0126],["2026-01",0.0118],["2026-02",0.0115],["2026-03",0.0112],["2026-04",0.0107],["2026-05",0.0104],["2026-06",0.0105],["2026-07",0.0109]],
+      "cycle": "near 0.2% in early 2022, above 3% by end-2022, around 3.5% through 2023-2024, then down to about 1% by mid-2026",
+      "source": "MAS-published 3M compounded SORA, via aggregators (moneylobang; MoneySmart), cross-checked to the curated spot",
+      "flag": "curated month-end readings, indicative to ~5bp; MAS publishes the authoritative daily series"
+    },
     "note": "Live 3M SORA is scrapeable from the MAS domestic-interest-rates page; package rates have no public feed and are curated here. Refresh at each review."
   },
 

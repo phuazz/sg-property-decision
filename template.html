@@ -49,6 +49,8 @@ h1,h2,h3{font-weight:400}
 .kpi .label{margin-bottom:6px}
 .kpi-val{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-0.5px}
 .kpi-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.ksrc{color:var(--b);text-decoration:none;font-weight:600;white-space:nowrap} .ksrc:hover{text-decoration:underline}
+#sora-chart{margin:8px 0 2px}
 
 /* tabs */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin:8px 0 22px;overflow-x:auto}
@@ -324,6 +326,13 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <h2 class="section">Pay cash for peace of mind, or borrow cheaply?</h2>
     <p class="lead">With interest rates near 1%, the loan costs <b>less</b> than what your cash could earn elsewhere — so on the maths, borrowing and keeping cash invested usually wins. But "no mortgage, less stress" is real too. This weighs both, and the <b>safety buffer</b> that matters more than either.</p>
     <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.3–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
+    <div class="card" id="rates-card">
+      <h3>3-month SORA &mdash; the rate this rests on <em style="font-style:normal;color:var(--t3)">curated &middot; MAS-published benchmark</em></h3>
+      <p class="intro">The cash-versus-loan case turns on how cheap the mortgage is, and most floating packages price off <b>3-month compounded SORA</b>. Here is where the benchmark has been. <span id="sora-now"></span></p>
+      <div id="sora-chart"></div>
+      <div class="note" id="sora-note"></div>
+      <div class="note"><b>Where these rates come from.</b> 3M SORA &mdash; <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.mas.gov.sg/monetary-policy/sora">MAS SORA benchmark</a> (the authoritative daily series and chart); the spot figure here is curated from it, retrieved via an aggregator. Fixed and floating <b>package</b> rates have no public feed &mdash; they are a curated scan of bank promotions (DBS / OCBC / UOB, via brokers), so verify a current package with the banks or <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.moneysense.gov.sg/">MoneySense</a>. The <b>4% TDSR stress floor</b> is set by <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.mas.gov.sg/regulation/notices/notice-645">MAS Notice 645</a>.</div>
+    </div>
     <div class="two-col">
       <div class="card">
         <h3>Assumptions</h3>
@@ -1091,18 +1100,42 @@ function renderWhere(){
 }
 
 /* ---------- KPIs + footer ---------- */
+function renderRatesChart(){
+  const el=$('sora-chart'), card=$('rates-card'); if(!el) return;
+  const H=(D.rules.rates||{}).sora_history||{}, s=H.series||[];
+  if(s.length<3){ if(card)card.style.display='none'; return; }
+  const vals=s.map(p=>p[1]*100), n=s.length, mn=Math.min(...vals), mx=Math.max(...vals);
+  const pad=(mx-mn)*0.2||0.1, ymin=mn-pad, ymax=mx+pad;
+  const W=720,Ht=210,pL=44,pR=16,pT=14,pB=30,pw=W-pL-pR,ph=Ht-pT-pB;
+  const X=i=>pL+(n===1?pw/2:i/(n-1)*pw), Y=v=>pT+(1-(v-ymin)/(ymax-ymin))*ph;
+  const MON=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let g=`<svg viewBox="0 0 ${W} ${Ht}" width="100%" style="max-width:720px;height:auto">`;
+  for(let kk=0;kk<=4;kk++){const v=ymin+(ymax-ymin)*kk/4,y=Y(v);
+    g+=`<line x1="${pL}" y1="${y.toFixed(1)}" x2="${W-pR}" y2="${y.toFixed(1)}" stroke="var(--bd)" stroke-width="1"/>`
+      +`<text x="${pL-7}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--t3)">${v.toFixed(2)}%</text>`;}
+  const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
+  g+=`<path d="M${X(0).toFixed(1)},${Y(ymin).toFixed(1)} L${pts.join(' L')} L${X(n-1).toFixed(1)},${Y(ymin).toFixed(1)} Z" fill="var(--b-bg)"/>`
+    +`<polyline points="${pts.join(' ')}" fill="none" stroke="var(--b)" stroke-width="2.2" stroke-linejoin="round"/>`;
+  vals.forEach((v,i)=>{const last=i===n-1;g+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${last?4:2.2}" fill="var(--b)"/>`;
+    if(last)g+=`<text x="${(X(i)-7).toFixed(1)}" y="${(Y(v)-9).toFixed(1)}" text-anchor="end" font-size="12" font-weight="700" fill="var(--b)">${v.toFixed(2)}%</text>`;});
+  s.forEach((p,i)=>{if(i%3===0||i===n-1){const pr=p[0].split('-');g+=`<text x="${X(i).toFixed(1)}" y="${Ht-9}" text-anchor="middle" font-size="10" fill="var(--t3)">${MON[+pr[1]]} '${pr[0].slice(2)}</text>`;}});
+  g+=`</svg>`; el.innerHTML=g;
+  const cur=vals[n-1], first=vals[0];
+  const now=$('sora-now'); if(now) now.innerHTML=`It is about <b>${cur.toFixed(2)}%</b> now, down from ${first.toFixed(2)}% ${n-1} months earlier.`;
+  const note=$('sora-note'); if(note) note.innerHTML=`Last ${n} months, month-end 3-month compounded SORA (curated from MAS-published SORA; indicative to ~5&thinsp;bp). Over the fuller cycle it was ${H.cycle||''}.`;
+}
 function renderKPIs(){
   const R=D.rules, M=D.market;
   const ppi=M.indices.ura_ppi, hdb=M.indices.hdb_rpi, live=M.live&&M.live.present;
   const k=[
-    {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'curated · '+R.rates.sora_3m.asof},
-    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'curated · promo 1–3 yr'},
-    {l:'TDSR stress floor',v:pct(R.tdsr.stress_rate,0),s:'loans sized at this rate'},
-    {l:'Private PPI',v:(ppi.yoy>=0?'+':'')+pct(ppi.yoy,1),s:ppi.asof+' · q/q '+(ppi.qoq>=0?'+':'')+pct(ppi.qoq,1)},
-    {l:'HDB resale RPI',v:(hdb.yoy>=0?'+':'')+pct(hdb.yoy,1),s:hdb.asof+' · q/q '+(hdb.qoq>=0?'+':'')+pct(hdb.qoq,1)},
-    {l:'GLS land bids',v:(M.gls.yoy>=0?'+':'')+pct(M.gls.yoy,0),s:'YoY · '+M.gls.asof.replace(' (live)','')}
+    {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'curated · '+R.rates.sora_3m.asof,src:'MAS',href:'https://www.mas.gov.sg/monetary-policy/sora'},
+    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'curated · promo 1–3 yr',src:'MoneySense',href:'https://www.moneysense.gov.sg/'},
+    {l:'TDSR stress floor',v:pct(R.tdsr.stress_rate,0),s:'loans sized at this rate',src:'MAS 645',href:'https://www.mas.gov.sg/regulation/notices/notice-645'},
+    {l:'Private PPI',v:(ppi.yoy>=0?'+':'')+pct(ppi.yoy,1),s:ppi.asof+' · q/q '+(ppi.qoq>=0?'+':'')+pct(ppi.qoq,1),src:'URA',href:'https://www.ura.gov.sg/Corporate/Property/Property-Data'},
+    {l:'HDB resale RPI',v:(hdb.yoy>=0?'+':'')+pct(hdb.yoy,1),s:hdb.asof+' · q/q '+(hdb.qoq>=0?'+':'')+pct(hdb.qoq,1),src:'data.gov.sg',href:'https://data.gov.sg/datasets/d_14f63e595975691e7c24a27ae4c07c79/view'},
+    {l:'GLS land bids',v:(M.gls.yoy>=0?'+':'')+pct(M.gls.yoy,0),s:'YoY · '+M.gls.asof.replace(' (live)',''),src:'URA',href:'https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites'}
   ];
-  $('kpis').innerHTML=k.map(x=>`<div class="kpi"><div class="label">${x.l}</div><div class="kpi-val">${x.v}</div><div class="kpi-sub">${x.s}</div></div>`).join('');
+  $('kpis').innerHTML=k.map(x=>`<div class="kpi"><div class="label">${x.l}</div><div class="kpi-val">${x.v}</div><div class="kpi-sub">${x.s}${x.href?` · <a class="ksrc" target="_blank" rel="noopener noreferrer" href="${x.href}">${x.src}&#8599;</a>`:''}</div></div>`).join('');
   const failed=(M.live&&M.live.failed)||[];
   if(live){
     // staleness in whole days via pure ms arithmetic (no month/day components are
@@ -1191,7 +1224,7 @@ function wire(){
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderFairValue(); renderAtGlance();
+    renderKPIs(); renderRatesChart(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderFairValue(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
