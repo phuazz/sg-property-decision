@@ -432,9 +432,11 @@ def ura_new_launches():
         tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
                   headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
         hdr = {**UA, "AccessKey": key, "Token": tok}
-        t = datetime.date.today(); yy = t.year % 100; mm = t.month; q = (mm - 1) // 3 + 1
-        pm = mm - 1 or 12; pyy = yy if mm > 1 else yy - 1
-        cands = [f"{mm:02d}{yy:02d}", f"{pm:02d}{pyy:02d}", f"{yy:02d}{mm:02d}", f"{yy:02d}q{q}", f"{pyy:02d}{pm:02d}"]
+        t = datetime.date.today(); yy = t.year % 100; mm = t.month
+        cands = []
+        for _ in range(7):  # mmyy, walking back to clear the developer-sales publication lag
+            cands.append(f"{mm:02d}{yy:02d}"); mm -= 1
+            if mm == 0: mm, yy = 12, yy - 1
         tried, res, working = {}, [], None
         for rp in cands:
             j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales&refPeriod={rp}",
