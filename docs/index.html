@@ -371,7 +371,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <p class="intro">Drill into individual condos: how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by district; click a column to sort.</p>
         <div class="field" style="max-width:340px;margin-bottom:10px"><input id="p-search" placeholder="Search project name…"></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px">
-          <span class="label" style="margin-right:2px">Districts <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— greener = more attractive, hover for metrics</span></span>
+          <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap any (pick as many as you like); ordered by attractiveness, greener = better, hover for detail</span></span>
           <span id="p-districts" style="display:contents"></span>
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
@@ -838,17 +838,20 @@ function renderProjects(){
   const P=D.market.projects, card=$('projects-card'); if(!card) return;
   if(!P||!P.rows||!P.rows.length){ card.style.display='none'; return; }
   const drows=(D.market.districts||{}).rows||[], dmed={}; drows.forEach(r=>dmed[r.d]=r.median_psf);
-  const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))].sort((a,b)=>(+a.slice(1))-(+b.slice(1)));
-  // cue each district chip by attractiveness (Balanced score): greener = more attractive, metrics on hover
-  const dsc={}, dnfo={};
+  const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))];
+  // recognisable area name + attractiveness (Balanced score) per district, so the filter reads by place and cues value
+  const dnm={}, dsc={}, dnfo={};
+  drows.forEach(r=>dnm[r.district]=r.name);
   if(drows.length){
     const ys=drows.map(r=>r.yield||0),ms=drows.map(r=>r.momentum==null?0:r.momentum),ls=drows.map(r=>Math.log(r.vol_12m||1)),ps=drows.map(r=>r.median_psf||0);
     drows.forEach(r=>{const s=Math.round(100*(_nz(ys,r.yield||0)+_nz(ms,r.momentum==null?0:r.momentum)+_nz(ls,Math.log(r.vol_12m||1))+(1-_nz(ps,r.median_psf||0)))/4);
       dsc[r.district]=s; dnfo[r.district]=`${r.district} ${r.name} — score ${s} · yield ${r.yield?pct(r.yield,1):'—'} · $${fmt0(r.median_psf)} psf · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}`;});
   }
+  const shortNm=d=>(dnm[d]||d).split('/')[0].trim();
+  allD.sort((a,b)=>(dsc[b]||0)-(dsc[a]||0)||(+a.slice(1))-(+b.slice(1)));  // most attractive first
   $('p-districts').innerHTML=allD.map(d=>{const s=dsc[d], act=_pdists.has(d);
-    const st=(!act&&s!=null)?` style="background:rgba(26,135,84,${(s/100*0.20).toFixed(3)});border-color:rgba(26,135,84,${(s/100*0.3+0.1).toFixed(3)})"`:'';
-    return `<button class="preset${act?' active':''}" data-d="${d}"${st} title="${dnfo[d]||d}">${d}</button>`;}).join('');
+    const st=(!act&&s!=null)?` style="background:rgba(26,135,84,${(s/100*0.22).toFixed(3)});border-color:rgba(26,135,84,${(s/100*0.35+0.12).toFixed(3)})"`:'';
+    return `<button class="preset${act?' active':''}" data-d="${d}"${st} title="${dnfo[d]||d}">${act?'&#10003; ':''}${shortNm(d)}</button>`;}).join('');
   $('p-clear').style.display=_pdists.size?'inline':'none';
   let rows=P.rows.filter(r=>r.median_psf);
   if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
