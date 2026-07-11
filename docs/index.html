@@ -83,7 +83,14 @@ h1,h2,h3{font-weight:400}
 .preset:hover{border-color:var(--b);color:var(--b)}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
 th.dsort:hover{color:var(--t1)}
-#district-map{margin:6px 0 14px}
+#district-map{position:relative;margin:6px 0 14px}
+#district-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:8px 11px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;white-space:nowrap}
+.dlegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--t2);margin:2px 0 8px}
+.dlegend span{display:inline-flex;align-items:center;gap:5px}
+.dlegend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.xlink{color:var(--b);text-decoration:none}
+.xlink:hover{text-decoration:underline}
+.xlinks{white-space:nowrap;font-size:11.5px}
 
 /* result tiles */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
@@ -354,7 +361,8 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3)">live URA resale data</em></h3>
         <p class="intro" id="district-intro"></p>
         <div class="presets" id="district-lenses"></div>
-        <div id="district-map"></div>
+        <div class="dlegend" id="district-legend"></div>
+        <div id="district-map"><div id="district-svg"></div><div id="district-tip"></div></div>
         <div class="tbl-wrap"><table id="district-table"></table></div>
         <div class="note" id="district-note"></div>
       </div>
@@ -372,6 +380,20 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       <div class="card">
         <h3>What S$1.2–1.5m buys today</h3>
         <div id="brief-map"></div>
+      </div>
+      <div class="card">
+        <h3>Useful links &amp; tools</h3>
+        <div style="font-size:13px;line-height:2.1">
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites">URA land-sales results</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.ura.gov.sg/maps/">URA Master Plan map</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.onemap.gov.sg/">OneMap (MRT / schools)</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.hdb.gov.sg/residential/buying-a-flat/resale">HDB resale</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.iras.gov.sg/taxes/stamp-duty/for-property">IRAS stamp duty</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.moneysense.gov.sg/">MoneySense</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://www.cpf.gov.sg/member/home-ownership">CPF for housing</a> ·
+          <a class="xlink" target="_blank" rel="noopener noreferrer" href="https://stackedhomes.com/editorial/">Stacked Homes explainers</a>
+        </div>
+        <div class="note">External links open in a new tab for convenience — official sources and reputable explainers, not endorsements or listings we vet; verify independently. The per-district <b>Listings / Map / Video</b> links in the table above open PropertyGuru, Google Maps and a YouTube search for that area.</div>
       </div>
     </div>
     <div class="nextnav"><button class="nextbtn" onclick="switchTab('afford')">Put it together: check affordability &rarr;</button></div>
@@ -703,8 +725,23 @@ function renderType(){
 
 /* ---------- render tab 4 ---------- */
 /* ---------- most attractive areas (live URA district data) ---------- */
-let _dlens='Balanced', _dsort='score';
+let _dlens='Balanced', _dsort='score', _dtipWired=false;
 const D_LENS={Balanced:{y:1,m:1,l:1,v:1},Yield:{y:3,m:1,l:1,v:1},Growth:{y:1,m:3,l:1,v:1},Liquidity:{y:1,m:1,l:3,v:1},Value:{y:1,m:1,l:1,v:3}};
+const _xa=(href,txt)=>`<a class="xlink" target="_blank" rel="noopener noreferrer" href="${href}">${txt}</a>`;
+const _gmap=q=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+' Singapore')}`;
+const _yt=q=>`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+const _pguru=n=>`https://www.propertyguru.com.sg/property-for-sale/p/district-${n}`;
+function _wireTip(){
+  if(_dtipWired) return; _dtipWired=true;
+  const map=$('district-map'), tip=$('district-tip'); if(!map||!tip) return;
+  map.addEventListener('mousemove',e=>{
+    const c=e.target.closest?e.target.closest('circle'):null, d=c&&c.getAttribute('data-tip');
+    if(d){const b=map.getBoundingClientRect();let x=e.clientX-b.left+14,y=e.clientY-b.top+14;if(x+195>b.width)x=e.clientX-b.left-195;if(x<4)x=4;
+      tip.innerHTML=d;tip.style.left=x+'px';tip.style.top=y+'px';tip.style.opacity='1';}
+    else tip.style.opacity='0';
+  });
+  map.addEventListener('mouseleave',()=>tip.style.opacity='0');
+}
 const _nz=(arr,v)=>{const lo=Math.min(...arr),hi=Math.max(...arr);return hi>lo?(v-lo)/(hi-lo):0.5;};
 function _scoreDistricts(rows){
   const ys=rows.map(r=>r.yield||0), ms=rows.map(r=>r.momentum==null?0:r.momentum),
@@ -728,8 +765,9 @@ function _valueMap(rows){
   g+=`<text x="16" y="${(m.t+H-m.b)/2}" text-anchor="middle" font-size="11" fill="var(--t2)" transform="rotate(-90 16 ${(m.t+H-m.b)/2})">Gross yield &rarr;</text>`;
   g+=`<text x="${m.l+6}" y="${m.t+2}" font-size="10.5" fill="var(--g)" font-weight="700">&#8598; more attractive: cheaper + higher yield</text>`;
   rows.forEach(r=>{const x=X(r.median_psf),y=Y((r.yield||0)*100);
-    g+=`<circle cx="${x}" cy="${y}" r="5" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.85"><title>${r.district} ${r.name}</title></circle>`+
-       `<text x="${x+7}" y="${y+3}" font-size="9.5" fill="var(--t2)" font-family="var(--mono)">${r.district}</text>`;});
+    const tip=`<b>${r.district} · ${r.name}</b><br>${r.region||'—'} · $${fmt0(r.median_psf)} psf<br>Yield ${r.yield?pct(r.yield,1):'—'} · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}<br>Vol ${fmt0(r.vol_12m)} · Score ${r.score}`.replace(/'/g,'');
+    g+=`<circle cx="${x}" cy="${y}" r="6" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.85" style="cursor:pointer" data-tip='${tip}'></circle>`+
+       `<text x="${x+8}" y="${y+3}" font-size="9.5" fill="var(--t2)" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
   return g+`</svg>`;
 }
 function renderDistricts(){
@@ -742,21 +780,24 @@ function renderDistricts(){
   }
   $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield, price, recent trend, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3)">${DS.n} districts · ${DS.basis}</span>`;
   $('district-lenses').innerHTML=Object.keys(D_LENS).map(k=>`<button class="preset${k===_dlens?' active':''}" data-lens="${k}">${k}</button>`).join('');
+  $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3)">&mdash; hover a dot for details</span>`;
   const scored=_scoreDistricts(DS.rows);
   const val=r=>_dsort==='name'?r.name:(_dsort==='district'?+r.d:(r[_dsort]==null?-1:r[_dsort]));
   scored.sort((a,b)=>_dsort==='name'?val(a).localeCompare(val(b)):val(b)-val(a));
-  $('district-map').innerHTML=_valueMap(scored);
+  $('district-svg').innerHTML=_valueMap(scored); _wireTip();
   const cols=[['district','Dist'],['name','Area'],['region','Seg'],['median_psf','Resale $psf'],['momentum','1yr'],['yield','Gross yld'],['vol_12m','Resale vol'],['score','Score']];
   const numk=['median_psf','momentum','yield','vol_12m','score'];
-  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}dsort" data-k="${k}">${l}${_dsort===k?' ▾':''}</th>`).join('');
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}dsort" data-k="${k}">${l}${_dsort===k?' ▾':''}</th>`).join('')+`<th>Explore</th>`;
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
-  const body=scored.map((r,i)=>`<tr${i<3?' style="background:var(--g-bg)"':''}><td class="mono">${r.district}</td><td>${r.name}</td>`+
+  const body=scored.map((r,i)=>{const area=r.name.split('/')[0].trim(), n=r.district.slice(1);
+    return `<tr${i<3?' style="background:var(--g-bg)"':''}><td class="mono">${r.district}</td><td>${r.name}</td>`+
     `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
     `<td class="num">$${fmt0(r.median_psf)}</td>`+
     `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
     `<td class="num">${r.yield?pct(r.yield,1):'—'}</td>`+
     `<td class="num">${fmt0(r.vol_12m)}</td>`+
-    `<td class="num"><b>${r.score}</b></td></tr>`).join('');
+    `<td class="num"><b>${r.score}</b></td>`+
+    `<td class="xlinks">${_xa(_pguru(n),'Listings')} &middot; ${_xa(_gmap(area),'Map')} &middot; ${_xa(_yt(area+' condo review'),'Video')}</td></tr>`;}).join('');
   $('district-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   $('district-lenses').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{_dlens=b.dataset.lens; renderDistricts();});
   $('district-table').querySelectorAll('.dsort').forEach(h=>h.onclick=()=>{_dsort=h.dataset.k; renderDistricts();});
@@ -782,7 +823,7 @@ function renderWhere(){
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
     G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
-      return `<tr><td>${t.site}${t.note?' <span class="chip chip-n" title="'+String(t.note).replace(/"/g,'')+'">i</span>':''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
+      return `<tr><td>${_xa(_gmap(t.site),t.site)}${t.note?`<div style="font-size:11px;color:var(--t3);margin-top:1px">${t.note}</div>`:''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
   $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) — but the average is <b>mix-unadjusted</b>: a year with more prime sites lifts it without any like-for-like inflation, so read it with the segment column. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there. Supply cuts both ways, though: the same nearby pipeline that floors prices also competes with your unit when you sell. Segment tags are approximated from the planning area — Bukit Timah-area sites can be CCR by postal district. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
 
   const b=D.market.brief, f=b.fit_summary;
