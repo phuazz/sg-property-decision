@@ -83,7 +83,7 @@ h1,h2,h3{font-weight:400}
 .preset:hover{border-color:var(--b);color:var(--b)}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
 th.dsort:hover{color:var(--t1)}
-#district-map{position:relative;margin:8px auto 16px;max-width:800px}
+#district-map{position:relative;margin:8px auto 16px;max-width:1080px}
 #district-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:8px 11px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;white-space:nowrap}
 .dlegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--t2);margin:2px 0 8px}
 .dlegend span{display:inline-flex;align-items:center;gap:5px}
@@ -369,9 +369,11 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
       <div class="card" id="projects-card">
         <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
         <p class="intro">Drill into individual condos: how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by district; click a column to sort.</p>
-        <div class="field-row" style="max-width:520px;margin-bottom:12px">
-          <div class="field" style="margin:0"><input id="p-search" placeholder="Search project name…"></div>
-          <div class="field" style="margin:0"><select id="p-district"></select></div>
+        <div class="field" style="max-width:340px;margin-bottom:10px"><input id="p-search" placeholder="Search project name…"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px">
+          <span class="label" style="margin-right:2px">Districts</span>
+          <span id="p-districts" style="display:contents"></span>
+          <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
         <div class="tbl-wrap"><table id="projects-table"></table></div>
         <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer.</div>
@@ -790,7 +792,7 @@ function _valueMap(rows){
   rows.forEach(r=>{const x=X(r.median_psf),y=Y((r.yield||0)*100), rad=4+(r.score||0)/100*7, isTop=top3.has(r.district);
     const tip=`<b>${r.district} · ${r.name}</b><br>${r.region||'—'} · $${fmt0(r.median_psf)} psf<br>Yield ${r.yield?pct(r.yield,1):'—'} · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}<br>Vol ${fmt0(r.vol_12m)} · Score ${r.score}`.replace(/'/g,'');
     g+=`<circle cx="${x}" cy="${y}" r="${rad.toFixed(1)}" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.82"${isTop?' stroke="var(--t1)" stroke-width="1.5"':''} style="cursor:pointer" data-tip='${tip}'></circle>`+
-       `<text x="${x+rad+3}" y="${y+3}" font-size="9.5" fill="${isTop?'var(--t1)':'var(--t2)'}" font-weight="${isTop?'700':'400'}" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
+       `<text x="${x+rad+3}" y="${y+3}" font-size="10.5" fill="${isTop?'var(--t1)':'var(--t2)'}" font-weight="${isTop?'700':'400'}" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
   return g+`</svg>`;
 }
 function renderDistricts(){
@@ -828,7 +830,7 @@ function renderDistricts(){
 }
 
 /* ---------- feature 2: project scorecard (turnover / lease / value) ---------- */
-let _psort='vol_12m', _pq='', _pdist='';
+let _psort='vol_12m', _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?l+'yr':'—');
@@ -836,13 +838,11 @@ function renderProjects(){
   const P=D.market.projects, card=$('projects-card'); if(!card) return;
   if(!P||!P.rows||!P.rows.length){ card.style.display='none'; return; }
   const drows=(D.market.districts||{}).rows||[], dmed={}; drows.forEach(r=>dmed[r.d]=r.median_psf);
-  const psel=$('p-district');
-  if(psel && !psel.dataset.filled){
-    psel.innerHTML='<option value="">All districts</option>'+drows.slice().sort((a,b)=>(+a.d)-(+b.d)).map(r=>`<option value="${r.district}">${r.district} · ${r.name}</option>`).join('');
-    psel.dataset.filled='1';
-  }
+  const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))].sort((a,b)=>(+a.slice(1))-(+b.slice(1)));
+  $('p-districts').innerHTML=allD.map(d=>`<button class="preset${_pdists.has(d)?' active':''}" data-d="${d}">${d}</button>`).join('');
+  $('p-clear').style.display=_pdists.size?'inline':'none';
   let rows=P.rows.filter(r=>r.median_psf);
-  if(_pdist) rows=rows.filter(r=>r.district===_pdist);
+  if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
   rows=rows.slice().sort((a,b)=>_psort==='project'?(a.project||'').localeCompare(b.project||''):
     _psort==='lease'?_leaseNum(b.lease)-_leaseNum(a.lease):
@@ -866,6 +866,8 @@ function renderProjects(){
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   $('projects-count').textContent=`${total} project${total===1?'':'s'} match${total===1?'es':''}${total>40?' — showing the top 40':''}`;
   $('projects-table').querySelectorAll('.psort').forEach(h=>h.onclick=()=>{_psort=h.dataset.k; renderProjects();});
+  $('p-districts').querySelectorAll('.preset').forEach(b=>b.onclick=()=>{const d=b.dataset.d;_pdists.has(d)?_pdists.delete(d):_pdists.add(d);renderProjects();});
+  $('p-clear').onclick=e=>{e.preventDefault();_pdists.clear();renderProjects();};
 }
 
 /* ---------- feature 4: is this asking price fair? ---------- */
@@ -1030,7 +1032,6 @@ function wire(){
   ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
   $('hook-budget').addEventListener('input',()=>{renderHook(); setMoney('i-price',$('hook-budget').value); renderAfford();});
   if($('p-search')) $('p-search').addEventListener('input',e=>{_pq=e.target.value.trim(); renderProjects();});
-  if($('p-district')) $('p-district').addEventListener('change',e=>{_pdist=e.target.value; renderProjects();});
   if($('f-district')) $('f-district').addEventListener('change',renderFairValue);
   if($('f-tenure')) $('f-tenure').addEventListener('change',renderFairValue);
   if($('f-project')) $('f-project').addEventListener('input',renderFairValue);
