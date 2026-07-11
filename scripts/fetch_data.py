@@ -432,24 +432,34 @@ def ura_new_launches():
         tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
                   headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
         hdr = {**UA, "AccessKey": key, "Token": tok}
-        t = datetime.date.today(); yy = t.year % 100; mm = t.month
-        cands = []
-        for _ in range(7):  # mmyy, walking back to clear the developer-sales publication lag
-            cands.append(f"{mm:02d}{yy:02d}"); mm -= 1
-            if mm == 0: mm, yy = 12, yy - 1
-        tried, res, working = {}, [], None
-        for rp in cands:
-            j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales&refPeriod={rp}",
-                    headers=hdr, timeout=60).json()
-            r = j.get("Result", []) if isinstance(j, dict) else []
-            tried[rp] = (j.get("Status") if isinstance(j, dict) else None, len(r))
-            if r and not res:
+        t = datetime.date.today(); yy, mm = t.year % 100, t.month
+        res, working = [], None
+        for _ in range(7):  # mmyy, walking back to clear the ~2-month developer-sales publication lag
+            rp = f"{mm:02d}{yy:02d}"
+            r = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales&refPeriod={rp}",
+                    headers=hdr, timeout=60).json().get("Result", [])
+            if r:
                 res, working = r, rp
-        out = {"tried": tried, "working": working, "n_projects": len(res)}
-        if res:
-            out["_proj_keys"] = list(res[0].keys())
-            out["_sample"] = json.dumps(res[0])[:1400]
-        return out
+                break
+            mm -= 1
+            if mm == 0:
+                mm, yy = 12, yy - 1
+        if not res:
+            return None
+        rows = []
+        for p in res:
+            ds = p.get("developerSales") or []
+            rec = max(ds, key=lambda x: x.get("refPeriod", "")) if ds else None
+            if not rec or not rec.get("medianPrice"):
+                continue
+            units, sold = rec.get("unitsAvail") or rec.get("launchedToDate"), rec.get("soldToDate")
+            rows.append({"project": p.get("project"), "developer": p.get("developer"),
+                         "region": p.get("marketSegment"), "district": "D" + str(p.get("district") or "").lstrip("0"),
+                         "psf": rec.get("medianPrice"), "units": units, "sold": sold,
+                         "takeup": (round(sold / units, 3) if units and sold else None)})
+        rows.sort(key=lambda r: -(r.get("sold") or 0))
+        return {"asof": working, "n": len(rows), "rows": rows,
+                "source": "URA PMI_Resi_Developer_Sales (new-sale median $psf, units, take-up, developer)"}
     except Exception as e:
         return {"error": repr(e)}
 
