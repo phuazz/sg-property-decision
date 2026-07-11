@@ -319,6 +319,42 @@ def ura_districts():
             "yield_ok": bool(rent), "basis": "resale condo, last 12 months",
             "source": "URA PMI_Resi_Transaction resale (12m median $psf / volume / momentum) + PMI_Resi_Rental (yield)"}
 
+def _mrt_exits():
+    """LTA MRT/LRT station exits (data.gov.sg, WGS84) -> [(lat, lon, station_name)]."""
+    meta = GET("https://api-open.data.gov.sg/v1/public/api/datasets/d_b39d3a0871985372d7e1637193335da5/poll-download", timeout=30).json()
+    url = meta.get("data", {}).get("url") or meta.get("url")
+    gj = GET(url, timeout=60).json()
+    out = []
+    for f in gj.get("features", []):
+        c = (f.get("geometry") or {}).get("coordinates")
+        st = (f.get("properties", {}) or {}).get("STATION_NA", "") or ""
+        if c and len(c) >= 2:
+            out.append((c[1], c[0], st.title().replace(" Mrt Station", "").replace(" Lrt Station", "").strip()))
+    return out
+
+def _add_mrt(rows):
+    """Annotate project rows (SVY21 x,y) with nearest MRT exit distance (m) + station. Best-effort; no-op on trouble."""
+    try:
+        import math
+        from pyproj import Transformer
+        exits = _mrt_exits()
+        if not exits:
+            return
+        tf = Transformer.from_crs("EPSG:3414", "EPSG:4326", always_xy=True)
+        def hav(a, b, c, d):
+            p = math.pi / 180
+            return 2 * 6371000.0 * math.asin(math.sqrt(
+                math.sin((c - a) * p / 2) ** 2 + math.cos(a * p) * math.cos(c * p) * math.sin((d - b) * p / 2) ** 2))
+        for r in rows:
+            try:
+                lon, lat = tf.transform(float(r["x"]), float(r["y"]))
+            except (TypeError, ValueError):
+                continue
+            best = min(exits, key=lambda e: hav(lat, lon, e[0], e[1]))
+            r["mrt_m"], r["mrt"] = round(hav(lat, lon, best[0], best[1])), best[2]
+    except Exception as e:
+        print(f"  note: MRT distances skipped ({e!r})")
+
 def ura_project_scorecard():
     """Per-project resale stats: median $psf (12m), volume (turnover), momentum, representative remaining
     lease, and SVY21 x/y (for the OneMap distance step). Resale-only, projects with a usable recent sample."""
@@ -367,8 +403,10 @@ def ura_project_scorecard():
                     "lease": (leases.most_common(1)[0][0] if leases else None),
                     "x": proj.get("x"), "y": proj.get("y")})
     out.sort(key=lambda r: -r["vol_12m"])
+    _add_mrt(out)
     return {"asof": cur.strftime("%Y-%m"), "n": len(out), "rows": out,
-            "source": "URA PMI_Resi_Transaction resale, per project"}
+            "mrt_ok": any("mrt_m" in r for r in out),
+            "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"}
 
 def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)

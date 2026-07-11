@@ -374,7 +374,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <div class="field" style="margin:0"><select id="p-district"></select></div>
         </div>
         <div class="tbl-wrap"><table id="projects-table"></table></div>
-        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits.</div>
+        <div class="note"><span id="projects-count"></span> · Resale only, last 12 months, projects with &ge;6 resale deals. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer.</div>
       </div>
       <div class="card" id="fair-card">
         <h3>Is this asking price fair?</h3>
@@ -843,9 +843,12 @@ function renderProjects(){
   if(_pdist) rows=rows.filter(r=>r.district===_pdist);
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
   rows=rows.slice().sort((a,b)=>_psort==='project'?(a.project||'').localeCompare(b.project||''):
-    _psort==='lease'?_leaseNum(b.lease)-_leaseNum(a.lease):((b[_psort]==null?-1e9:b[_psort])-(a[_psort]==null?-1e9:a[_psort])));
+    _psort==='lease'?_leaseNum(b.lease)-_leaseNum(a.lease):
+    _psort==='mrt_m'?((a.mrt_m==null?1e9:a.mrt_m)-(b.mrt_m==null?1e9:b.mrt_m)):
+    ((b[_psort]==null?-1e9:b[_psort])-(a[_psort]==null?-1e9:a[_psort])));
   const total=rows.length, shown=rows.slice(0,40);
-  const cols=[['project','Project'],['district','Dist'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover'],['lease','Lease']];
+  const hasMrt=(D.market.projects||{}).mrt_ok;
+  const cols=[['project','Project'],['district','Dist'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
   const numk=['median_psf','momentum','vol_12m','lease'];
   const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}">${l}${_psort===k?' ▾':''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
   const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
@@ -854,6 +857,7 @@ function renderProjects(){
       `<td class="num">$${fmt0(r.median_psf)}</td>`+
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
       `<td class="num">${fmt0(r.vol_12m)}</td>`+
+      (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+
       `<td class="num ${leaseCls}">${_leaseTxt(r.lease)}</td>`+
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');

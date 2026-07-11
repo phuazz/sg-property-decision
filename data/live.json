@@ -758,7 +758,9 @@
     "momentum": 0.093,
     "lease": 92,
     "x": "19797.85798",
-    "y": "33186.6657"
+    "y": "33186.6657",
+    "mrt_m": 607,
+    "mrt": "Clementi"
    },
    {
     "project": "TREASURE AT TAMPINES",
@@ -770,7 +772,9 @@
     "momentum": 0.037,
     "lease": 91,
     "x": "40757.33347",
-    "y": "36358.54887"
+    "y": "36358.54887",
+    "mrt_m": 706,
+    "mrt": "Simei"
    },
    {
     "project": "STIRLING RESIDENCES",
@@ -782,7 +786,9 @@
     "momentum": 0.003,
     "lease": 90,
     "x": "24800.93159",
-    "y": "30394.28968"
+    "y": "30394.28968",
+    "mrt_m": 388,
+    "mrt": "Queenstown"
    },
    {
     "project": "PARC ESTA",
@@ -794,7 +800,9 @@
     "momentum": 0.022,
     "lease": 91,
     "x": "35712.52927",
-    "y": "33393.94203"
+    "y": "33393.94203",
+    "mrt_m": 141,
+    "mrt": "Eunos"
    },
    {
     "project": "RIVERFRONT RESIDENCES",
@@ -806,7 +814,9 @@
     "momentum": 0.016,
     "lease": 91,
     "x": "35458.50239",
-    "y": "39364.6381"
+    "y": "39364.6381",
+    "mrt_m": 820,
+    "mrt": "Hougang"
    },
    {
     "project": "THE FLORENCE RESIDENCES",
@@ -818,7 +828,9 @@
     "momentum": 0.008,
     "lease": 91,
     "x": "33871.27918",
-    "y": "38787.35131"
+    "y": "38787.35131",
+    "mrt_m": 776,
+    "mrt": "Kovan"
    },
    {
     "project": "AFFINITY AT SERANGOON",
@@ -830,7 +842,9 @@
     "momentum": 0.03,
     "lease": 91,
     "x": "32408.2014883077",
-    "y": "38638.056207411"
+    "y": "38638.056207411",
+    "mrt_m": 1430,
+    "mrt": "Kovan"
    },
    {
     "project": "D'LEEDON",
@@ -842,7 +856,9 @@
     "momentum": 0.011,
     "lease": 83,
     "x": "24794.97409",
-    "y": "33173.15667"
+    "y": "33173.15667",
+    "mrt_m": 349,
+    "mrt": "Farrer Road"
    },
    {
     "project": "JADESCAPE",
@@ -854,7 +870,9 @@
     "momentum": 0.05,
     "lease": 91,
     "x": "28554.17812",
-    "y": "37102.33484"
+    "y": "37102.33484",
+    "mrt_m": 327,
+    "mrt": "Marymount"
    },
    {
     "project": "THE TRE VER",
@@ -866,7 +884,9 @@
     "momentum": 0.014,
     "lease": 91,
     "x": "31595.79282",
-    "y": "35408.07252"
+    "y": "35408.07252",
+    "mrt_m": 553,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "SIMS URBAN OASIS",
@@ -878,7 +898,9 @@
     "momentum": 0.006,
     "lease": 87,
     "x": "33307.06278",
-    "y": "33529.9945"
+    "y": "33529.9945",
+    "mrt_m": 373,
+    "mrt": "Aljunied"
    },
    {
     "project": "HIGH PARK RESIDENCES",
@@ -890,7 +912,9 @@
     "momentum": 0.018,
     "lease": 87,
     "x": "32599.66032",
-    "y": "42087.09637"
+    "y": "42087.09637",
+    "mrt_m": 107,
+    "mrt": "Thanggam"
    },
    {
     "project": "KINGSFORD WATERBAY",
@@ -902,7 +926,9 @@
     "momentum": 0.007,
     "lease": 87,
     "x": "35697.27417",
-    "y": "39452.99521"
+    "y": "39452.99521",
+    "mrt_m": 1065,
+    "mrt": "Hougang"
    },
    {
     "project": "AVENUE SOUTH RESIDENCE",
@@ -914,7 +940,9 @@
     "momentum": -0.003,
     "lease": 91,
     "x": "27597.65868",
-    "y": "28801.89427"
+    "y": "28801.89427",
+    "mrt_m": 1015,
+    "mrt": "Outram Park"
    },
    {
     "project": "REFLECTIONS AT KEPPEL BAY",
@@ -926,7 +954,9 @@
     "momentum": -0.016,
     "lease": 79,
     "x": "25516.36659",
-    "y": "27739.98731"
+    "y": "27739.98731",
+    "mrt_m": 417,
+    "mrt": "Telok Blangah"
    },
    {
     "project": "MIDWOOD",
@@ -938,7 +968,9 @@
     "momentum": -0.013,
     "lease": 91,
     "x": "20249.04677",
-    "y": "38461.5106"
+    "y": "38461.5106",
+    "mrt_m": 443,
+    "mrt": "Hillview"
    },
    {
     "project": "EIGHT RIVERSUITES",
@@ -950,7 +982,9 @@
     "momentum": -0.021,
     "lease": 84,
     "x": "31479.90364",
-    "y": "33732.08699"
+    "y": "33732.08699",
+    "mrt_m": 369,
+    "mrt": "Boon Keng"
    },
    {
     "project": "WHISTLER GRAND",
@@ -962,7 +996,9 @@
     "momentum": 0.034,
     "lease": 91,
     "x": "19209.44944",
-    "y": "33541.60842"
+    "y": "33541.60842",
+    "mrt_m": 1274,
+    "mrt": "Clementi"
    },
    {
     "project": "MARINA ONE RESIDENCES",
@@ -974,7 +1010,9 @@
     "momentum": -0.067,
     "lease": 84,
     "x": "30267.72638",
-    "y": "28854.49833"
+    "y": "28854.49833",
+    "mrt_m": 87,
+    "mrt": "Marina Bay"
    },
    {
     "project": "NORMANTON PARK",
@@ -986,7 +1024,9 @@
     "momentum": null,
     "lease": 92,
     "x": "23533.189352884",
-    "y": "29876.2396721336"
+    "y": "29876.2396721336",
+    "mrt_m": 1143,
+    "mrt": "Kent Ridge"
    },
    {
     "project": "BOTANIQUE AT BARTLEY",
@@ -998,7 +1038,9 @@
     "momentum": 0.037,
     "lease": 87,
     "x": "33448.47447",
-    "y": "36080.89312"
+    "y": "36080.89312",
+    "mrt_m": 228,
+    "mrt": "Bartley"
    },
    {
     "project": "PARK COLONIAL",
@@ -1010,7 +1052,9 @@
     "momentum": 0.03,
     "lease": 90,
     "x": "32091.15217",
-    "y": "35634.37107"
+    "y": "35634.37107",
+    "mrt_m": 48,
+    "mrt": "Woodleigh"
    },
    {
     "project": "THE GARDEN RESIDENCES",
@@ -1022,7 +1066,9 @@
     "momentum": 0.041,
     "lease": 90,
     "x": "32058.67668",
-    "y": "38662.36939"
+    "y": "38662.36939",
+    "mrt_m": 1675,
+    "mrt": "Serangoon"
    },
    {
     "project": "EUHABITAT",
@@ -1034,7 +1080,9 @@
     "momentum": -0.01,
     "lease": 83,
     "x": "36247.72416",
-    "y": "34423.11746"
+    "y": "34423.11746",
+    "mrt_m": 838,
+    "mrt": "Kaki Bukit"
    },
    {
     "project": "BARTLEY RIDGE",
@@ -1046,7 +1094,9 @@
     "momentum": 0.075,
     "lease": 85,
     "x": "33357.34992",
-    "y": "35916.62838"
+    "y": "35916.62838",
+    "mrt_m": 185,
+    "mrt": "Bartley"
    },
    {
     "project": "WATERTOWN",
@@ -1058,7 +1108,9 @@
     "momentum": 0.017,
     "lease": 84,
     "x": "35683.21349",
-    "y": "43157.81549"
+    "y": "43157.81549",
+    "mrt_m": 138,
+    "mrt": "Punggol"
    },
    {
     "project": "D'NEST",
@@ -1070,7 +1122,9 @@
     "momentum": 0.016,
     "lease": 83,
     "x": "40567.72901",
-    "y": "39126.44726"
+    "y": "39126.44726",
+    "mrt_m": 445,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "THE ALPS RESIDENCES",
@@ -1082,7 +1136,9 @@
     "momentum": -0.001,
     "lease": 88,
     "x": "38727.87581",
-    "y": "37414.33513"
+    "y": "37414.33513",
+    "mrt_m": 1375,
+    "mrt": "Tampines West"
    },
    {
     "project": "THE TRILINQ",
@@ -1094,7 +1150,9 @@
     "momentum": 0.023,
     "lease": 85,
     "x": "19966.91281",
-    "y": "33433.18732"
+    "y": "33433.18732",
+    "mrt_m": 560,
+    "mrt": "Clementi"
    },
    {
     "project": "THE BAYSHORE",
@@ -1106,7 +1164,9 @@
     "momentum": -0.004,
     "lease": 66,
     "x": "39798.51412",
-    "y": "32767.93705"
+    "y": "32767.93705",
+    "mrt_m": 156,
+    "mrt": "Bayshore"
    },
    {
     "project": "THE GLADES",
@@ -1118,7 +1178,9 @@
     "momentum": -0.02,
     "lease": 86,
     "x": "40737.55068",
-    "y": "34367.70272"
+    "y": "34367.70272",
+    "mrt_m": 221,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "COMMONWEALTH TOWERS",
@@ -1130,7 +1192,9 @@
     "momentum": 0.04,
     "lease": 86,
     "x": "25017.08346",
-    "y": "30871.2987"
+    "y": "30871.2987",
+    "mrt_m": 104,
+    "mrt": "Queenstown"
    },
    {
     "project": "A TREASURE TROVE",
@@ -1142,7 +1206,9 @@
     "momentum": 0.051,
     "lease": 84,
     "x": "35452.27422",
-    "y": "43066.90942"
+    "y": "43066.90942",
+    "mrt_m": 223,
+    "mrt": "Punggol"
    },
    {
     "project": "COCO PALMS",
@@ -1154,7 +1220,9 @@
     "momentum": -0.002,
     "lease": 81,
     "x": "40591.77093",
-    "y": "39281.67731"
+    "y": "39281.67731",
+    "mrt_m": 334,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "LAKE GRANDE",
@@ -1166,7 +1234,9 @@
     "momentum": 0.027,
     "lease": 88,
     "x": "15836.60154",
-    "y": "36415.23868"
+    "y": "36415.23868",
+    "mrt_m": 294,
+    "mrt": "Lakeside"
    },
    {
     "project": "PARC RIVIERA",
@@ -1178,7 +1248,9 @@
     "momentum": 0.056,
     "lease": 88,
     "x": "19093.70854",
-    "y": "33652.48025"
+    "y": "33652.48025",
+    "mrt_m": 1424,
+    "mrt": "Clementi"
    },
    {
     "project": "RIPPLE BAY",
@@ -1190,7 +1262,9 @@
     "momentum": 0.022,
     "lease": 84,
     "x": "42208.82231",
-    "y": "39918.50739"
+    "y": "39918.50739",
+    "mrt_m": 1387,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "THE PALETTE",
@@ -1202,7 +1276,9 @@
     "momentum": 0.014,
     "lease": 83,
     "x": "40287.21638",
-    "y": "39128.42273"
+    "y": "39128.42273",
+    "mrt_m": 675,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "CARIBBEAN AT KEPPEL BAY",
@@ -1214,7 +1290,9 @@
     "momentum": 0.029,
     "lease": 72,
     "x": "25917.2871",
-    "y": "27763.86233"
+    "y": "27763.86233",
+    "mrt_m": 644,
+    "mrt": "Telok Blangah"
    },
    {
     "project": "THE TAPESTRY",
@@ -1226,7 +1304,9 @@
     "momentum": 0.014,
     "lease": 90,
     "x": "38604.46386",
-    "y": "37333.61995"
+    "y": "37333.61995",
+    "mrt_m": 1408,
+    "mrt": "Tampines West"
    },
    {
     "project": "QUEENS PEAK",
@@ -1238,7 +1318,9 @@
     "momentum": 0.02,
     "lease": 88,
     "x": "25073.21159",
-    "y": "30746.7066"
+    "y": "30746.7066",
+    "mrt_m": 79,
+    "mrt": "Queenstown"
    },
    {
     "project": "THE MINTON",
@@ -1250,7 +1332,9 @@
     "momentum": 0.032,
     "lease": 80,
     "x": "33397.36401",
-    "y": "37061.4256"
+    "y": "37061.4256",
+    "mrt_m": 851,
+    "mrt": "Serangoon"
    },
    {
     "project": "SYMPHONY SUITES",
@@ -1262,7 +1346,9 @@
     "momentum": 0.03,
     "lease": 87,
     "x": "29227.73943",
-    "y": "46384.49485"
+    "y": "46384.49485",
+    "mrt_m": 1182,
+    "mrt": "Yishun"
    },
    {
     "project": "JEWEL @ BUANGKOK",
@@ -1274,7 +1360,9 @@
     "momentum": 0.069,
     "lease": 85,
     "x": "34531.02649",
-    "y": "40361.01587"
+    "y": "40361.01587",
+    "mrt_m": 222,
+    "mrt": "Buangkok"
    },
    {
     "project": "MANDARIN GARDENS",
@@ -1286,7 +1374,9 @@
     "momentum": -0.01,
     "lease": 55,
     "x": "38215.19543",
-    "y": "32224.38887"
+    "y": "32224.38887",
+    "mrt_m": 429,
+    "mrt": "Siglap"
    },
    {
     "project": "THE LAKESHORE",
@@ -1298,7 +1388,9 @@
     "momentum": 0.009,
     "lease": 75,
     "x": "15704.10937",
-    "y": "36488.45945"
+    "y": "36488.45945",
+    "mrt_m": 251,
+    "mrt": "Lakeside"
    },
    {
     "project": "COSTA DEL SOL",
@@ -1310,7 +1402,9 @@
     "momentum": 0.064,
     "lease": 70,
     "x": "39903.00247",
-    "y": "32699.49736"
+    "y": "32699.49736",
+    "mrt_m": 49,
+    "mrt": "Bayshore"
    },
    {
     "project": "MELVILLE PARK",
@@ -1322,7 +1416,9 @@
     "momentum": 0.047,
     "lease": 65,
     "x": "41943.27856",
-    "y": "36540.56584"
+    "y": "36540.56584",
+    "mrt_m": 587,
+    "mrt": "Upper Changi"
    },
    {
     "project": "BARTLEY RESIDENCES",
@@ -1334,7 +1430,9 @@
     "momentum": 0.001,
     "lease": 84,
     "x": "33247.2431",
-    "y": "36114.49085"
+    "y": "36114.49085",
+    "mrt_m": 74,
+    "mrt": "Bartley"
    },
    {
     "project": "PARC ROSEWOOD",
@@ -1346,7 +1444,9 @@
     "momentum": -0.078,
     "lease": 84,
     "x": "22739.74394",
-    "y": "45447.74591"
+    "y": "45447.74591",
+    "mrt_m": 776,
+    "mrt": "Woodlands South"
    },
    {
     "project": "KENT RIDGE HILL RESIDENCES",
@@ -1358,7 +1458,9 @@
     "momentum": 0.008,
     "lease": 91,
     "x": "23270.4835354934",
-    "y": "29259.7286110323"
+    "y": "29259.7286110323",
+    "mrt_m": 560,
+    "mrt": "Pasir Panjang"
    },
    {
     "project": "THE POIZ RESIDENCES",
@@ -1370,7 +1472,9 @@
     "momentum": 0.028,
     "lease": 87,
     "x": "31747.9998",
-    "y": "34860.98774"
+    "y": "34860.98774",
+    "mrt_m": 197,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "DAINTREE RESIDENCE",
@@ -1382,7 +1486,9 @@
     "momentum": -0.023,
     "lease": 90,
     "x": "21058.09275",
-    "y": "35761.35486"
+    "y": "35761.35486",
+    "mrt_m": 537,
+    "mrt": "Beauty World"
    },
    {
     "project": "GRANDEUR PARK RESIDENCES",
@@ -1394,7 +1500,9 @@
     "momentum": 0.028,
     "lease": 89,
     "x": "40411.37998",
-    "y": "34125.4454"
+    "y": "34125.4454",
+    "mrt_m": 243,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "LAKEVILLE",
@@ -1406,7 +1514,9 @@
     "momentum": 0.027,
     "lease": 86,
     "x": "16053.40995",
-    "y": "36364.19176"
+    "y": "36364.19176",
+    "mrt_m": 482,
+    "mrt": "Lakeside"
    },
    {
     "project": "PARC BOTANNIA",
@@ -1418,7 +1528,9 @@
     "momentum": 0.002,
     "lease": 89,
     "x": "32668.60364",
-    "y": "42208.54218"
+    "y": "42208.54218",
+    "mrt_m": 94,
+    "mrt": "Thanggam"
    },
    {
     "project": "THE INTERLACE",
@@ -1430,7 +1542,9 @@
     "momentum": 0.009,
     "lease": 82,
     "x": "24628.43429",
-    "y": "29404.85109"
+    "y": "29404.85109",
+    "mrt_m": 1125,
+    "mrt": "Labrador Park"
    },
    {
     "project": "GEM RESIDENCES",
@@ -1442,7 +1556,9 @@
     "momentum": 0.065,
     "lease": 88,
     "x": "29992.76342",
-    "y": "35722.73803"
+    "y": "35722.73803",
+    "mrt_m": 446,
+    "mrt": "Braddell"
    },
    {
     "project": "PARC OLYMPIA",
@@ -1454,7 +1570,9 @@
     "momentum": 0.036,
     "lease": 85,
     "x": "42624.40303",
-    "y": "37465.37336"
+    "y": "37465.37336",
+    "mrt_m": 1004,
+    "mrt": "Tampines East"
    },
    {
     "project": "CLAVON",
@@ -1466,7 +1584,9 @@
     "momentum": null,
     "lease": 92,
     "x": "20628.9284312595",
-    "y": "32314.2656786125"
+    "y": "32314.2656786125",
+    "mrt_m": 641,
+    "mrt": "Clementi"
    },
    {
     "project": "MARTIN MODERN",
@@ -1478,7 +1598,9 @@
     "momentum": 0.032,
     "lease": 89,
     "x": "28532.67705",
-    "y": "30653.80865"
+    "y": "30653.80865",
+    "mrt_m": 467,
+    "mrt": "Great World"
    },
    {
     "project": "SEASIDE RESIDENCES",
@@ -1490,7 +1612,9 @@
     "momentum": 0.012,
     "lease": 89,
     "x": "38389.86367",
-    "y": "32192.78661"
+    "y": "32192.78661",
+    "mrt_m": 284,
+    "mrt": "Siglap"
    },
    {
     "project": "THE SANTORINI",
@@ -1502,7 +1626,9 @@
     "momentum": 0.033,
     "lease": 86,
     "x": "38555.4185",
-    "y": "37086.10729"
+    "y": "37086.10729",
+    "mrt_m": 1301,
+    "mrt": "Tampines West"
    },
    {
     "project": "THE PANORAMA",
@@ -1514,7 +1640,9 @@
     "momentum": 0.045,
     "lease": 86,
     "x": "28122.81807",
-    "y": "39721.36481"
+    "y": "39721.36481",
+    "mrt_m": 351,
+    "mrt": "Mayflower"
    },
    {
     "project": "HEDGES PARK CONDOMINIUM",
@@ -1526,7 +1654,9 @@
     "momentum": 0.011,
     "lease": 83,
     "x": "42960.69685",
-    "y": "37356.23655"
+    "y": "37356.23655",
+    "mrt_m": 1349,
+    "mrt": "Tampines East"
    },
    {
     "project": "J GATEWAY",
@@ -1538,7 +1668,9 @@
     "momentum": 0.06,
     "lease": 85,
     "x": "17807.30864",
-    "y": "35386.56966"
+    "y": "35386.56966",
+    "mrt_m": 257,
+    "mrt": "Jurong East"
    },
    {
     "project": "ARCHIPELAGO",
@@ -1550,7 +1682,9 @@
     "momentum": 0.037,
     "lease": 84,
     "x": "37721.7980206817",
-    "y": "35569.8113532287"
+    "y": "35569.8113532287",
+    "mrt_m": 429,
+    "mrt": "Bedok North"
    },
    {
     "project": "RIVERSAILS",
@@ -1562,7 +1696,9 @@
     "momentum": 0.036,
     "lease": 84,
     "x": "35676.3551",
-    "y": "40011.12927"
+    "y": "40011.12927",
+    "mrt_m": 628,
+    "mrt": "Kangkar"
    },
    {
     "project": "THE SAIL @ MARINA BAY",
@@ -1574,7 +1710,9 @@
     "momentum": 0.026,
     "lease": 75,
     "x": "30152.38281",
-    "y": "29246.50498"
+    "y": "29246.50498",
+    "mrt_m": 111,
+    "mrt": "Downtown"
    },
    {
     "project": "LIVIA",
@@ -1586,7 +1724,9 @@
     "momentum": 0.007,
     "lease": 81,
     "x": "40175.7153",
-    "y": "39398.88111"
+    "y": "39398.88111",
+    "mrt_m": 713,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "URBAN VISTA",
@@ -1598,7 +1738,9 @@
     "momentum": 0.04,
     "lease": 85,
     "x": "40373.23248",
-    "y": "34422.41382"
+    "y": "34422.41382",
+    "mrt_m": 148,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "ECO",
@@ -1610,7 +1752,9 @@
     "momentum": 0.014,
     "lease": 85,
     "x": "40492.88141",
-    "y": "33975.08625"
+    "y": "33975.08625",
+    "mrt_m": 371,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "SILVERSEA",
@@ -1622,7 +1766,9 @@
     "momentum": 0.004,
     "lease": 80,
     "x": "35766.11671",
-    "y": "31372.56959"
+    "y": "31372.56959",
+    "mrt_m": 327,
+    "mrt": "Marine Parade"
    },
    {
     "project": "LE QUEST",
@@ -1634,7 +1780,9 @@
     "momentum": 0.012,
     "lease": 89,
     "x": "17792.13824",
-    "y": "37546.43235"
+    "y": "37546.43235",
+    "mrt_m": 1148,
+    "mrt": "Bukit Batok"
    },
    {
     "project": "THE RESIDENCES AT W SINGAPORE SENTOSA COVE",
@@ -1646,7 +1794,9 @@
     "momentum": -0.005,
     "lease": 79,
     "x": "29084.63574",
-    "y": "25458.65878"
+    "y": "25458.65878",
+    "mrt_m": 3080,
+    "mrt": "Harbourfront"
    },
    {
     "project": "TWIN VEW",
@@ -1658,7 +1808,9 @@
     "momentum": 0.029,
     "lease": 90,
     "x": "19027.87153",
-    "y": "33550.02134"
+    "y": "33550.02134",
+    "mrt_m": 1447,
+    "mrt": "Clementi"
    },
    {
     "project": "SOPHIA HILLS",
@@ -1670,7 +1822,9 @@
     "momentum": -0.012,
     "lease": 86,
     "x": "29599.86877",
-    "y": "31428.74031"
+    "y": "31428.74031",
+    "mrt_m": 227,
+    "mrt": "Dhoby Ghaut"
    },
    {
     "project": "PALM ISLES",
@@ -1682,7 +1836,9 @@
     "momentum": -0.016,
     "lease": 84,
     "x": "42536.79834",
-    "y": "37570.2551"
+    "y": "37570.2551",
+    "mrt_m": 917,
+    "mrt": "Tampines East"
    },
    {
     "project": "BRADDELL VIEW",
@@ -1694,7 +1850,9 @@
     "momentum": 0.029,
     "lease": 54,
     "x": "28996.55563",
-    "y": "35915.49087"
+    "y": "35915.49087",
+    "mrt_m": 377,
+    "mrt": "Caldecott"
    },
    {
     "project": "EASTPOINT GREEN",
@@ -1706,7 +1864,9 @@
     "momentum": 0.029,
     "lease": 69,
     "x": "41023.62286",
-    "y": "35634.30173"
+    "y": "35634.30173",
+    "mrt_m": 600,
+    "mrt": "Simei"
    },
    {
     "project": "RIVER ISLES",
@@ -1718,7 +1878,9 @@
     "momentum": 0.059,
     "lease": 85,
     "x": "36947.39763",
-    "y": "42103.87234"
+    "y": "42103.87234",
+    "mrt_m": 360,
+    "mrt": "Coral Edge"
    },
    {
     "project": "KINGSFORD . HILLVIEW PEAK",
@@ -1730,7 +1892,9 @@
     "momentum": -0.017,
     "lease": 85,
     "x": "20304.46394",
-    "y": "38537.21461"
+    "y": "38537.21461",
+    "mrt_m": 444,
+    "mrt": "Hillview"
    },
    {
     "project": "THE TENNERY",
@@ -1742,7 +1906,9 @@
     "momentum": 0.019,
     "lease": 83,
     "x": "19818.50892",
-    "y": "40272.3726"
+    "y": "40272.3726",
+    "mrt_m": 37,
+    "mrt": "Bukit Panjang"
    },
    {
     "project": "HILLION RESIDENCES",
@@ -1754,7 +1920,9 @@
     "momentum": -0.004,
     "lease": 86,
     "x": "20281.07517",
-    "y": "40071.49622"
+    "y": "40071.49622",
+    "mrt_m": 106,
+    "mrt": "Bukit Panjang"
    },
    {
     "project": "SKIES MILTONIA",
@@ -1766,7 +1934,9 @@
     "momentum": 0.045,
     "lease": 85,
     "x": "29553.09048",
-    "y": "44459.53099"
+    "y": "44459.53099",
+    "mrt_m": 1562,
+    "mrt": "Khatib"
    },
    {
     "project": "THE CREST",
@@ -1778,7 +1948,9 @@
     "momentum": 0.028,
     "lease": 85,
     "x": "26574.01896",
-    "y": "30611.87535"
+    "y": "30611.87535",
+    "mrt_m": 542,
+    "mrt": "Redhill"
    },
    {
     "project": "ECHELON",
@@ -1790,7 +1962,9 @@
     "momentum": 0.027,
     "lease": 85,
     "x": "26280.36259",
-    "y": "30334.28322"
+    "y": "30334.28322",
+    "mrt_m": 142,
+    "mrt": "Redhill"
    },
    {
     "project": "DUO RESIDENCES",
@@ -1802,7 +1976,9 @@
     "momentum": 0.018,
     "lease": 84,
     "x": "30731.18944",
-    "y": "31280.37116"
+    "y": "31280.37116",
+    "mrt_m": 108,
+    "mrt": "Bugis"
    },
    {
     "project": "AMBER PARK",
@@ -1814,7 +1990,9 @@
     "momentum": 0.019,
     "lease": "FH",
     "x": "35333.0562",
-    "y": "31414.79391"
+    "y": "31414.79391",
+    "mrt_m": 167,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "THE LUXURIE",
@@ -1826,7 +2004,9 @@
     "momentum": 0.107,
     "lease": 84,
     "x": "35025.43012",
-    "y": "41198.909"
+    "y": "41198.909",
+    "mrt_m": 263,
+    "mrt": "Sengkang"
    },
    {
     "project": "FLAMINGO VALLEY",
@@ -1838,7 +2018,9 @@
     "momentum": 0.107,
     "lease": "FH",
     "x": "37987.83212",
-    "y": "33288.66962"
+    "y": "33288.66962",
+    "mrt_m": 970,
+    "mrt": "Bedok"
    },
    {
     "project": "THE SKYWOODS",
@@ -1850,7 +2032,9 @@
     "momentum": 0.032,
     "lease": 85,
     "x": "21110.68277",
-    "y": "38640.92461"
+    "y": "38640.92461",
+    "mrt_m": 550,
+    "mrt": "Hillview"
    },
    {
     "project": "NORTH PARK RESIDENCES",
@@ -1862,7 +2046,9 @@
     "momentum": -0.015,
     "lease": 88,
     "x": "28390.14699",
-    "y": "45560.43713"
+    "y": "45560.43713",
+    "mrt_m": 200,
+    "mrt": "Yishun"
    },
    {
     "project": "CITY GATE",
@@ -1874,7 +2060,9 @@
     "momentum": -0.007,
     "lease": 87,
     "x": "31220.91906",
-    "y": "31632.51122"
+    "y": "31632.51122",
+    "mrt_m": 279,
+    "mrt": "Nicoll Highway"
    },
    {
     "project": "ALEX RESIDENCES",
@@ -1886,7 +2074,9 @@
     "momentum": 0.005,
     "lease": 86,
     "x": "26406.55166",
-    "y": "30330.19689"
+    "y": "30330.19689",
+    "mrt_m": 229,
+    "mrt": "Redhill"
    },
    {
     "project": "DOVER PARKVIEW",
@@ -1898,7 +2088,9 @@
     "momentum": 0.012,
     "lease": 66,
     "x": "22549.76988",
-    "y": "32046.80403"
+    "y": "32046.80403",
+    "mrt_m": 692,
+    "mrt": "Buona Vista"
    },
    {
     "project": "PRINCIPAL GARDEN",
@@ -1910,7 +2102,9 @@
     "momentum": -0.001,
     "lease": 87,
     "x": "26833.45669",
-    "y": "30529.79021"
+    "y": "30529.79021",
+    "mrt_m": 699,
+    "mrt": "Redhill"
    },
    {
     "project": "OUE TWIN PEAKS",
@@ -1922,7 +2116,9 @@
     "momentum": -0.035,
     "lease": 83,
     "x": "28012.12948",
-    "y": "31280.89314"
+    "y": "31280.89314",
+    "mrt_m": 291,
+    "mrt": "Great World"
    },
    {
     "project": "THOMSON THREE",
@@ -1934,7 +2130,9 @@
     "momentum": 0.022,
     "lease": 85,
     "x": "27782.41394",
-    "y": "37721.46439"
+    "y": "37721.46439",
+    "mrt_m": 194,
+    "mrt": "Upper Thomson"
    },
    {
     "project": "Q BAY RESIDENCES",
@@ -1946,7 +2144,9 @@
     "momentum": 0.006,
     "lease": 85,
     "x": "38445.13607",
-    "y": "37043.88119"
+    "y": "37043.88119",
+    "mrt_m": 1377,
+    "mrt": "Tampines West"
    },
    {
     "project": "CENTRO RESIDENCES",
@@ -1958,7 +2158,9 @@
     "momentum": 0.04,
     "lease": 80,
     "x": "29676.85614",
-    "y": "39146.80859"
+    "y": "39146.80859",
+    "mrt_m": 143,
+    "mrt": "Ang Mo Kio"
    },
    {
     "project": "SANCTUARY GREEN",
@@ -1970,7 +2172,9 @@
     "momentum": -0.01,
     "lease": 70,
     "x": "32238.68643",
-    "y": "31013.5486"
+    "y": "31013.5486",
+    "mrt_m": 233,
+    "mrt": "Tanjong Rhu"
    },
    {
     "project": "PARC OASIS",
@@ -1982,7 +2186,9 @@
     "momentum": -0.002,
     "lease": 64,
     "x": "16875.89713",
-    "y": "36259.52241"
+    "y": "36259.52241",
+    "mrt_m": 233,
+    "mrt": "Chinese Garden"
    },
    {
     "project": "ICON",
@@ -1994,7 +2200,9 @@
     "momentum": -0.047,
     "lease": 75,
     "x": "29243.99192",
-    "y": "28627.34247"
+    "y": "28627.34247",
+    "mrt_m": 143,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "KOPAR AT NEWTON",
@@ -2006,7 +2214,9 @@
     "momentum": -0.048,
     "lease": 92,
     "x": "28833.23719",
-    "y": "32780.65526"
+    "y": "32780.65526",
+    "mrt_m": 297,
+    "mrt": "Newton"
    },
    {
     "project": "SIGNATURE PARK",
@@ -2018,7 +2228,9 @@
     "momentum": 0.032,
     "lease": "FH",
     "x": "20702.19548",
-    "y": "35932.73624"
+    "y": "35932.73624",
+    "mrt_m": 858,
+    "mrt": "Beauty World"
    },
    {
     "project": "COSTA RHU",
@@ -2030,7 +2242,9 @@
     "momentum": 0.023,
     "lease": 67,
     "x": "31737.17784",
-    "y": "31050.75479"
+    "y": "31050.75479",
+    "mrt_m": 419,
+    "mrt": "Nicoll Highway"
    },
    {
     "project": "CARISSA PARK CONDOMINIUM",
@@ -2042,7 +2256,9 @@
     "momentum": 0.075,
     "lease": "FH",
     "x": "42588.73299",
-    "y": "37930.06537"
+    "y": "37930.06537",
+    "mrt_m": 1000,
+    "mrt": "Tampines East"
    },
    {
     "project": "NV RESIDENCES",
@@ -2054,7 +2270,9 @@
     "momentum": 0.061,
     "lease": 81,
     "x": "40254.51031",
-    "y": "39311.09561"
+    "y": "39311.09561",
+    "mrt_m": 646,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "WATERFRONT ISLE",
@@ -2066,7 +2284,9 @@
     "momentum": 0.084,
     "lease": 82,
     "x": "38517.11013",
-    "y": "35521.92669"
+    "y": "35521.92669",
+    "mrt_m": 578,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "VALLEY PARK",
@@ -2078,7 +2298,9 @@
     "momentum": 0.06,
     "lease": 850,
     "x": "27472.37511",
-    "y": "30618.07221"
+    "y": "30618.07221",
+    "mrt_m": 451,
+    "mrt": "Great World"
    },
    {
     "project": "THE INFLORA",
@@ -2090,7 +2312,9 @@
     "momentum": -0.019,
     "lease": 85,
     "x": "42794.95049",
-    "y": "37595.31942"
+    "y": "37595.31942",
+    "mrt_m": 1175,
+    "mrt": "Tampines East"
    },
    {
     "project": "BAYSHORE PARK",
@@ -2102,7 +2326,9 @@
     "momentum": 0.023,
     "lease": 55,
     "x": "39647.6014",
-    "y": "32564.2617"
+    "y": "32564.2617",
+    "mrt_m": 338,
+    "mrt": "Bayshore"
    },
    {
     "project": "WATERVIEW",
@@ -2114,7 +2340,9 @@
     "momentum": 0.035,
     "lease": 83,
     "x": "38344.7582",
-    "y": "36673.7654"
+    "y": "36673.7654",
+    "mrt_m": 1350,
+    "mrt": "Tampines West"
    },
    {
     "project": "FOREST WOODS",
@@ -2126,7 +2354,9 @@
     "momentum": 0.033,
     "lease": 89,
     "x": "32788.1857",
-    "y": "37054.92915"
+    "y": "37054.92915",
+    "mrt_m": 279,
+    "mrt": "Serangoon"
    },
    {
     "project": "DOUBLE BAY RESIDENCES",
@@ -2138,7 +2368,9 @@
     "momentum": 0.04,
     "lease": 81,
     "x": "41679.81417",
-    "y": "35874.35874"
+    "y": "35874.35874",
+    "mrt_m": 346,
+    "mrt": "Simei"
    },
    {
     "project": "BOATHOUSE RESIDENCES",
@@ -2150,7 +2382,9 @@
     "momentum": 0.057,
     "lease": 84,
     "x": "35690.9541",
-    "y": "39778.01067"
+    "y": "39778.01067",
+    "mrt_m": 862,
+    "mrt": "Kangkar"
    },
    {
     "project": "RIVERBANK @ FERNVALE",
@@ -2162,7 +2396,9 @@
     "momentum": 0.029,
     "lease": 86,
     "x": "33370.91969",
-    "y": "41829.04532"
+    "y": "41829.04532",
+    "mrt_m": 313,
+    "mrt": "Layar"
    },
    {
     "project": "THE HILLIER",
@@ -2174,7 +2410,9 @@
     "momentum": -0.037,
     "lease": 84,
     "x": "20299.96403",
-    "y": "38342.98919"
+    "y": "38342.98919",
+    "mrt_m": 348,
+    "mrt": "Hillview"
    },
    {
     "project": "V ON SHENTON",
@@ -2186,7 +2424,9 @@
     "momentum": -0.068,
     "lease": 84,
     "x": "29765.39916",
-    "y": "28838.92043"
+    "y": "28838.92043",
+    "mrt_m": 122,
+    "mrt": "Shenton Way"
    },
    {
     "project": "RIVERSOUND RESIDENCE",
@@ -2198,7 +2438,9 @@
     "momentum": 0.02,
     "lease": 84,
     "x": "35707.41081",
-    "y": "40350.03295"
+    "y": "40350.03295",
+    "mrt_m": 289,
+    "mrt": "Kangkar"
    },
    {
     "project": "THE CASCADIA",
@@ -2210,7 +2452,9 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "22905.70517",
-    "y": "35125.60822"
+    "y": "35125.60822",
+    "mrt_m": 402,
+    "mrt": "King Albert Park"
    },
    {
     "project": "AQUARIUS BY THE PARK",
@@ -2222,7 +2466,9 @@
     "momentum": 0.008,
     "lease": 69,
     "x": "39394.89086",
-    "y": "35509.22943"
+    "y": "35509.22943",
+    "mrt_m": 264,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "LA FIESTA",
@@ -2234,7 +2480,9 @@
     "momentum": 0.053,
     "lease": 85,
     "x": "34899.3933",
-    "y": "41195.80129"
+    "y": "41195.80129",
+    "mrt_m": 228,
+    "mrt": "Sengkang"
    },
    {
     "project": "CASA MERAH",
@@ -2246,7 +2494,9 @@
     "momentum": 0.029,
     "lease": 79,
     "x": "40489.28674",
-    "y": "34527.58263"
+    "y": "34527.58263",
+    "mrt_m": 164,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "RIVERVALE CREST",
@@ -2258,7 +2508,9 @@
     "momentum": 0.007,
     "lease": 70,
     "x": "35894.28058",
-    "y": "41518.47888"
+    "y": "41518.47888",
+    "mrt_m": 201,
+    "mrt": "Rumbia"
    },
    {
     "project": "THE CLEMENT CANOPY",
@@ -2270,7 +2522,9 @@
     "momentum": 0.03,
     "lease": 89,
     "x": "20790.40019",
-    "y": "32111.23165"
+    "y": "32111.23165",
+    "mrt_m": 887,
+    "mrt": "Clementi"
    },
    {
     "project": "SKYSUITES@ANSON",
@@ -2282,7 +2536,9 @@
     "momentum": -0.019,
     "lease": 81,
     "x": "29271.29089",
-    "y": "28569.17836"
+    "y": "28569.17836",
+    "mrt_m": 196,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "MARGARET VILLE",
@@ -2294,7 +2550,9 @@
     "momentum": 0.028,
     "lease": 90,
     "x": "24604.32635",
-    "y": "31319.54941"
+    "y": "31319.54941",
+    "mrt_m": 531,
+    "mrt": "Commonwealth"
    },
    {
     "project": "FOURTH AVENUE RESIDENCES",
@@ -2306,7 +2564,9 @@
     "momentum": 0.042,
     "lease": 91,
     "x": "23941.57032",
-    "y": "34614.4005"
+    "y": "34614.4005",
+    "mrt_m": 166,
+    "mrt": "Sixth Avenue"
    },
    {
     "project": "PARC CENTROS",
@@ -2318,7 +2578,9 @@
     "momentum": 0.042,
     "lease": 85,
     "x": "35885.54064",
-    "y": "42844.00494"
+    "y": "42844.00494",
+    "mrt_m": 237,
+    "mrt": "Punggol"
    },
    {
     "project": "NEPTUNE COURT",
@@ -2330,7 +2592,9 @@
     "momentum": 0.092,
     "lease": 48,
     "x": "37759.16697",
-    "y": "32189.34938"
+    "y": "32189.34938",
+    "mrt_m": 436,
+    "mrt": "Marine Terrace"
    },
    {
     "project": "THE CENTRIS",
@@ -2342,7 +2606,9 @@
     "momentum": 0.041,
     "lease": 79,
     "x": "13803.61745",
-    "y": "35802.24557"
+    "y": "35802.24557",
+    "mrt_m": 148,
+    "mrt": "Boon Lay"
    },
    {
     "project": "PARC VISTA",
@@ -2354,7 +2620,9 @@
     "momentum": -0.012,
     "lease": 68,
     "x": "15055.62454",
-    "y": "36324.44393"
+    "y": "36324.44393",
+    "mrt_m": 393,
+    "mrt": "Lakeside"
    },
    {
     "project": "THE ANTARES",
@@ -2366,7 +2634,9 @@
     "momentum": -0.012,
     "lease": 91,
     "x": "33600.27076",
-    "y": "34226.54077"
+    "y": "34226.54077",
+    "mrt_m": 74,
+    "mrt": "Mattar"
    },
    {
     "project": "TERRASSE",
@@ -2378,7 +2648,9 @@
     "momentum": 0.009,
     "lease": 83,
     "x": "32868.56977",
-    "y": "38941.6248"
+    "y": "38941.6248",
+    "mrt_m": 1251,
+    "mrt": "Kovan"
    },
    {
     "project": "THE JOVELL",
@@ -2390,7 +2662,9 @@
     "momentum": -0.023,
     "lease": 91,
     "x": "42789.70493",
-    "y": "37758.0871"
+    "y": "37758.0871",
+    "mrt_m": 1170,
+    "mrt": "Tampines East"
    },
    {
     "project": "COTE D'AZUR",
@@ -2402,7 +2676,9 @@
     "momentum": -0.001,
     "lease": 74,
     "x": "35837.91306",
-    "y": "31463.59386"
+    "y": "31463.59386",
+    "mrt_m": 212,
+    "mrt": "Marine Parade"
    },
    {
     "project": "THOMSON GRAND",
@@ -2414,7 +2690,9 @@
     "momentum": 0.014,
     "lease": 83,
     "x": "27646.83589",
-    "y": "38576.16381"
+    "y": "38576.16381",
+    "mrt_m": 298,
+    "mrt": "Bright Hill"
    },
    {
     "project": "THE QUARTZ",
@@ -2426,7 +2704,9 @@
     "momentum": 0.063,
     "lease": 78,
     "x": "34788.51847",
-    "y": "40270.9053"
+    "y": "40270.9053",
+    "mrt_m": 260,
+    "mrt": "Buangkok"
    },
    {
     "project": "REGENT HEIGHTS",
@@ -2438,7 +2718,9 @@
     "momentum": 0.005,
     "lease": 68,
     "x": "19411.54338",
-    "y": "37242.4398"
+    "y": "37242.4398",
+    "mrt_m": 770,
+    "mrt": "Bukit Gombak"
    },
    {
     "project": "RIVERTREES RESIDENCES",
@@ -2450,7 +2732,9 @@
     "momentum": 0.066,
     "lease": 86,
     "x": "33333.9799",
-    "y": "41742.48621"
+    "y": "41742.48621",
+    "mrt_m": 219,
+    "mrt": "Layar"
    },
    {
     "project": "RIVER PLACE",
@@ -2462,7 +2746,9 @@
     "momentum": 0.02,
     "lease": 68,
     "x": "28897.73369",
-    "y": "30293.99154"
+    "y": "30293.99154",
+    "mrt_m": 392,
+    "mrt": "Fort Canning"
    },
    {
     "project": "VARSITY PARK CONDOMINIUM",
@@ -2474,7 +2760,9 @@
     "momentum": 0.001,
     "lease": 77,
     "x": "20833.03347",
-    "y": "30759.9647"
+    "y": "30759.9647",
+    "mrt_m": 1728,
+    "mrt": "Kent Ridge"
    },
    {
     "project": "BOTANNIA",
@@ -2486,7 +2774,9 @@
     "momentum": 0.041,
     "lease": 858,
     "x": "19241.83324",
-    "y": "33444.51281"
+    "y": "33444.51281",
+    "mrt_m": 1211,
+    "mrt": "Clementi"
    },
    {
     "project": "HIGHLINE RESIDENCES",
@@ -2498,7 +2788,9 @@
     "momentum": 0.052,
     "lease": 86,
     "x": "27603.58591",
-    "y": "29605.2519"
+    "y": "29605.2519",
+    "mrt_m": 362,
+    "mrt": "Tiong Bahru"
    },
    {
     "project": "PARK PLACE RESIDENCES AT PLQ",
@@ -2510,7 +2802,9 @@
     "momentum": -0.009,
     "lease": 88,
     "x": "34650.75952",
-    "y": "33225.82318"
+    "y": "33225.82318",
+    "mrt_m": 52,
+    "mrt": "Cc9"
    },
    {
     "project": "SEA ESTA",
@@ -2522,7 +2816,9 @@
     "momentum": 0.0,
     "lease": 85,
     "x": "42124.14196",
-    "y": "40011.64013"
+    "y": "40011.64013",
+    "mrt_m": 1347,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "RIO VISTA",
@@ -2534,7 +2830,9 @@
     "momentum": 0.091,
     "lease": 74,
     "x": "35609.17894",
-    "y": "39507.35624"
+    "y": "39507.35624",
+    "mrt_m": 986,
+    "mrt": "Hougang"
    },
    {
     "project": "REGENTVILLE",
@@ -2546,7 +2844,9 @@
     "momentum": 0.003,
     "lease": 69,
     "x": "32964.90847",
-    "y": "39542.15731"
+    "y": "39542.15731",
+    "mrt_m": 1573,
+    "mrt": "Hougang"
    },
    {
     "project": "FORETT@BUKIT TIMAH",
@@ -2558,7 +2858,9 @@
     "momentum": -0.002,
     "lease": "FH",
     "x": "20737.38579",
-    "y": "35783.43148"
+    "y": "35783.43148",
+    "mrt_m": 843,
+    "mrt": "Beauty World"
    },
    {
     "project": "STARS OF KOVAN",
@@ -2570,7 +2872,9 @@
     "momentum": 0.005,
     "lease": 88,
     "x": "34025.61282",
-    "y": "38185.11535"
+    "y": "38185.11535",
+    "mrt_m": 284,
+    "mrt": "Kovan"
    },
    {
     "project": "THE GARDENS AT BISHAN",
@@ -2582,7 +2886,9 @@
     "momentum": 0.018,
     "lease": 70,
     "x": "27707.15417",
-    "y": "38557.33258"
+    "y": "38557.33258",
+    "mrt_m": 246,
+    "mrt": "Bright Hill"
    },
    {
     "project": "KOVAN MELODY",
@@ -2594,7 +2900,9 @@
     "momentum": 0.045,
     "lease": 77,
     "x": "33599.85543",
-    "y": "38046.90248"
+    "y": "38046.90248",
+    "mrt_m": 104,
+    "mrt": "Kovan"
    },
    {
     "project": "HILLVIEW REGENCY",
@@ -2606,7 +2914,9 @@
     "momentum": 0.015,
     "lease": 73,
     "x": "19548.01948",
-    "y": "37125.84425"
+    "y": "37125.84425",
+    "mrt_m": 867,
+    "mrt": "Bukit Batok"
    },
    {
     "project": "PARKVIEW APARTMENTS",
@@ -2618,7 +2928,9 @@
     "momentum": -0.006,
     "lease": 67,
     "x": "19914.73308",
-    "y": "35899.43792"
+    "y": "35899.43792",
+    "mrt_m": 1519,
+    "mrt": "Bukit Batok"
    },
    {
     "project": "THE MILTONIA RESIDENCES",
@@ -2630,7 +2942,9 @@
     "momentum": 0.013,
     "lease": 83,
     "x": "29740.57648",
-    "y": "44290.32394"
+    "y": "44290.32394",
+    "mrt_m": 1752,
+    "mrt": "Khatib"
    },
    {
     "project": "CASTLE GREEN",
@@ -2642,7 +2956,9 @@
     "momentum": 0.046,
     "lease": 66,
     "x": "28786.79439",
-    "y": "40892.15439"
+    "y": "40892.15439",
+    "mrt_m": 371,
+    "mrt": "Lentor"
    },
    {
     "project": "NORTHVALE",
@@ -2654,7 +2970,9 @@
     "momentum": 0.003,
     "lease": 68,
     "x": "18206.90523",
-    "y": "40965.14597"
+    "y": "40965.14597",
+    "mrt_m": 143,
+    "mrt": "Choa Chu Kang"
    },
    {
     "project": "MAYSPRINGS",
@@ -2666,7 +2984,9 @@
     "momentum": 0.022,
     "lease": 67,
     "x": "20247.15911",
-    "y": "39785.83534"
+    "y": "39785.83534",
+    "mrt_m": 205,
+    "mrt": "Bukit Panjang"
    },
    {
     "project": "YISHUN SAPPHIRE",
@@ -2678,7 +2998,9 @@
     "momentum": 0.047,
     "lease": 71,
     "x": "27694.37809",
-    "y": "46873.76261"
+    "y": "46873.76261",
+    "mrt_m": 307,
+    "mrt": "Canberra"
    },
    {
     "project": "SPRING GROVE",
@@ -2690,7 +3012,9 @@
     "momentum": -0.005,
     "lease": 64,
     "x": "27294.47876",
-    "y": "31104.49157"
+    "y": "31104.49157",
+    "mrt_m": 643,
+    "mrt": "Orchard Boulevard"
    },
    {
     "project": "CITYLIGHTS",
@@ -2702,7 +3026,9 @@
     "momentum": 0.063,
     "lease": 77,
     "x": "31316.33298",
-    "y": "32288.0299"
+    "y": "32288.0299",
+    "mrt_m": 90,
+    "mrt": "Lavender"
    },
    {
     "project": "UPTOWN @ FARRER",
@@ -2714,7 +3040,9 @@
     "momentum": -0.067,
     "lease": 90,
     "x": "30483.57536",
-    "y": "32804.24129"
+    "y": "32804.24129",
+    "mrt_m": 78,
+    "mrt": "Farrer Park"
    },
    {
     "project": "CASAFINA",
@@ -2726,7 +3054,9 @@
     "momentum": 0.06,
     "lease": 69,
     "x": "39200.98547",
-    "y": "33057.1559"
+    "y": "33057.1559",
+    "mrt_m": 598,
+    "mrt": "Siglap"
    },
    {
     "project": "REGENT GROVE",
@@ -2738,7 +3068,9 @@
     "momentum": 0.004,
     "lease": 70,
     "x": "18594.9603",
-    "y": "42354.44351"
+    "y": "42354.44351",
+    "mrt_m": 215,
+    "mrt": "Yew Tee"
    },
    {
     "project": "THE LAKEFRONT RESIDENCES",
@@ -2750,7 +3082,9 @@
     "momentum": 0.034,
     "lease": 83,
     "x": "15319.37254",
-    "y": "36085.26708"
+    "y": "36085.26708",
+    "mrt_m": 193,
+    "mrt": "Lakeside"
    },
    {
     "project": "THE WARREN",
@@ -2762,7 +3096,9 @@
     "momentum": 0.021,
     "lease": 74,
     "x": "17986.76022",
-    "y": "40940.828"
+    "y": "40940.828",
+    "mrt_m": 134,
+    "mrt": "Choa Chu Kang"
    },
    {
     "project": "PARC EMILY",
@@ -2774,7 +3110,9 @@
     "momentum": 0.037,
     "lease": "FH",
     "x": "29760.20046",
-    "y": "31761.1177"
+    "y": "31761.1177",
+    "mrt_m": 234,
+    "mrt": "Little India"
    },
    {
     "project": "TRE RESIDENCES",
@@ -2786,7 +3124,9 @@
     "momentum": 0.033,
     "lease": 87,
     "x": "33753.41021",
-    "y": "33277.93753"
+    "y": "33277.93753",
+    "mrt_m": 294,
+    "mrt": "Aljunied"
    },
    {
     "project": "SEASTRAND",
@@ -2798,7 +3138,9 @@
     "momentum": -0.003,
     "lease": 84,
     "x": "42217.46739",
-    "y": "39728.39288"
+    "y": "39728.39288",
+    "mrt_m": 1340,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "SKY VUE",
@@ -2810,7 +3152,9 @@
     "momentum": 0.013,
     "lease": 86,
     "x": "29963.63621",
-    "y": "37206.92816"
+    "y": "37206.92816",
+    "mrt_m": 208,
+    "mrt": "Bishan"
    },
    {
     "project": "GRANDEUR 8",
@@ -2822,7 +3166,9 @@
     "momentum": 0.081,
     "lease": 75,
     "x": "29491.79076",
-    "y": "39824.96295"
+    "y": "39824.96295",
+    "mrt_m": 602,
+    "mrt": "Yio Chu Kang"
    },
    {
     "project": "THE LANAI",
@@ -2834,7 +3180,9 @@
     "momentum": 0.038,
     "lease": 858,
     "x": "20036.5128",
-    "y": "37605.42798"
+    "y": "37605.42798",
+    "mrt_m": 784,
+    "mrt": "Dt4"
    },
    {
     "project": "ORCHID PARK CONDOMINIUM",
@@ -2846,7 +3194,9 @@
     "momentum": 0.044,
     "lease": 64,
     "x": "28169.48794",
-    "y": "43891.77702"
+    "y": "43891.77702",
+    "mrt_m": 478,
+    "mrt": "Khatib"
    },
    {
     "project": "HILLSTA",
@@ -2858,7 +3208,9 @@
     "momentum": 0.014,
     "lease": 84,
     "x": "19436.0362",
-    "y": "39883.45041"
+    "y": "39883.45041",
+    "mrt_m": 279,
+    "mrt": "Phoenix"
    },
    {
     "project": "EIGHT COURTYARDS",
@@ -2870,7 +3222,9 @@
     "momentum": 0.07,
     "lease": 83,
     "x": "27746.73622",
-    "y": "46719.49233"
+    "y": "46719.49233",
+    "mrt_m": 471,
+    "mrt": "Canberra"
    },
    {
     "project": "PALM GARDENS",
@@ -2882,7 +3236,9 @@
     "momentum": 0.0,
     "lease": 69,
     "x": "18491.94059",
-    "y": "40006.1704"
+    "y": "40006.1704",
+    "mrt_m": 156,
+    "mrt": "Keat Hong"
    },
    {
     "project": "THE PARC CONDOMINIUM",
@@ -2894,7 +3250,9 @@
     "momentum": 0.034,
     "lease": "FH",
     "x": "20145.84021",
-    "y": "32576.59566"
+    "y": "32576.59566",
+    "mrt_m": 474,
+    "mrt": "Clementi"
    },
    {
     "project": "ONE-NORTH RESIDENCES",
@@ -2906,7 +3264,9 @@
     "momentum": -0.142,
     "lease": 78,
     "x": "23179.13688",
-    "y": "31564.61931"
+    "y": "31564.61931",
+    "mrt_m": 276,
+    "mrt": "One-North"
    },
    {
     "project": "VACANZA @ EAST",
@@ -2918,7 +3278,9 @@
     "momentum": 0.063,
     "lease": "FH",
     "x": "37075.32823",
-    "y": "34636.8897"
+    "y": "34636.8897",
+    "mrt_m": 636,
+    "mrt": "Bedok North"
    },
    {
     "project": "NIN RESIDENCE",
@@ -2930,7 +3292,9 @@
     "momentum": 0.091,
     "lease": 83,
     "x": "32080.38736",
-    "y": "35021.52991"
+    "y": "35021.52991",
+    "mrt_m": 115,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "THE TESSARINA",
@@ -2942,7 +3306,9 @@
     "momentum": -0.054,
     "lease": "FH",
     "x": "23093.24887",
-    "y": "34930.97101"
+    "y": "34930.97101",
+    "mrt_m": 669,
+    "mrt": "King Albert Park"
    },
    {
     "project": "THE VENUE RESIDENCES",
@@ -2954,7 +3320,9 @@
     "momentum": 0.038,
     "lease": 85,
     "x": "32006.95802",
-    "y": "34527.10224"
+    "y": "34527.10224",
+    "mrt_m": 291,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "THE DRAYCOTT",
@@ -2966,7 +3334,9 @@
     "momentum": -0.055,
     "lease": "FH",
     "x": "27816.4627",
-    "y": "32678.78379"
+    "y": "32678.78379",
+    "mrt_m": 696,
+    "mrt": "Newton"
    },
    {
     "project": "IRWELL HILL RESIDENCES",
@@ -2978,7 +3348,9 @@
     "momentum": null,
     "lease": 93,
     "x": "27810.1434714329",
-    "y": "31004.5581278484"
+    "y": "31004.5581278484",
+    "mrt_m": 174,
+    "mrt": "Great World"
    },
    {
     "project": "ASPEN HEIGHTS",
@@ -2990,7 +3362,9 @@
     "momentum": 0.043,
     "lease": 814,
     "x": "28749.27822",
-    "y": "30788.63254"
+    "y": "30788.63254",
+    "mrt_m": 525,
+    "mrt": "Fort Canning"
    },
    {
     "project": "SAVANNAH CONDOPARK",
@@ -3002,7 +3376,9 @@
     "momentum": 0.066,
     "lease": 73,
     "x": "42185.43106",
-    "y": "36884.11451"
+    "y": "36884.11451",
+    "mrt_m": 850,
+    "mrt": "Tampines East"
    },
    {
     "project": "THE SCALA",
@@ -3014,7 +3390,9 @@
     "momentum": 0.046,
     "lease": 83,
     "x": "31566.85702",
-    "y": "36936.62834"
+    "y": "36936.62834",
+    "mrt_m": 134,
+    "mrt": "Lorong Chuan"
    },
    {
     "project": "THE TEMBUSU",
@@ -3026,7 +3404,9 @@
     "momentum": 0.045,
     "lease": "FH",
     "x": "34242.29042",
-    "y": "38176.76251"
+    "y": "38176.76251",
+    "mrt_m": 471,
+    "mrt": "Kovan"
    },
    {
     "project": "MAPLE WOODS",
@@ -3038,7 +3418,9 @@
     "momentum": 0.005,
     "lease": "FH",
     "x": "22557.45183",
-    "y": "35210.20923"
+    "y": "35210.20923",
+    "mrt_m": 143,
+    "mrt": "King Albert Park"
    },
    {
     "project": "EDELWEISS PARK CONDOMINIUM",
@@ -3050,7 +3432,9 @@
     "momentum": 0.065,
     "lease": "FH",
     "x": "42914.95721",
-    "y": "37625.26447"
+    "y": "37625.26447",
+    "mrt_m": 1293,
+    "mrt": "Tampines East"
    },
    {
     "project": "CLEMENTI PARK",
@@ -3062,7 +3446,9 @@
     "momentum": 0.017,
     "lease": "FH",
     "x": "20729.8950524278",
-    "y": "34582.5032685371"
+    "y": "34582.5032685371",
+    "mrt_m": 1493,
+    "mrt": "Beauty World"
    },
    {
     "project": "KOVAN RESIDENCES",
@@ -3074,7 +3460,9 @@
     "momentum": 0.043,
     "lease": 80,
     "x": "33779.51607",
-    "y": "38126.67708"
+    "y": "38126.67708",
+    "mrt_m": 113,
+    "mrt": "Kovan"
    },
    {
     "project": "H2O RESIDENCES",
@@ -3086,7 +3474,9 @@
     "momentum": 0.048,
     "lease": 83,
     "x": "33258.12021",
-    "y": "41604.97742"
+    "y": "41604.97742",
+    "mrt_m": 64,
+    "mrt": "Layar"
    },
    {
     "project": "WOODHAVEN",
@@ -3098,7 +3488,9 @@
     "momentum": 0.105,
     "lease": 84,
     "x": "22509.49107",
-    "y": "45852.04014"
+    "y": "45852.04014",
+    "mrt_m": 594,
+    "mrt": "Woodlands"
    },
    {
     "project": "CASPIAN",
@@ -3110,7 +3502,9 @@
     "momentum": 0.069,
     "lease": 81,
     "x": "15233.2825",
-    "y": "36106.09242"
+    "y": "36106.09242",
+    "mrt_m": 244,
+    "mrt": "Lakeside"
    },
    {
     "project": "CASABLANCA",
@@ -3122,7 +3516,9 @@
     "momentum": 0.021,
     "lease": 74,
     "x": "22687.29183",
-    "y": "45750.89969"
+    "y": "45750.89969",
+    "mrt_m": 564,
+    "mrt": "Woodlands"
    },
    {
     "project": "THE COAST AT SENTOSA COVE",
@@ -3134,7 +3530,9 @@
     "momentum": -0.065,
     "lease": 79,
     "x": "29138.21001",
-    "y": "25323.25071"
+    "y": "25323.25071",
+    "mrt_m": 3212,
+    "mrt": "Harbourfront"
    },
    {
     "project": "SEAHILL",
@@ -3146,7 +3544,9 @@
     "momentum": -0.019,
     "lease": 84,
     "x": "20335.87711",
-    "y": "31252.99934"
+    "y": "31252.99934",
+    "mrt_m": 1691,
+    "mrt": "Clementi"
    },
    {
     "project": "ALEXIS",
@@ -3158,7 +3558,9 @@
     "momentum": 0.06,
     "lease": "FH",
     "x": "25110.45619",
-    "y": "30392.50599"
+    "y": "30392.50599",
+    "mrt_m": 370,
+    "mrt": "Queenstown"
    },
    {
     "project": "CORALS AT KEPPEL BAY",
@@ -3170,7 +3572,9 @@
     "momentum": -0.005,
     "lease": 80,
     "x": "26191.48223",
-    "y": "27655.69013"
+    "y": "27655.69013",
+    "mrt_m": 380,
+    "mrt": "Harbourfront"
    },
    {
     "project": "CITYSCAPE @FARRER PARK",
@@ -3182,7 +3586,9 @@
     "momentum": 0.022,
     "lease": "FH",
     "x": "30033.84328",
-    "y": "33365.70034"
+    "y": "33365.70034",
+    "mrt_m": 610,
+    "mrt": "Farrer Park"
    },
    {
     "project": "CITY SQUARE RESIDENCES",
@@ -3194,7 +3600,9 @@
     "momentum": -0.023,
     "lease": "FH",
     "x": "30688.9222",
-    "y": "32600.89985"
+    "y": "32600.89985",
+    "mrt_m": 176,
+    "mrt": "Farrer Park"
    },
    {
     "project": "LEEDON RESIDENCE",
@@ -3206,7 +3614,9 @@
     "momentum": 0.025,
     "lease": "FH",
     "x": "24453.60166",
-    "y": "32902.09919"
+    "y": "32902.09919",
+    "mrt_m": 658,
+    "mrt": "Holland Village"
    },
    {
     "project": "SIMSVILLE",
@@ -3218,7 +3628,9 @@
     "momentum": 0.037,
     "lease": 67,
     "x": "34181.73154",
-    "y": "33237.97677"
+    "y": "33237.97677",
+    "mrt_m": 348,
+    "mrt": "Paya Lebar"
    },
    {
     "project": "THE HILLFORD",
@@ -3230,7 +3642,9 @@
     "momentum": 0.014,
     "lease": 47,
     "x": "20892.6492",
-    "y": "36270.72522"
+    "y": "36270.72522",
+    "mrt_m": 732,
+    "mrt": "Beauty World"
    },
    {
     "project": "VUE 8 RESIDENCE",
@@ -3242,7 +3656,9 @@
     "momentum": 0.075,
     "lease": 85,
     "x": "39959.28714",
-    "y": "40476.55781"
+    "y": "40476.55781",
+    "mrt_m": 1402,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "VERDALE",
@@ -3254,7 +3670,9 @@
     "momentum": -0.053,
     "lease": 91,
     "x": "20899.15124",
-    "y": "36404.39006"
+    "y": "36404.39006",
+    "mrt_m": 791,
+    "mrt": "Beauty World"
    },
    {
     "project": "THOMSON IMPRESSIONS",
@@ -3266,7 +3684,9 @@
     "momentum": 0.103,
     "lease": 88,
     "x": "27598.90998",
-    "y": "38047.56142"
+    "y": "38047.56142",
+    "mrt_m": 358,
+    "mrt": "Bright Hill"
    },
    {
     "project": "CHANGI RISE CONDOMINIUM",
@@ -3278,7 +3698,9 @@
     "momentum": 0.031,
     "lease": 73,
     "x": "42160.97883",
-    "y": "36748.37053"
+    "y": "36748.37053",
+    "mrt_m": 736,
+    "mrt": "Upper Changi"
    },
    {
     "project": "WATER PLACE",
@@ -3290,7 +3712,9 @@
     "momentum": 0.038,
     "lease": 71,
     "x": "32392.14862",
-    "y": "31015.78755"
+    "y": "31015.78755",
+    "mrt_m": 85,
+    "mrt": "Tanjong Rhu"
    },
    {
     "project": "THE SHORE RESIDENCES",
@@ -3302,7 +3726,9 @@
     "momentum": 0.016,
     "lease": 86,
     "x": "35640.7387",
-    "y": "31745.11798"
+    "y": "31745.11798",
+    "mrt_m": 305,
+    "mrt": "Marine Parade"
    },
    {
     "project": "THE WISTERIA",
@@ -3314,7 +3740,9 @@
     "momentum": 0.005,
     "lease": 88,
     "x": "28911.73969",
-    "y": "44415.19288"
+    "y": "44415.19288",
+    "mrt_m": 920,
+    "mrt": "Khatib"
    },
    {
     "project": "THE ESTUARY",
@@ -3326,7 +3754,9 @@
     "momentum": 0.023,
     "lease": 81,
     "x": "27910.37769",
-    "y": "43652.06388"
+    "y": "43652.06388",
+    "mrt_m": 670,
+    "mrt": "Khatib"
    },
    {
     "project": "THE GREENWICH",
@@ -3338,7 +3768,9 @@
     "momentum": 0.029,
     "lease": 82,
     "x": "31983.37033",
-    "y": "40973.58117"
+    "y": "40973.58117",
+    "mrt_m": 992,
+    "mrt": "Fernvale"
    },
    {
     "project": "SELETAR PARK RESIDENCE",
@@ -3350,7 +3782,9 @@
     "momentum": 0.011,
     "lease": 84,
     "x": "32054.47488",
-    "y": "40846.94822"
+    "y": "40846.94822",
+    "mrt_m": 1021,
+    "mrt": "Fernvale"
    },
    {
     "project": "ARTRA",
@@ -3362,7 +3796,9 @@
     "momentum": 0.054,
     "lease": 89,
     "x": "26204.50079",
-    "y": "30270.56219"
+    "y": "30270.56219",
+    "mrt_m": 61,
+    "mrt": "Redhill"
    },
    {
     "project": "MARINA BAY RESIDENCES",
@@ -3374,7 +3810,9 @@
     "momentum": 0.086,
     "lease": 78,
     "x": "30411.54277",
-    "y": "29120.0497"
+    "y": "29120.0497",
+    "mrt_m": 205,
+    "mrt": "Downtown"
    },
    {
     "project": "SKYLINE RESIDENCES",
@@ -3386,7 +3824,9 @@
     "momentum": 0.034,
     "lease": "FH",
     "x": "25141.59429",
-    "y": "28240.98249"
+    "y": "28240.98249",
+    "mrt_m": 272,
+    "mrt": "Telok Blangah"
    },
    {
     "project": "VISIONCREST",
@@ -3398,7 +3838,9 @@
     "momentum": -0.007,
     "lease": "FH",
     "x": "29086.47082",
-    "y": "31179.5055"
+    "y": "31179.5055",
+    "mrt_m": 242,
+    "mrt": "Dhoby Ghaut"
    },
    {
     "project": "19 NASSIM",
@@ -3410,7 +3852,9 @@
     "momentum": 0.064,
     "lease": 92,
     "x": "26665.60779",
-    "y": "32098.67077"
+    "y": "32098.67077",
+    "mrt_m": 204,
+    "mrt": "Napier"
    },
    {
     "project": "PEBBLE BAY",
@@ -3422,7 +3866,9 @@
     "momentum": 0.042,
     "lease": 67,
     "x": "32199.09794",
-    "y": "31161.63901"
+    "y": "31161.63901",
+    "mrt_m": 284,
+    "mrt": "Tanjong Rhu"
    },
    {
     "project": "KOVAN REGENCY",
@@ -3434,7 +3880,9 @@
     "momentum": 0.083,
     "lease": 85,
     "x": "33800.13998",
-    "y": "38402.50425"
+    "y": "38402.50425",
+    "mrt_m": 383,
+    "mrt": "Kovan"
    },
    {
     "project": "COMPASS HEIGHTS",
@@ -3446,7 +3894,9 @@
     "momentum": 0.067,
     "lease": 73,
     "x": "34999.51358",
-    "y": "41548.58433"
+    "y": "41548.58433",
+    "mrt_m": 68,
+    "mrt": "Sengkang"
    },
    {
     "project": "THE ESTA",
@@ -3458,7 +3908,9 @@
     "momentum": 0.049,
     "lease": "FH",
     "x": "35421.33807",
-    "y": "31642.27679"
+    "y": "31642.27679",
+    "mrt_m": 353,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "FERRARIA PARK CONDOMINIUM",
@@ -3470,7 +3922,9 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "42587.85864",
-    "y": "37824.50599"
+    "y": "37824.50599",
+    "mrt_m": 977,
+    "mrt": "Tampines East"
    },
    {
     "project": "BEDOK RESIDENCES",
@@ -3482,7 +3936,9 @@
     "momentum": -0.003,
     "lease": 84,
     "x": "38624.85371",
-    "y": "34058.84219"
+    "y": "34058.84219",
+    "mrt_m": 72,
+    "mrt": "Bedok"
    },
    {
     "project": "PARC VERA",
@@ -3494,7 +3950,9 @@
     "momentum": 0.056,
     "lease": 83,
     "x": "34899.44085",
-    "y": "38424.04637"
+    "y": "38424.04637",
+    "mrt_m": 784,
+    "mrt": "Hougang"
    },
    {
     "project": "EAST MEADOWS",
@@ -3506,7 +3964,9 @@
     "momentum": -0.055,
     "lease": 71,
     "x": "40393.51094",
-    "y": "34539.49813"
+    "y": "34539.49813",
+    "mrt_m": 210,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "ELIAS GREEN",
@@ -3518,7 +3978,9 @@
     "momentum": null,
     "lease": 64,
     "x": "40075.34234",
-    "y": "39328.16397"
+    "y": "39328.16397",
+    "mrt_m": 820,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "HAZEL PARK CONDOMINIUM",
@@ -3530,7 +3992,9 @@
     "momentum": 0.051,
     "lease": 855,
     "x": "20362.09479",
-    "y": "39377.31814"
+    "y": "39377.31814",
+    "mrt_m": 288,
+    "mrt": "Cashew"
    },
    {
     "project": "TREE HOUSE",
@@ -3542,7 +4006,9 @@
     "momentum": -0.014,
     "lease": 82,
     "x": "21755.53693",
-    "y": "39165.40158"
+    "y": "39165.40158",
+    "mrt_m": 920,
+    "mrt": "Pending"
    },
    {
     "project": "THE NAUTICAL",
@@ -3554,7 +4020,9 @@
     "momentum": 0.058,
     "lease": 84,
     "x": "27019.07234",
-    "y": "47092.90696"
+    "y": "47092.90696",
+    "mrt_m": 549,
+    "mrt": "Canberra"
    },
    {
     "project": "GUILIN VIEW",
@@ -3566,7 +4034,9 @@
     "momentum": -0.025,
     "lease": 69,
     "x": "19076.81937",
-    "y": "37441.00237"
+    "y": "37441.00237",
+    "mrt_m": 440,
+    "mrt": "Bukit Gombak"
    },
    {
     "project": "HERITAGE VIEW",
@@ -3578,7 +4048,9 @@
     "momentum": 0.035,
     "lease": 69,
     "x": "22542.30201",
-    "y": "31861.34513"
+    "y": "31861.34513",
+    "mrt_m": 607,
+    "mrt": "One-North"
    },
    {
     "project": "THE M",
@@ -3590,7 +4062,9 @@
     "momentum": -0.033,
     "lease": 92,
     "x": "30512.38558",
-    "y": "31149.16596"
+    "y": "31149.16596",
+    "mrt_m": 165,
+    "mrt": "Bugis"
    },
    {
     "project": "SPOTTISWOODE RESIDENCES",
@@ -3602,7 +4076,9 @@
     "momentum": -0.03,
     "lease": "FH",
     "x": "28391.04102",
-    "y": "28638.52549"
+    "y": "28638.52549",
+    "mrt_m": 461,
+    "mrt": "Outram Park"
    },
    {
     "project": "CONCOURSE SKYLINE",
@@ -3614,7 +4090,9 @@
     "momentum": 0.03,
     "lease": 81,
     "x": "31177.02601",
-    "y": "31402.44379"
+    "y": "31402.44379",
+    "mrt_m": 183,
+    "mrt": "Nicoll Highway"
    },
    {
     "project": "THE METROPOLITAN CONDOMINIUM",
@@ -3626,7 +4104,9 @@
     "momentum": 0.045,
     "lease": 79,
     "x": "26074.4211",
-    "y": "30319.95369"
+    "y": "30319.95369",
+    "mrt_m": 164,
+    "mrt": "Redhill"
    },
    {
     "project": "DRAYCOTT EIGHT",
@@ -3638,7 +4118,9 @@
     "momentum": 0.03,
     "lease": 70,
     "x": "27873.51273",
-    "y": "32632.1856"
+    "y": "32632.1856",
+    "mrt_m": 648,
+    "mrt": "Newton"
    },
    {
     "project": "RV RESIDENCES",
@@ -3650,7 +4132,9 @@
     "momentum": 0.002,
     "lease": 850,
     "x": "27457.08811",
-    "y": "30747.1766"
+    "y": "30747.1766",
+    "mrt_m": 481,
+    "mrt": "Great World"
    },
    {
     "project": "RIVERBAY",
@@ -3662,7 +4146,9 @@
     "momentum": 0.045,
     "lease": 855,
     "x": "31252.10377",
-    "y": "34467.62684"
+    "y": "34467.62684",
+    "mrt_m": 766,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "THE TRIZON",
@@ -3674,7 +4160,9 @@
     "momentum": -0.022,
     "lease": "FH",
     "x": "21812.49516",
-    "y": "33297.82296"
+    "y": "33297.82296",
+    "mrt_m": 641,
+    "mrt": "Dover"
    },
    {
     "project": "BOULEVARD 88",
@@ -3686,7 +4174,9 @@
     "momentum": 0.028,
     "lease": "FH",
     "x": "27366.632",
-    "y": "31920.73749"
+    "y": "31920.73749",
+    "mrt_m": 329,
+    "mrt": "Orchard"
    },
    {
     "project": "RIDGEWOOD",
@@ -3698,7 +4188,9 @@
     "momentum": 0.067,
     "lease": 858,
     "x": "22012.60924",
-    "y": "33335.38623"
+    "y": "33335.38623",
+    "mrt_m": 683,
+    "mrt": "Dover"
    },
    {
     "project": "GOODWOOD RESIDENCE",
@@ -3710,7 +4202,9 @@
     "momentum": -0.013,
     "lease": "FH",
     "x": "28242.40185",
-    "y": "33045.14362"
+    "y": "33045.14362",
+    "mrt_m": 348,
+    "mrt": "Newton"
    },
    {
     "project": "8@WOODLEIGH",
@@ -3722,7 +4216,9 @@
     "momentum": 0.029,
     "lease": 81,
     "x": "32054.48459",
-    "y": "35398.78134"
+    "y": "35398.78134",
+    "mrt_m": 256,
+    "mrt": "Woodleigh"
    },
    {
     "project": "TREVISTA",
@@ -3734,7 +4230,9 @@
     "momentum": 0.095,
     "lease": 81,
     "x": "29497.64495",
-    "y": "35585.27344"
+    "y": "35585.27344",
+    "mrt_m": 296,
+    "mrt": "Braddell"
    },
    {
     "project": "SUNGLADE",
@@ -3746,7 +4244,9 @@
     "momentum": 0.03,
     "lease": 73,
     "x": "32191.80235",
-    "y": "36788.44214"
+    "y": "36788.44214",
+    "mrt_m": 225,
+    "mrt": "Serangoon"
    },
    {
     "project": "WATERFRONT GOLD",
@@ -3758,7 +4258,9 @@
     "momentum": 0.026,
     "lease": 82,
     "x": "38594.31988",
-    "y": "35560.66753"
+    "y": "35560.66753",
+    "mrt_m": 515,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "PANDAN VALLEY",
@@ -3770,7 +4272,9 @@
     "momentum": -0.029,
     "lease": "FH",
     "x": "21849.274",
-    "y": "33434.49919"
+    "y": "33434.49919",
+    "mrt_m": 774,
+    "mrt": "Dover"
    },
    {
     "project": "GARDENVISTA",
@@ -3782,7 +4286,9 @@
     "momentum": 0.004,
     "lease": 72,
     "x": "22119.07251",
-    "y": "35567.12233"
+    "y": "35567.12233",
+    "mrt_m": 389,
+    "mrt": "King Albert Park"
    },
    {
     "project": "EASTERN LAGOON",
@@ -3794,7 +4300,9 @@
     "momentum": 0.004,
     "lease": "FH",
     "x": "39283.19458",
-    "y": "32912.84254"
+    "y": "32912.84254",
+    "mrt_m": 534,
+    "mrt": "Siglap"
    },
    {
     "project": "SOUTHAVEN II",
@@ -3806,7 +4314,9 @@
     "momentum": 0.021,
     "lease": 850,
     "x": "21360.67779",
-    "y": "36516.72511"
+    "y": "36516.72511",
+    "mrt_m": 584,
+    "mrt": "Beauty World"
    },
    {
     "project": "SUNRISE GARDENS",
@@ -3818,7 +4328,9 @@
     "momentum": 0.044,
     "lease": 68,
     "x": "30667.53887",
-    "y": "41324.5412"
+    "y": "41324.5412",
+    "mrt_m": 1663,
+    "mrt": "Yio Chu Kang"
    },
    {
     "project": "YISHUN EMERALD",
@@ -3830,7 +4342,9 @@
     "momentum": 0.065,
     "lease": 71,
     "x": "27743.96219",
-    "y": "46794.77791"
+    "y": "46794.77791",
+    "mrt_m": 399,
+    "mrt": "Canberra"
    },
    {
     "project": "THE MAYFAIR",
@@ -3842,7 +4356,9 @@
     "momentum": 0.002,
     "lease": 69,
     "x": "16900.97331",
-    "y": "36472.35379"
+    "y": "36472.35379",
+    "mrt_m": 436,
+    "mrt": "Chinese Garden"
    },
    {
     "project": "ROSEWOOD",
@@ -3854,7 +4370,9 @@
     "momentum": 0.011,
     "lease": 73,
     "x": "22845.26261",
-    "y": "45907.53508"
+    "y": "45907.53508",
+    "mrt_m": 356,
+    "mrt": "Woodlands"
    },
    {
     "project": "ONE SHENTON",
@@ -3866,7 +4384,9 @@
     "momentum": 0.045,
     "lease": 78,
     "x": "29918.01006",
-    "y": "29083.45837"
+    "y": "29083.45837",
+    "mrt_m": 169,
+    "mrt": "Shenton Way"
    },
    {
     "project": "THE OCEANFRONT @ SENTOSA COVE",
@@ -3878,7 +4398,9 @@
     "momentum": 0.042,
     "lease": 78,
     "x": "29023.88711",
-    "y": "25225.29105"
+    "y": "25225.29105",
+    "mrt_m": 3199,
+    "mrt": "Harbourfront"
    },
    {
     "project": "WESTCOVE CONDOMINIUM",
@@ -3890,7 +4412,9 @@
     "momentum": -0.03,
     "lease": 68,
     "x": "20534.15193",
-    "y": "31177.94848"
+    "y": "31177.94848",
+    "mrt_m": 1763,
+    "mrt": "Clementi"
    },
    {
     "project": "76 SHENTON",
@@ -3902,7 +4426,9 @@
     "momentum": 0.039,
     "lease": 80,
     "x": "29361.61324",
-    "y": "28440.09985"
+    "y": "28440.09985",
+    "mrt_m": 241,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "26 NEWTON",
@@ -3914,7 +4440,9 @@
     "momentum": -0.007,
     "lease": "FH",
     "x": "28923.36229",
-    "y": "33108.14595"
+    "y": "33108.14595",
+    "mrt_m": 440,
+    "mrt": "Newton"
    },
    {
     "project": "HILLCREST ARCADIA",
@@ -3926,7 +4454,9 @@
     "momentum": 0.037,
     "lease": 48,
     "x": "25285.8976",
-    "y": "35295.18784"
+    "y": "35295.18784",
+    "mrt_m": 1045,
+    "mrt": "Tan Kah Kee"
    },
    {
     "project": "DUCHESS CREST",
@@ -3938,7 +4468,9 @@
     "momentum": 0.019,
     "lease": 68,
     "x": "24624.90207",
-    "y": "34100.18072"
+    "y": "34100.18072",
+    "mrt_m": 540,
+    "mrt": "Tan Kah Kee"
    },
    {
     "project": "KERRISDALE",
@@ -3950,7 +4482,9 @@
     "momentum": 0.018,
     "lease": 71,
     "x": "30789.02729",
-    "y": "32870.36572"
+    "y": "32870.36572",
+    "mrt_m": 314,
+    "mrt": "Farrer Park"
    },
    {
     "project": "SOLEIL @ SINARAN",
@@ -3962,7 +4496,9 @@
     "momentum": 0.074,
     "lease": 79,
     "x": "29306.2821",
-    "y": "33522.12361"
+    "y": "33522.12361",
+    "mrt_m": 198,
+    "mrt": "Novena"
    },
    {
     "project": "MARTIN PLACE RESIDENCES",
@@ -3974,7 +4510,9 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "28527.48424",
-    "y": "30727.28191"
+    "y": "30727.28191",
+    "mrt_m": 471,
+    "mrt": "Great World"
    },
    {
     "project": "SOMMERVILLE PARK",
@@ -3986,7 +4524,9 @@
     "momentum": 0.029,
     "lease": "FH",
     "x": "25051.76203",
-    "y": "32677.40385"
+    "y": "32677.40385",
+    "mrt_m": 643,
+    "mrt": "Farrer Road"
    },
    {
     "project": "CLOVER BY THE PARK",
@@ -3998,7 +4538,9 @@
     "momentum": 0.044,
     "lease": 80,
     "x": "29445.45247",
-    "y": "38002.44962"
+    "y": "38002.44962",
+    "mrt_m": 1013,
+    "mrt": "Bishan"
    },
    {
     "project": "MY MANHATTAN",
@@ -4010,7 +4552,9 @@
     "momentum": 0.008,
     "lease": 83,
     "x": "41365.3994",
-    "y": "35988.68173"
+    "y": "35988.68173",
+    "mrt_m": 112,
+    "mrt": "Simei"
    },
    {
     "project": "THE WATERSIDE",
@@ -4022,7 +4566,9 @@
     "momentum": 0.09,
     "lease": "FH",
     "x": "33503.36137",
-    "y": "31008.60786"
+    "y": "31008.60786",
+    "mrt_m": 316,
+    "mrt": "Katong Park"
    },
    {
     "project": "LAGUNA PARK",
@@ -4034,7 +4580,9 @@
     "momentum": -0.016,
     "lease": 50,
     "x": "39003.85157",
-    "y": "32488.16914"
+    "y": "32488.16914",
+    "mrt_m": 101,
+    "mrt": "Siglap"
    },
    {
     "project": "PINE GROVE",
@@ -4046,7 +4594,9 @@
     "momentum": -0.013,
     "lease": 57,
     "x": "21525.2954",
-    "y": "33380.12367"
+    "y": "33380.12367",
+    "mrt_m": 808,
+    "mrt": "Dover"
    },
    {
     "project": "ONE AMBER",
@@ -4058,7 +4608,9 @@
     "momentum": 0.048,
     "lease": "FH",
     "x": "35317.23125",
-    "y": "31590.66576"
+    "y": "31590.66576",
+    "mrt_m": 245,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "FLO RESIDENCE",
@@ -4070,7 +4622,9 @@
     "momentum": 0.053,
     "lease": 84,
     "x": "36951.11917",
-    "y": "41544.77295"
+    "y": "41544.77295",
+    "mrt_m": 225,
+    "mrt": "Coral Edge"
    },
    {
     "project": "AMBER 45",
@@ -4082,7 +4636,9 @@
     "momentum": 0.011,
     "lease": "FH",
     "x": "35562.14476",
-    "y": "31632.86396"
+    "y": "31632.86396",
+    "mrt_m": 370,
+    "mrt": "Marine Parade"
    },
    {
     "project": "PARC PALAIS",
@@ -4094,7 +4650,9 @@
     "momentum": 0.035,
     "lease": "FH",
     "x": "20409.22694",
-    "y": "37707.38602"
+    "y": "37707.38602",
+    "mrt_m": 469,
+    "mrt": "Dt4"
    },
    {
     "project": "THE SEA VIEW",
@@ -4106,7 +4664,9 @@
     "momentum": 0.088,
     "lease": "FH",
     "x": "35581.62839",
-    "y": "31581.90297"
+    "y": "31581.90297",
+    "mrt_m": 357,
+    "mrt": "Marine Parade"
    },
    {
     "project": "THE MADEIRA",
@@ -4118,7 +4678,9 @@
     "momentum": 0.002,
     "lease": 73,
     "x": "18676.43633",
-    "y": "37672.98718"
+    "y": "37672.98718",
+    "mrt_m": 336,
+    "mrt": "Bukit Gombak"
    },
    {
     "project": "EUPHONY GARDENS",
@@ -4130,7 +4692,9 @@
     "momentum": 0.06,
     "lease": 71,
     "x": "27017.88078",
-    "y": "45271.49965"
+    "y": "45271.49965",
+    "mrt_m": 1214,
+    "mrt": "Yishun"
    },
    {
     "project": "THE CALROSE",
@@ -4142,7 +4706,9 @@
     "momentum": 0.07,
     "lease": "FH",
     "x": "28344.33243",
-    "y": "40467.55239"
+    "y": "40467.55239",
+    "mrt_m": 185,
+    "mrt": "Lentor"
    },
    {
     "project": "SELETAR SPRINGS CONDOMINIUM",
@@ -4154,7 +4720,9 @@
     "momentum": 0.057,
     "lease": 70,
     "x": "33026.26712",
-    "y": "41057.24503"
+    "y": "41057.24503",
+    "mrt_m": 528,
+    "mrt": "Layar"
    },
    {
     "project": "HILLINGTON GREEN",
@@ -4166,7 +4734,9 @@
     "momentum": 0.054,
     "lease": 856,
     "x": "20342.96457",
-    "y": "38045.59787"
+    "y": "38045.59787",
+    "mrt_m": 347,
+    "mrt": "Hillview"
    },
    {
     "project": "MEADOWS @ PEIRCE",
@@ -4178,7 +4748,9 @@
     "momentum": 0.037,
     "lease": "FH",
     "x": "27344.08127",
-    "y": "40368.85116"
+    "y": "40368.85116",
+    "mrt_m": 991,
+    "mrt": "Lentor"
    },
    {
     "project": "RIVIERE",
@@ -4190,7 +4762,9 @@
     "momentum": 0.003,
     "lease": 91,
     "x": "28218.49314",
-    "y": "30455.31905"
+    "y": "30455.31905",
+    "mrt_m": 222,
+    "mrt": "Havelock"
    },
    {
     "project": "THE ROCHESTER RESIDENCES",
@@ -4202,7 +4776,9 @@
     "momentum": 0.076,
     "lease": 78,
     "x": "22994.3604",
-    "y": "31949.13443"
+    "y": "31949.13443",
+    "mrt_m": 312,
+    "mrt": "Buona Vista"
    },
    {
     "project": "ASCENTIA SKY",
@@ -4214,7 +4790,9 @@
     "momentum": 0.021,
     "lease": 81,
     "x": "26183.9116",
-    "y": "30372.33171"
+    "y": "30372.33171",
+    "mrt_m": 165,
+    "mrt": "Redhill"
    },
    {
     "project": "BLUE HORIZON",
@@ -4226,7 +4804,9 @@
     "momentum": -0.015,
     "lease": 73,
     "x": "20407.56726",
-    "y": "31116.71765"
+    "y": "31116.71765",
+    "mrt_m": 1824,
+    "mrt": "Clementi"
    },
    {
     "project": "CENTRAL GREEN CONDOMINIUM",
@@ -4238,7 +4818,9 @@
     "momentum": 0.03,
     "lease": 65,
     "x": "27396.24926",
-    "y": "29657.73452"
+    "y": "29657.73452",
+    "mrt_m": 173,
+    "mrt": "Tiong Bahru"
    },
    {
     "project": "QUEENS",
@@ -4250,7 +4832,9 @@
     "momentum": 0.043,
     "lease": 71,
     "x": "25033.49158",
-    "y": "30562.88589"
+    "y": "30562.88589",
+    "mrt_m": 183,
+    "mrt": "Queenstown"
    },
    {
     "project": "BELLE VUE RESIDENCES",
@@ -4262,7 +4846,9 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "28955.32253",
-    "y": "31008.60033"
+    "y": "31008.60033",
+    "mrt_m": 453,
+    "mrt": "Dhoby Ghaut"
    },
    {
     "project": "REGENCY PARK",
@@ -4274,7 +4860,9 @@
     "momentum": 0.029,
     "lease": "FH",
     "x": "27265.13377",
-    "y": "30925.99921"
+    "y": "30925.99921",
+    "mrt_m": 703,
+    "mrt": "Great World"
    },
    {
     "project": "ST THOMAS SUITES",
@@ -4286,7 +4874,9 @@
     "momentum": -0.024,
     "lease": "FH",
     "x": "28287.10031",
-    "y": "31197.14084"
+    "y": "31197.14084",
+    "mrt_m": 331,
+    "mrt": "Somerset"
    },
    {
     "project": "OLEANDER TOWERS",
@@ -4298,7 +4888,9 @@
     "momentum": 0.03,
     "lease": 68,
     "x": "29226.76011",
-    "y": "35042.28491"
+    "y": "35042.28491",
+    "mrt_m": 242,
+    "mrt": "Toa Payoh"
    },
    {
     "project": "THE SCOTTS TOWER",
@@ -4310,7 +4902,9 @@
     "momentum": -0.037,
     "lease": 87,
     "x": "28242.73625",
-    "y": "32477.57613"
+    "y": "32477.57613",
+    "mrt_m": 381,
+    "mrt": "Newton"
    },
    {
     "project": "TIARA",
@@ -4322,7 +4916,9 @@
     "momentum": 0.045,
     "lease": "FH",
     "x": "27743.34091",
-    "y": "30846.41657"
+    "y": "30846.41657",
+    "mrt_m": 242,
+    "mrt": "Great World"
    },
    {
     "project": "PARVIS",
@@ -4334,7 +4930,9 @@
     "momentum": 0.009,
     "lease": "FH",
     "x": "24279.66391",
-    "y": "32462.32164"
+    "y": "32462.32164",
+    "mrt_m": 444,
+    "mrt": "Holland Village"
    },
    {
     "project": "THE VERMONT ON CAIRNHILL",
@@ -4346,7 +4944,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "28552.67919",
-    "y": "32367.12796"
+    "y": "32367.12796",
+    "mrt_m": 343,
+    "mrt": "Newton"
    },
    {
     "project": "AMARYLLIS VILLE",
@@ -4358,7 +4958,9 @@
     "momentum": 0.004,
     "lease": 70,
     "x": "28961.52889",
-    "y": "33007.46973"
+    "y": "33007.46973",
+    "mrt_m": 433,
+    "mrt": "Newton"
    },
    {
     "project": "SKY GREEN",
@@ -4370,7 +4972,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "33888.36258",
-    "y": "34968.70187"
+    "y": "34968.70187",
+    "mrt_m": 321,
+    "mrt": "Tai Seng"
    },
    {
     "project": "PARK INFINIA AT WEE NAM",
@@ -4382,7 +4986,9 @@
     "momentum": 0.02,
     "lease": "FH",
     "x": "29138.3885",
-    "y": "33055.05557"
+    "y": "33055.05557",
+    "mrt_m": 521,
+    "mrt": "Novena"
    },
    {
     "project": "THE TRUMPS",
@@ -4394,7 +5000,9 @@
     "momentum": 0.057,
     "lease": 73,
     "x": "36921.99044",
-    "y": "33587.44068"
+    "y": "33587.44068",
+    "mrt_m": 117,
+    "mrt": "Kembangan"
    },
    {
     "project": "OKIO",
@@ -4406,7 +5014,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "30214.47579",
-    "y": "33820.31017"
+    "y": "33820.31017",
+    "mrt_m": 948,
+    "mrt": "Boon Keng"
    },
    {
     "project": "RIVERGATE",
@@ -4418,7 +5028,9 @@
     "momentum": 0.035,
     "lease": "FH",
     "x": "28342.39849",
-    "y": "30493.66904"
+    "y": "30493.66904",
+    "mrt_m": 311,
+    "mrt": "Great World"
    },
    {
     "project": "SYMPHONY HEIGHTS",
@@ -4430,7 +5042,9 @@
     "momentum": 0.027,
     "lease": "FH",
     "x": "20620.76192",
-    "y": "37644.41866"
+    "y": "37644.41866",
+    "mrt_m": 262,
+    "mrt": "Dt4"
    },
    {
     "project": "RAFFLESIA CONDOMINIUM",
@@ -4442,7 +5056,9 @@
     "momentum": 0.042,
     "lease": 70,
     "x": "29079.85645",
-    "y": "36647.82919"
+    "y": "36647.82919",
+    "mrt_m": 330,
+    "mrt": "Marymount"
    },
    {
     "project": "TROPICAL SPRING",
@@ -4454,7 +5070,9 @@
     "momentum": 0.003,
     "lease": 70,
     "x": "41617.17243",
-    "y": "35956.93098"
+    "y": "35956.93098",
+    "mrt_m": 246,
+    "mrt": "Simei"
    },
    {
     "project": "THE GALE",
@@ -4466,7 +5084,9 @@
     "momentum": 0.022,
     "lease": "FH",
     "x": "42831.72037",
-    "y": "37904.97345"
+    "y": "37904.97345",
+    "mrt_m": 1231,
+    "mrt": "Tampines East"
    },
    {
     "project": "THE MAKENA",
@@ -4478,7 +5098,9 @@
     "momentum": 0.065,
     "lease": "FH",
     "x": "34774.62592",
-    "y": "31009.13855"
+    "y": "31009.13855",
+    "mrt_m": 410,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "MEYER MANSION",
@@ -4490,7 +5112,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "34423.29087",
-    "y": "30982.90021"
+    "y": "30982.90021",
+    "mrt_m": 454,
+    "mrt": "Katong Park"
    },
    {
     "project": "RIS GRANDEUR",
@@ -4502,7 +5126,9 @@
     "momentum": 0.038,
     "lease": "FH",
     "x": "39907.23544",
-    "y": "39588.84486"
+    "y": "39588.84486",
+    "mrt_m": 993,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "SPRINGDALE CONDOMINIUM",
@@ -4514,7 +5140,9 @@
     "momentum": 0.02,
     "lease": 850,
     "x": "21209.62142",
-    "y": "36713.23515"
+    "y": "36713.23515",
+    "mrt_m": 824,
+    "mrt": "Beauty World"
    },
    {
     "project": "LAKEVIEW ESTATE",
@@ -4526,7 +5154,9 @@
     "momentum": null,
     "lease": 50,
     "x": "28114.18307",
-    "y": "36826.33132"
+    "y": "36826.33132",
+    "mrt_m": 469,
+    "mrt": "Upper Thomson"
    },
    {
     "project": "SKY HABITAT",
@@ -4538,7 +5168,9 @@
     "momentum": 0.081,
     "lease": 84,
     "x": "30083.79271",
-    "y": "37121.48893"
+    "y": "37121.48893",
+    "mrt_m": 230,
+    "mrt": "Bishan"
    },
    {
     "project": "THE JADE",
@@ -4550,7 +5182,9 @@
     "momentum": 0.039,
     "lease": 74,
     "x": "18606.028",
-    "y": "36791.32616"
+    "y": "36791.32616",
+    "mrt_m": 70,
+    "mrt": "Bukit Batok"
    },
    {
     "project": "THE COMMODORE",
@@ -4562,7 +5196,9 @@
     "momentum": null,
     "lease": 93,
     "x": "27382.6717339242",
-    "y": "47023.3177771214"
+    "y": "47023.3177771214",
+    "mrt_m": 257,
+    "mrt": "Canberra"
    },
    {
     "project": "LAKEHOLMZ",
@@ -4574,7 +5210,9 @@
     "momentum": 0.043,
     "lease": 74,
     "x": "14973.7817",
-    "y": "36046.95039"
+    "y": "36046.95039",
+    "mrt_m": 502,
+    "mrt": "Lakeside"
    },
    {
     "project": "HILLBROOKS",
@@ -4586,7 +5224,9 @@
     "momentum": 0.021,
     "lease": "FH",
     "x": "20085.10747",
-    "y": "37862.11544"
+    "y": "37862.11544",
+    "mrt_m": 664,
+    "mrt": "Hillview"
    },
    {
     "project": "FORESQUE RESIDENCES",
@@ -4598,7 +5238,9 @@
     "momentum": 0.034,
     "lease": 84,
     "x": "21676.65393",
-    "y": "39031.59097"
+    "y": "39031.59097",
+    "mrt_m": 971,
+    "mrt": "Pending"
    },
    {
     "project": "TANGLIN VIEW",
@@ -4610,7 +5252,9 @@
     "momentum": 0.016,
     "lease": 70,
     "x": "26216.73826",
-    "y": "30495.57934"
+    "y": "30495.57934",
+    "mrt_m": 287,
+    "mrt": "Redhill"
    },
    {
     "project": "VIVA VISTA",
@@ -4622,7 +5266,9 @@
     "momentum": -0.021,
     "lease": "FH",
     "x": "22723.76402",
-    "y": "29139.70697"
+    "y": "29139.70697",
+    "mrt_m": 565,
+    "mrt": "Haw Par Villa"
    },
    {
     "project": "HUNDRED TREES",
@@ -4634,7 +5280,9 @@
     "momentum": 0.016,
     "lease": 858,
     "x": "19778.91818",
-    "y": "32932.06359"
+    "y": "32932.06359",
+    "mrt_m": 631,
+    "mrt": "Clementi"
    },
    {
     "project": "SPOTTISWOODE 18",
@@ -4646,7 +5294,9 @@
     "momentum": 0.015,
     "lease": "FH",
     "x": "28472.02095",
-    "y": "28674.36657"
+    "y": "28674.36657",
+    "mrt_m": 399,
+    "mrt": "Outram Park"
    },
    {
     "project": "STURDEE RESIDENCES",
@@ -4658,7 +5308,9 @@
     "momentum": 0.034,
     "lease": 88,
     "x": "30863.33552",
-    "y": "32801.21836"
+    "y": "32801.21836",
+    "mrt_m": 347,
+    "mrt": "Farrer Park"
    },
    {
     "project": "PINEWOOD GARDENS",
@@ -4670,7 +5322,9 @@
     "momentum": 0.024,
     "lease": "FH",
     "x": "27639.77477",
-    "y": "33083.28364"
+    "y": "33083.28364",
+    "mrt_m": 587,
+    "mrt": "Stevens"
    },
    {
     "project": "THOMSON 800",
@@ -4682,7 +5336,9 @@
     "momentum": 0.099,
     "lease": "FH",
     "x": "28603.46536",
-    "y": "35917.85447"
+    "y": "35917.85447",
+    "mrt_m": 365,
+    "mrt": "Caldecott"
    },
    {
     "project": "CENTRAL GROVE",
@@ -4694,7 +5350,9 @@
     "momentum": -0.038,
     "lease": 70,
     "x": "33686.86931",
-    "y": "33168.14896"
+    "y": "33168.14896",
+    "mrt_m": 214,
+    "mrt": "Aljunied"
    },
    {
     "project": "MIRAGE TOWER",
@@ -4706,7 +5364,9 @@
     "momentum": 0.018,
     "lease": "FH",
     "x": "28104.98457",
-    "y": "30486.22696"
+    "y": "30486.22696",
+    "mrt_m": 154,
+    "mrt": "Great World"
    },
    {
     "project": "VISTA RESIDENCES",
@@ -4718,7 +5378,9 @@
     "momentum": 0.017,
     "lease": "FH",
     "x": "29108.98203",
-    "y": "34536.08276"
+    "y": "34536.08276",
+    "mrt_m": 631,
+    "mrt": "Toa Payoh"
    },
    {
     "project": "HILLTOPS",
@@ -4730,7 +5392,9 @@
     "momentum": -0.014,
     "lease": "FH",
     "x": "28580.68101",
-    "y": "32175.88161"
+    "y": "32175.88161",
+    "mrt_m": 536,
+    "mrt": "Newton"
    },
    {
     "project": "10 EVELYN",
@@ -4742,7 +5406,9 @@
     "momentum": -0.192,
     "lease": "FH",
     "x": "28802.98961",
-    "y": "33159.24242"
+    "y": "33159.24242",
+    "mrt_m": 380,
+    "mrt": "Newton"
    },
    {
     "project": "WATERMARK ROBERTSON QUAY",
@@ -4754,7 +5420,9 @@
     "momentum": -0.008,
     "lease": "FH",
     "x": "28510.44291",
-    "y": "30250.2774"
+    "y": "30250.2774",
+    "mrt_m": 435,
+    "mrt": "Havelock"
    },
    {
     "project": "STRATFORD COURT",
@@ -4766,7 +5434,9 @@
     "momentum": -0.037,
     "lease": 68,
     "x": "41136.39078",
-    "y": "34521.65204"
+    "y": "34521.65204",
+    "mrt_m": 644,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "CHILTERN PARK",
@@ -4778,7 +5448,9 @@
     "momentum": 0.067,
     "lease": 64,
     "x": "31339.04317",
-    "y": "36940.07844"
+    "y": "36940.07844",
+    "mrt_m": 161,
+    "mrt": "Lorong Chuan"
    },
    {
     "project": "THE RAINTREE",
@@ -4790,7 +5462,9 @@
     "momentum": 0.052,
     "lease": 76,
     "x": "21458.67893",
-    "y": "36711.08313"
+    "y": "36711.08313",
+    "mrt_m": 749,
+    "mrt": "Beauty World"
    },
    {
     "project": "THE SPRINGBLOOM",
@@ -4802,7 +5476,9 @@
     "momentum": 0.004,
     "lease": 68,
     "x": "31253.66167",
-    "y": "36980.93002"
+    "y": "36980.93002",
+    "mrt_m": 121,
+    "mrt": "Lorong Chuan"
    },
    {
     "project": "BALLOTA PARK CONDOMINIUM",
@@ -4814,7 +5490,9 @@
     "momentum": 0.078,
     "lease": "FH",
     "x": "43017.79298",
-    "y": "37832.0162"
+    "y": "37832.0162",
+    "mrt_m": 1404,
+    "mrt": "Tampines East"
    },
    {
     "project": "WATERFRONT KEY",
@@ -4826,7 +5504,9 @@
     "momentum": -0.015,
     "lease": 80,
     "x": "38831.7815",
-    "y": "35480.41757"
+    "y": "35480.41757",
+    "mrt_m": 264,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "STRATUM",
@@ -4838,7 +5518,9 @@
     "momentum": 0.045,
     "lease": 85,
     "x": "40381.97148",
-    "y": "40224.05137"
+    "y": "40224.05137",
+    "mrt_m": 943,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "THE CLEARWATER",
@@ -4850,7 +5532,9 @@
     "momentum": 0.069,
     "lease": 70,
     "x": "39282.51885",
-    "y": "35508.75022"
+    "y": "35508.75022",
+    "mrt_m": 164,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "THE NEXUS",
@@ -4862,7 +5546,9 @@
     "momentum": 0.03,
     "lease": "FH",
     "x": "22801.71059",
-    "y": "35103.71841"
+    "y": "35103.71841",
+    "mrt_m": 337,
+    "mrt": "King Albert Park"
    },
    {
     "project": "MAYFAIR MODERN",
@@ -4874,7 +5560,9 @@
     "momentum": 0.084,
     "lease": 91,
     "x": "22228.54455",
-    "y": "35524.3771"
+    "y": "35524.3771",
+    "mrt_m": 283,
+    "mrt": "King Albert Park"
    },
    {
     "project": "MAYFAIR GARDENS",
@@ -4886,7 +5574,9 @@
     "momentum": 0.014,
     "lease": 91,
     "x": "22303.70661",
-    "y": "35596.27113"
+    "y": "35596.27113",
+    "mrt_m": 312,
+    "mrt": "King Albert Park"
    },
    {
     "project": "CHANGI GREEN",
@@ -4898,7 +5588,9 @@
     "momentum": -0.011,
     "lease": "FH",
     "x": "42465.58849",
-    "y": "36340.85835"
+    "y": "36340.85835",
+    "mrt_m": 376,
+    "mrt": "Upper Changi"
    },
    {
     "project": "SEVENTY SAINT PATRICK'S",
@@ -4910,7 +5602,9 @@
     "momentum": 0.012,
     "lease": "FH",
     "x": "37168.09851",
-    "y": "32181.00277"
+    "y": "32181.00277",
+    "mrt_m": 88,
+    "mrt": "Marine Terrace"
    },
    {
     "project": "THE DAIRY FARM",
@@ -4922,7 +5616,9 @@
     "momentum": 0.009,
     "lease": "FH",
     "x": "20967.31468",
-    "y": "38470.84231"
+    "y": "38470.84231",
+    "mrt_m": 331,
+    "mrt": "Hillview"
    },
    {
     "project": "NINE RESIDENCES",
@@ -4934,7 +5630,9 @@
     "momentum": -0.008,
     "lease": 86,
     "x": "28898.78339",
-    "y": "46094.64658"
+    "y": "46094.64658",
+    "mrt_m": 747,
+    "mrt": "Yishun"
    },
    {
     "project": "MI CASA",
@@ -4946,7 +5644,9 @@
     "momentum": -0.013,
     "lease": 81,
     "x": "18551.41375",
-    "y": "40680.39186"
+    "y": "40680.39186",
+    "mrt_m": 432,
+    "mrt": "Choa Chu Kang"
    },
    {
     "project": "SEASONS PARK",
@@ -4958,7 +5658,9 @@
     "momentum": 0.02,
     "lease": 68,
     "x": "28661.4474",
-    "y": "40785.91664"
+    "y": "40785.91664",
+    "mrt_m": 215,
+    "mrt": "Lentor"
    },
    {
     "project": "CANBERRA RESIDENCES",
@@ -4970,7 +5672,9 @@
     "momentum": 0.018,
     "lease": 83,
     "x": "27091.34064",
-    "y": "47394.19722"
+    "y": "47394.19722",
+    "mrt_m": 481,
+    "mrt": "Canberra"
    },
    {
     "project": "LAKEPOINT CONDOMINIUM",
@@ -4982,7 +5686,9 @@
     "momentum": -0.055,
     "lease": 56,
     "x": "15205.51211",
-    "y": "35999.39106"
+    "y": "35999.39106",
+    "mrt_m": 334,
+    "mrt": "Lakeside"
    },
    {
     "project": "SELETARIS",
@@ -4994,7 +5700,9 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "27056.05186",
-    "y": "46482.52867"
+    "y": "46482.52867",
+    "mrt_m": 873,
+    "mrt": "Canberra"
    },
    {
     "project": "ALTEZ",
@@ -5006,7 +5714,9 @@
     "momentum": 0.131,
     "lease": 81,
     "x": "29224.32188",
-    "y": "28566.29912"
+    "y": "28566.29912",
+    "mrt_m": 207,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "NEWEST",
@@ -5018,7 +5728,9 @@
     "momentum": null,
     "lease": 858,
     "x": "19556.7007",
-    "y": "33187.93129"
+    "y": "33187.93129",
+    "mrt_m": 845,
+    "mrt": "Clementi"
    },
    {
     "project": "CLEMENTIWOODS CONDOMINIUM",
@@ -5030,7 +5742,9 @@
     "momentum": 0.001,
     "lease": 79,
     "x": "20752.17158",
-    "y": "31012.23939"
+    "y": "31012.23939",
+    "mrt_m": 1829,
+    "mrt": "Kent Ridge"
    },
    {
     "project": "WATERFRONT @ FABER",
@@ -5042,7 +5756,9 @@
     "momentum": 0.01,
     "lease": 86,
     "x": "19304.04342",
-    "y": "33982.49856"
+    "y": "33982.49856",
+    "mrt_m": 1423,
+    "mrt": "Clementi"
    },
    {
     "project": "ONE-NORTH EDEN",
@@ -5054,7 +5770,9 @@
     "momentum": -0.014,
     "lease": 92,
     "x": "23075.324352473",
-    "y": "31754.0004873965"
+    "y": "31754.0004873965",
+    "mrt_m": 366,
+    "mrt": "One-North"
    },
    {
     "project": "SOUTHBANK",
@@ -5066,7 +5784,9 @@
     "momentum": 0.018,
     "lease": 79,
     "x": "31448.88726",
-    "y": "32070.8669"
+    "y": "32070.8669",
+    "mrt_m": 170,
+    "mrt": "Lavender"
    },
    {
     "project": "ORCHARD SCOTTS",
@@ -5078,7 +5798,9 @@
     "momentum": 0.047,
     "lease": 74,
     "x": "28570.55107",
-    "y": "32441.09516"
+    "y": "32441.09516",
+    "mrt_m": 270,
+    "mrt": "Newton"
    },
    {
     "project": "ST REGIS RESIDENCES SINGAPORE",
@@ -5090,7 +5812,9 @@
     "momentum": 0.009,
     "lease": 968,
     "x": "27252.55797",
-    "y": "31988.81944"
+    "y": "31988.81944",
+    "mrt_m": 394,
+    "mrt": "Orchard Boulevard"
    },
    {
     "project": "NINETEEN SHELFORD ROAD",
@@ -5102,7 +5826,9 @@
     "momentum": -0.021,
     "lease": "FH",
     "x": "25633.69162",
-    "y": "34269.22484"
+    "y": "34269.22484",
+    "mrt_m": 473,
+    "mrt": "Tan Kah Kee"
    },
    {
     "project": "ESPADA",
@@ -5114,7 +5840,9 @@
     "momentum": 0.079,
     "lease": "FH",
     "x": "28380.95563",
-    "y": "31079.00263"
+    "y": "31079.00263",
+    "mrt_m": 351,
+    "mrt": "Somerset"
    },
    {
     "project": "REZI 24",
@@ -5126,7 +5854,9 @@
     "momentum": -0.025,
     "lease": "FH",
     "x": "33593.17547",
-    "y": "32651.68211"
+    "y": "32651.68211",
+    "mrt_m": 533,
+    "mrt": "Aljunied"
    },
    {
     "project": "KALLANG RIVERSIDE",
@@ -5138,7 +5868,9 @@
     "momentum": 0.044,
     "lease": "FH",
     "x": "31758.20311",
-    "y": "32158.54453"
+    "y": "32158.54453",
+    "mrt_m": 450,
+    "mrt": "Lavender"
    },
    {
     "project": "ONE JERVOIS",
@@ -5150,7 +5882,9 @@
     "momentum": 0.063,
     "lease": "FH",
     "x": "27082.1862",
-    "y": "30589.14809"
+    "y": "30589.14809",
+    "mrt_m": 777,
+    "mrt": "Tiong Bahru"
    },
    {
     "project": "PATERSON SUITES",
@@ -5162,7 +5896,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "27693.35328",
-    "y": "31494.31166"
+    "y": "31494.31166",
+    "mrt_m": 196,
+    "mrt": "Orchard"
    },
    {
     "project": "STARVILLE",
@@ -5174,7 +5910,9 @@
     "momentum": 0.021,
     "lease": "FH",
     "x": "36807.16086",
-    "y": "34521.67919"
+    "y": "34521.67919",
+    "mrt_m": 806,
+    "mrt": "Kaki Bukit"
    },
    {
     "project": "LE CRESCENDO",
@@ -5186,7 +5924,9 @@
     "momentum": 0.096,
     "lease": "FH",
     "x": "34131.02612",
-    "y": "34745.19968"
+    "y": "34745.19968",
+    "mrt_m": 452,
+    "mrt": "Macpherson"
    },
    {
     "project": "8 @ MOUNT SOPHIA",
@@ -5198,7 +5938,9 @@
     "momentum": 0.088,
     "lease": 79,
     "x": "29406.49307",
-    "y": "31479.60348"
+    "y": "31479.60348",
+    "mrt_m": 148,
+    "mrt": "Dhoby Ghaut"
    },
    {
     "project": "JUI RESIDENCES",
@@ -5210,7 +5952,9 @@
     "momentum": 0.001,
     "lease": "FH",
     "x": "31652.98935",
-    "y": "34277.59632"
+    "y": "34277.59632",
+    "mrt_m": 605,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "THE WATERINA",
@@ -5222,7 +5966,9 @@
     "momentum": 0.091,
     "lease": "FH",
     "x": "34340.50915",
-    "y": "32738.57626"
+    "y": "32738.57626",
+    "mrt_m": 408,
+    "mrt": "Dakota"
    },
    {
     "project": "ROYALGREEN",
@@ -5234,7 +5980,9 @@
     "momentum": -0.035,
     "lease": "FH",
     "x": "23641.85819",
-    "y": "34780.96016"
+    "y": "34780.96016",
+    "mrt_m": 268,
+    "mrt": "Sixth Avenue"
    },
    {
     "project": "CYAN",
@@ -5246,7 +5994,9 @@
     "momentum": 0.029,
     "lease": "FH",
     "x": "27627.62508",
-    "y": "33280.06186"
+    "y": "33280.06186",
+    "mrt_m": 474,
+    "mrt": "Stevens"
    },
    {
     "project": "CAIRNHILL CREST",
@@ -5258,7 +6008,9 @@
     "momentum": 0.093,
     "lease": "FH",
     "x": "28615.36346",
-    "y": "32016.63009"
+    "y": "32016.63009",
+    "mrt_m": 564,
+    "mrt": "Somerset"
    },
    {
     "project": "GLENTREES",
@@ -5270,7 +6022,9 @@
     "momentum": 0.089,
     "lease": 858,
     "x": "22657.75209",
-    "y": "33191.50779"
+    "y": "33191.50779",
+    "mrt_m": 927,
+    "mrt": "Dover"
    },
    {
     "project": "TANGLIN PARK",
@@ -5282,7 +6036,9 @@
     "momentum": -0.014,
     "lease": "FH",
     "x": "26010.59292",
-    "y": "31407.055"
+    "y": "31407.055",
+    "mrt_m": 809,
+    "mrt": "Napier"
    },
    {
     "project": "THE QUAYSIDE",
@@ -5294,7 +6050,9 @@
     "momentum": 0.059,
     "lease": 67,
     "x": "28651.44865",
-    "y": "30277.06127"
+    "y": "30277.06127",
+    "mrt_m": 575,
+    "mrt": "Havelock"
    },
    {
     "project": "WATERFORD RESIDENCE",
@@ -5306,7 +6064,9 @@
     "momentum": 0.06,
     "lease": 814,
     "x": "28724.38792",
-    "y": "30715.11751"
+    "y": "30715.11751",
+    "mrt_m": 516,
+    "mrt": "Fort Canning"
    },
    {
     "project": "GRANGE RESIDENCES",
@@ -5318,7 +6078,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "26813.73785",
-    "y": "31856.95776"
+    "y": "31856.95776",
+    "mrt_m": 137,
+    "mrt": "Orchard Boulevard"
    },
    {
     "project": "DAKOTA RESIDENCES",
@@ -5330,7 +6092,9 @@
     "momentum": 0.097,
     "lease": 80,
     "x": "33980.7023",
-    "y": "32076.141"
+    "y": "32076.141",
+    "mrt_m": 219,
+    "mrt": "Dakota"
    },
    {
     "project": "PARC KOMO",
@@ -5342,7 +6106,9 @@
     "momentum": 0.014,
     "lease": "FH",
     "x": "43172.53965",
-    "y": "38158.98543"
+    "y": "38158.98543",
+    "mrt_m": 1625,
+    "mrt": "Tampines East"
    },
    {
     "project": "THE CREEK @ BUKIT",
@@ -5354,7 +6120,9 @@
     "momentum": -0.034,
     "lease": "FH",
     "x": "20884.1748",
-    "y": "35645.76954"
+    "y": "35645.76954",
+    "mrt_m": 725,
+    "mrt": "Beauty World"
    },
    {
     "project": "THE TROPICA",
@@ -5366,7 +6134,9 @@
     "momentum": 0.022,
     "lease": 69,
     "x": "38455.28517",
-    "y": "36761.48356"
+    "y": "36761.48356",
+    "mrt_m": 1263,
+    "mrt": "Tampines West"
    },
    {
     "project": "THE LINE @ TANJONG RHU",
@@ -5378,7 +6148,9 @@
     "momentum": 0.043,
     "lease": "FH",
     "x": "33685.80085",
-    "y": "31200.17569"
+    "y": "31200.17569",
+    "mrt_m": 74,
+    "mrt": "Katong Park"
    },
    {
     "project": "HIGH OAK CONDOMINIUM",
@@ -5390,7 +6162,9 @@
     "momentum": 0.054,
     "lease": 69,
     "x": "21130.01862",
-    "y": "35690.56682"
+    "y": "35690.56682",
+    "mrt_m": 475,
+    "mrt": "Beauty World"
    },
    {
     "project": "THE SEAWIND",
@@ -5402,7 +6176,9 @@
     "momentum": 0.052,
     "lease": "FH",
     "x": "37022.23286",
-    "y": "32547.0812"
+    "y": "32547.0812",
+    "mrt_m": 420,
+    "mrt": "Marine Terrace"
    },
    {
     "project": "THE TANAMERA",
@@ -5414,7 +6190,9 @@
     "momentum": 0.048,
     "lease": 63,
     "x": "40178.51031",
-    "y": "34368.33499"
+    "y": "34368.33499",
+    "mrt_m": 331,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "COASTLINE RESIDENCES",
@@ -5426,7 +6204,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "35314.0058",
-    "y": "31259.64123"
+    "y": "31259.64123",
+    "mrt_m": 150,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "ESTELLA GARDENS",
@@ -5438,7 +6218,9 @@
     "momentum": 0.006,
     "lease": "FH",
     "x": "42839.9769",
-    "y": "38002.73513"
+    "y": "38002.73513",
+    "mrt_m": 1261,
+    "mrt": "Tampines East"
    },
    {
     "project": "VILLA MARINA",
@@ -5450,7 +6232,9 @@
     "momentum": -0.082,
     "lease": 68,
     "x": "38479.05922",
-    "y": "32633.46793"
+    "y": "32633.46793",
+    "mrt_m": 218,
+    "mrt": "Siglap"
    },
    {
     "project": "MODENA",
@@ -5462,7 +6246,9 @@
     "momentum": -0.016,
     "lease": 70,
     "x": "41498.39937",
-    "y": "36088.04913"
+    "y": "36088.04913",
+    "mrt_m": 88,
+    "mrt": "Simei"
    },
    {
     "project": "THE GAZANIA",
@@ -5474,7 +6260,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "33097.76557",
-    "y": "36353.05347"
+    "y": "36353.05347",
+    "mrt_m": 173,
+    "mrt": "Bartley"
    },
    {
     "project": "BAYWATER",
@@ -5486,7 +6274,9 @@
     "momentum": -0.022,
     "lease": 74,
     "x": "39040.91354",
-    "y": "35511.49644"
+    "y": "35511.49644",
+    "mrt_m": 126,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "SUNHAVEN",
@@ -5498,7 +6288,9 @@
     "momentum": -0.005,
     "lease": "FH",
     "x": "42330.27335",
-    "y": "36696.2987"
+    "y": "36696.2987",
+    "mrt_m": 685,
+    "mrt": "Upper Changi"
    },
    {
     "project": "OPTIMA @ TANAH MERAH",
@@ -5510,7 +6302,9 @@
     "momentum": 0.053,
     "lease": 81,
     "x": "40648.94137",
-    "y": "34469.87399"
+    "y": "34469.87399",
+    "mrt_m": 174,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "WATERFRONT WAVES",
@@ -5522,7 +6316,9 @@
     "momentum": 0.07,
     "lease": 80,
     "x": "38790.1784",
-    "y": "35464.5145"
+    "y": "35464.5145",
+    "mrt_m": 299,
+    "mrt": "Bedok Reservoir"
    },
    {
     "project": "THE QUINN",
@@ -5534,7 +6330,9 @@
     "momentum": -0.076,
     "lease": "FH",
     "x": "32441.00278",
-    "y": "36238.32205"
+    "y": "36238.32205",
+    "mrt_m": 519,
+    "mrt": "Woodleigh"
    },
    {
     "project": "OASIS @ ELIAS",
@@ -5546,7 +6344,9 @@
     "momentum": 0.026,
     "lease": 81,
     "x": "40050.63341",
-    "y": "39936.97234"
+    "y": "39936.97234",
+    "mrt_m": 979,
+    "mrt": "Pasir Ris"
    },
    {
     "project": "ECO SANCTUARY",
@@ -5558,7 +6358,9 @@
     "momentum": -0.022,
     "lease": 85,
     "x": "21589.87005",
-    "y": "39206.74437"
+    "y": "39206.74437",
+    "mrt_m": 778,
+    "mrt": "Pending"
    },
    {
     "project": "RIVERWALK APARTMENTS",
@@ -5570,7 +6372,9 @@
     "momentum": null,
     "lease": 53,
     "x": "29680.47392",
-    "y": "30154.93846"
+    "y": "30154.93846",
+    "mrt_m": 151,
+    "mrt": "Clarke Quay"
    },
    {
     "project": "THE CLIFT",
@@ -5582,7 +6386,9 @@
     "momentum": 0.003,
     "lease": 77,
     "x": "29559.31115",
-    "y": "29095.0919"
+    "y": "29095.0919",
+    "mrt_m": 184,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "REGENT PARK",
@@ -5594,7 +6400,9 @@
     "momentum": 0.021,
     "lease": 66,
     "x": "19946.09604",
-    "y": "33315.60113"
+    "y": "33315.60113",
+    "mrt_m": 510,
+    "mrt": "Clementi"
    },
    {
     "project": "THE ANCHORAGE",
@@ -5606,7 +6414,9 @@
     "momentum": 0.022,
     "lease": "FH",
     "x": "24832.26679",
-    "y": "30230.30292"
+    "y": "30230.30292",
+    "mrt_m": 530,
+    "mrt": "Queenstown"
    },
    {
     "project": "EON SHENTON",
@@ -5618,7 +6428,9 @@
     "momentum": null,
     "lease": 84,
     "x": "29435.12891",
-    "y": "28482.59355"
+    "y": "28482.59355",
+    "mrt_m": 179,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "WALLICH RESIDENCE",
@@ -5630,7 +6442,9 @@
     "momentum": -0.113,
     "lease": 84,
     "x": "29387.98658",
-    "y": "28842.67269"
+    "y": "28842.67269",
+    "mrt_m": 76,
+    "mrt": "Tanjong Pagar"
    },
    {
     "project": "THE SHELFORD",
@@ -5642,7 +6456,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "25588.16404",
-    "y": "34202.32006"
+    "y": "34202.32006",
+    "mrt_m": 429,
+    "mrt": "Tan Kah Kee"
    },
    {
     "project": "TANGLIN REGENCY",
@@ -5654,7 +6470,9 @@
     "momentum": -0.002,
     "lease": 67,
     "x": "26135.99983",
-    "y": "30485.46545"
+    "y": "30485.46545",
+    "mrt_m": 287,
+    "mrt": "Redhill"
    },
    {
     "project": "TREVOSE PARK",
@@ -5666,7 +6484,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "27157.04338",
-    "y": "34102.83586"
+    "y": "34102.83586",
+    "mrt_m": 353,
+    "mrt": "Stevens"
    },
    {
     "project": "UE SQUARE",
@@ -5678,7 +6498,9 @@
     "momentum": 0.111,
     "lease": 856,
     "x": "28945.08505",
-    "y": "30611.17235"
+    "y": "30611.17235",
+    "mrt_m": 274,
+    "mrt": "Fort Canning"
    },
    {
     "project": "WATERBANK AT DAKOTA",
@@ -5690,7 +6512,9 @@
     "momentum": 0.031,
     "lease": 82,
     "x": "34193.80268",
-    "y": "32128.03498"
+    "y": "32128.03498",
+    "mrt_m": 179,
+    "mrt": "Dakota"
    },
    {
     "project": "ASTORIA PARK",
@@ -5702,7 +6526,9 @@
     "momentum": 0.057,
     "lease": 66,
     "x": "36735.13558",
-    "y": "33710.9665"
+    "y": "33710.9665",
+    "mrt_m": 121,
+    "mrt": "Kembangan"
    },
    {
     "project": "BELMOND GREEN",
@@ -5714,7 +6540,9 @@
     "momentum": 0.014,
     "lease": "FH",
     "x": "27807.60677",
-    "y": "33145.14956"
+    "y": "33145.14956",
+    "mrt_m": 694,
+    "mrt": "Stevens"
    },
    {
     "project": "DORMER PARK",
@@ -5726,7 +6554,9 @@
     "momentum": 0.034,
     "lease": "FH",
     "x": "26677.03314",
-    "y": "30742.14633"
+    "y": "30742.14633",
+    "mrt_m": 709,
+    "mrt": "Redhill"
    },
    {
     "project": "8 SAINT THOMAS",
@@ -5738,7 +6568,9 @@
     "momentum": 0.072,
     "lease": "FH",
     "x": "28330.96609",
-    "y": "30946.47959"
+    "y": "30946.47959",
+    "mrt_m": 324,
+    "mrt": "Great World"
    },
    {
     "project": "WATERSCAPE AT CAVENAGH",
@@ -5750,7 +6582,9 @@
     "momentum": -0.001,
     "lease": "FH",
     "x": "28867.26249",
-    "y": "31824.89313"
+    "y": "31824.89313",
+    "mrt_m": 454,
+    "mrt": "Somerset"
    },
    {
     "project": "PALM SPRING",
@@ -5762,7 +6596,9 @@
     "momentum": -0.011,
     "lease": "FH",
     "x": "27746.2993",
-    "y": "33281.25654"
+    "y": "33281.25654",
+    "mrt_m": 585,
+    "mrt": "Stevens"
    },
    {
     "project": "SANT RITZ",
@@ -5774,7 +6610,9 @@
     "momentum": -0.003,
     "lease": 85,
     "x": "31996.91858",
-    "y": "34650.8351"
+    "y": "34650.8351",
+    "mrt_m": 168,
+    "mrt": "Potong Pasir"
    },
    {
     "project": "WINDY HEIGHTS",
@@ -5786,7 +6624,9 @@
     "momentum": 0.07,
     "lease": "FH",
     "x": "36598.02516",
-    "y": "34409.29144"
+    "y": "34409.29144",
+    "mrt_m": 747,
+    "mrt": "Kembangan"
    },
    {
     "project": "HORIZON TOWERS",
@@ -5798,7 +6638,9 @@
     "momentum": 0.053,
     "lease": 52,
     "x": "27928.68525",
-    "y": "31107.43238"
+    "y": "31107.43238",
+    "mrt_m": 142,
+    "mrt": "Great World"
    },
    {
     "project": "GUILLEMARD SUITES",
@@ -5810,7 +6652,9 @@
     "momentum": -0.106,
     "lease": "FH",
     "x": "33498.03408",
-    "y": "32583.23364"
+    "y": "32583.23364",
+    "mrt_m": 466,
+    "mrt": "Mountbatten"
    },
    {
     "project": "URBAN TREASURES",
@@ -5822,7 +6666,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "36065.47433",
-    "y": "34620.30608"
+    "y": "34620.30608",
+    "mrt_m": 661,
+    "mrt": "Ubi"
    },
    {
     "project": "THE LAURELS",
@@ -5834,7 +6680,9 @@
     "momentum": -0.005,
     "lease": "FH",
     "x": "28509.97603",
-    "y": "31900.18038"
+    "y": "31900.18038",
+    "mrt_m": 449,
+    "mrt": "Somerset"
    },
    {
     "project": "THE ARTE",
@@ -5846,7 +6694,9 @@
     "momentum": 0.084,
     "lease": "FH",
     "x": "29013.10256",
-    "y": "34527.83343"
+    "y": "34527.83343",
+    "mrt_m": 697,
+    "mrt": "Toa Payoh"
    },
    {
     "project": "BEACON HEIGHTS",
@@ -5858,7 +6708,9 @@
     "momentum": 0.038,
     "lease": 855,
     "x": "31207.79592",
-    "y": "34289.35365"
+    "y": "34289.35365",
+    "mrt_m": 701,
+    "mrt": "Boon Keng"
    },
    {
     "project": "SCOTTS SQUARE",
@@ -5870,7 +6722,9 @@
     "momentum": -0.002,
     "lease": "FH",
     "x": "27972.85919",
-    "y": "32014.18459"
+    "y": "32014.18459",
+    "mrt_m": 118,
+    "mrt": "Orchard"
    },
    {
     "project": "CAIRNHILL NINE",
@@ -5882,7 +6736,9 @@
     "momentum": -0.033,
     "lease": 87,
     "x": "28459.16483",
-    "y": "31758.47228"
+    "y": "31758.47228",
+    "mrt_m": 323,
+    "mrt": "Somerset"
    },
    {
     "project": "RESIDENTIAL APARTMENTS",
@@ -5894,7 +6750,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "34992.60301",
-    "y": "32046.02109"
+    "y": "32046.02109",
+    "mrt_m": 674,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "THE SUMMIT",
@@ -5906,7 +6764,9 @@
     "momentum": 0.084,
     "lease": "FH",
     "x": "39959.61909",
-    "y": "33220.65997"
+    "y": "33220.65997",
+    "mrt_m": 349,
+    "mrt": "Bayshore"
    },
    {
     "project": "PARC ELEGANCE",
@@ -5918,7 +6778,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "36412.08461",
-    "y": "33346.9486"
+    "y": "33346.9486",
+    "mrt_m": 564,
+    "mrt": "Kembangan"
    },
    {
     "project": "FULCRUM",
@@ -5930,7 +6792,9 @@
     "momentum": -0.023,
     "lease": "FH",
     "x": "33735.3674",
-    "y": "31227.93243"
+    "y": "31227.93243",
+    "mrt_m": 42,
+    "mrt": "Katong Park"
    },
    {
     "project": "SEASONS VIEW",
@@ -5942,7 +6806,9 @@
     "momentum": 0.015,
     "lease": 69,
     "x": "28851.1134",
-    "y": "37141.64045"
+    "y": "37141.64045",
+    "mrt_m": 412,
+    "mrt": "Marymount"
    },
    {
     "project": "CARDIFF RESIDENCE",
@@ -5954,7 +6820,9 @@
     "momentum": 0.02,
     "lease": 84,
     "x": "31614.58398",
-    "y": "37450.40536"
+    "y": "37450.40536",
+    "mrt_m": 403,
+    "mrt": "Lorong Chuan"
    },
    {
     "project": "TANJONG RIA CONDOMINIUM",
@@ -5966,7 +6834,9 @@
     "momentum": 0.04,
     "lease": 66,
     "x": "32561.37722",
-    "y": "30999.65384"
+    "y": "30999.65384",
+    "mrt_m": 94,
+    "mrt": "Tanjong Rhu"
    },
    {
     "project": "THE MEYERISE",
@@ -5978,7 +6848,9 @@
     "momentum": 0.049,
     "lease": "FH",
     "x": "34633.49148",
-    "y": "30953.08019"
+    "y": "30953.08019",
+    "mrt_m": 556,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "THE BLOSSOMVALE",
@@ -5990,7 +6862,9 @@
     "momentum": null,
     "lease": 857,
     "x": "22380.12467",
-    "y": "35435.42004"
+    "y": "35435.42004",
+    "mrt_m": 136,
+    "mrt": "King Albert Park"
    },
    {
     "project": "THE SEAFRONT ON MEYER",
@@ -6002,7 +6876,9 @@
     "momentum": 0.034,
     "lease": "FH",
     "x": "34086.80475",
-    "y": "31076.78326"
+    "y": "31076.78326",
+    "mrt_m": 105,
+    "mrt": "Katong Park"
    },
    {
     "project": "GOLDENHILL PARK CONDOMINIUM",
@@ -6014,7 +6890,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "31224.32642",
-    "y": "37219.62781"
+    "y": "37219.62781",
+    "mrt_m": 144,
+    "mrt": "Lorong Chuan"
    },
    {
     "project": "LAGUNA GREEN",
@@ -6026,7 +6904,9 @@
     "momentum": -0.052,
     "lease": 68,
     "x": "39291.83555",
-    "y": "32796.83762"
+    "y": "32796.83762",
+    "mrt_m": 468,
+    "mrt": "Siglap"
    },
    {
     "project": "KOVAN GRANDEUR",
@@ -6038,7 +6918,9 @@
     "momentum": 0.014,
     "lease": 83,
     "x": "34528.98534",
-    "y": "38089.89878"
+    "y": "38089.89878",
+    "mrt_m": 731,
+    "mrt": "Kovan"
    },
    {
     "project": "EVERGREEN PARK",
@@ -6050,7 +6932,9 @@
     "momentum": 0.031,
     "lease": 68,
     "x": "35374.1604",
-    "y": "39061.7031"
+    "y": "39061.7031",
+    "mrt_m": 782,
+    "mrt": "Hougang"
    },
    {
     "project": "FAR HORIZON GARDENS",
@@ -6062,7 +6946,9 @@
     "momentum": 0.013,
     "lease": 55,
     "x": "28655.09536",
-    "y": "40574.76634"
+    "y": "40574.76634",
+    "mrt_m": 212,
+    "mrt": "Lentor"
    },
    {
     "project": "SIGLAP V",
@@ -6074,7 +6960,9 @@
     "momentum": -0.069,
     "lease": "FH",
     "x": "38068.45274",
-    "y": "32793.65781"
+    "y": "32793.65781",
+    "mrt_m": 633,
+    "mrt": "Siglap"
    },
    {
     "project": "TANAMERA CREST",
@@ -6086,7 +6974,9 @@
     "momentum": 0.004,
     "lease": 73,
     "x": "40142.321",
-    "y": "35010.64799"
+    "y": "35010.64799",
+    "mrt_m": 745,
+    "mrt": "Tanah Merah"
    },
    {
     "project": "MERAWOODS",
@@ -6098,7 +6988,9 @@
     "momentum": 0.041,
     "lease": 858,
     "x": "19816.41719",
-    "y": "37596.98152"
+    "y": "37596.98152",
+    "mrt_m": 896,
+    "mrt": "Bukit Gombak"
    },
    {
     "project": "BULLION PARK",
@@ -6110,7 +7002,9 @@
     "momentum": -0.021,
     "lease": "FH",
     "x": "28247.79715",
-    "y": "41588.64618"
+    "y": "41588.64618",
+    "mrt_m": 723,
+    "mrt": "Lentor"
    },
    {
     "project": "GRANDE VISTA",
@@ -6122,7 +7016,9 @@
     "momentum": 0.094,
     "lease": 859,
     "x": "30002.02778",
-    "y": "41133.52788"
+    "y": "41133.52788",
+    "mrt_m": 1021,
+    "mrt": "Yio Chu Kang"
    },
    {
     "project": "NATURA@HILLVIEW",
@@ -6134,7 +7030,9 @@
     "momentum": 0.037,
     "lease": "FH",
     "x": "19706.56375",
-    "y": "37263.39611"
+    "y": "37263.39611",
+    "mrt_m": 959,
+    "mrt": "Bukit Gombak"
    },
    {
     "project": "KANDIS RESIDENCE",
@@ -6146,7 +7044,9 @@
     "momentum": -0.031,
     "lease": 89,
     "x": "28382.98253",
-    "y": "48642.82762"
+    "y": "48642.82762",
+    "mrt_m": 1611,
+    "mrt": "Canberra"
    },
    {
     "project": "MARINA BAY SUITES",
@@ -6158,7 +7058,9 @@
     "momentum": -0.014,
     "lease": 80,
     "x": "30095.03618",
-    "y": "29199.57054"
+    "y": "29199.57054",
+    "mrt_m": 69,
+    "mrt": "Downtown"
    },
    {
     "project": "BURLINGTON SQUARE",
@@ -6170,7 +7072,9 @@
     "momentum": 0.068,
     "lease": 69,
     "x": "30157.00031",
-    "y": "31620.97109"
+    "y": "31620.97109",
+    "mrt_m": 134,
+    "mrt": "Rochor"
    },
    {
     "project": "CARABELLE",
@@ -6182,7 +7086,9 @@
     "momentum": -0.006,
     "lease": 858,
     "x": "19424.17318",
-    "y": "33280.65333"
+    "y": "33280.65333",
+    "mrt_m": 992,
+    "mrt": "Clementi"
    },
    {
     "project": "THE PEARL @ MOUNT FABER",
@@ -6194,7 +7100,9 @@
     "momentum": -0.034,
     "lease": 75,
     "x": "27042.14738",
-    "y": "28096.3676"
+    "y": "28096.3676",
+    "mrt_m": 611,
+    "mrt": "Harbourfront"
    },
    {
     "project": "WEST BAY CONDOMINIUM",
@@ -6206,7 +7114,9 @@
     "momentum": 0.009,
     "lease": 64,
     "x": "20439.95978",
-    "y": "31284.53946"
+    "y": "31284.53946",
+    "mrt_m": 1655,
+    "mrt": "Clementi"
    },
    {
     "project": "MARINA COLLECTION",
@@ -6218,7 +7128,9 @@
     "momentum": null,
     "lease": 80,
     "x": "28722.70375",
-    "y": "25203.03085"
+    "y": "25203.03085",
+    "mrt_m": 3015,
+    "mrt": "Harbourfront"
    },
    {
     "project": "THE PLAZA",
@@ -6230,7 +7142,9 @@
     "momentum": 0.001,
     "lease": 41,
     "x": "31041.43821",
-    "y": "31330.93671"
+    "y": "31330.93671",
+    "mrt_m": 324,
+    "mrt": "Nicoll Highway"
    },
    {
     "project": "THE SORRENTO",
@@ -6242,7 +7156,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "20521.64045",
-    "y": "30904.5222"
+    "y": "30904.5222",
+    "mrt_m": 2037,
+    "mrt": "Clementi"
    },
    {
     "project": "FABER CREST",
@@ -6254,7 +7170,9 @@
     "momentum": 0.029,
     "lease": 69,
     "x": "19547.85969",
-    "y": "33943.45546"
+    "y": "33943.45546",
+    "mrt_m": 1217,
+    "mrt": "Clementi"
    },
    {
     "project": "VIZ AT HOLLAND",
@@ -6266,7 +7184,9 @@
     "momentum": -0.022,
     "lease": "FH",
     "x": "24506.68165",
-    "y": "32306.28704"
+    "y": "32306.28704",
+    "mrt_m": 714,
+    "mrt": "Holland Village"
    },
    {
     "project": "THE GLYNDEBOURNE",
@@ -6278,7 +7198,9 @@
     "momentum": 0.103,
     "lease": "FH",
     "x": "26918.1768",
-    "y": "33830.47873"
+    "y": "33830.47873",
+    "mrt_m": 266,
+    "mrt": "Stevens"
    },
    {
     "project": "ROBIN SUITES",
@@ -6290,7 +7212,9 @@
     "momentum": -0.011,
     "lease": "FH",
     "x": "27493.73032",
-    "y": "33329.17393"
+    "y": "33329.17393",
+    "mrt_m": 331,
+    "mrt": "Stevens"
    },
    {
     "project": "ROCHELLE AT NEWTON",
@@ -6302,7 +7226,9 @@
     "momentum": 0.032,
     "lease": 81,
     "x": "28957.57952",
-    "y": "32925.8568"
+    "y": "32925.8568",
+    "mrt_m": 412,
+    "mrt": "Newton"
    },
    {
     "project": "PARKSUITES",
@@ -6314,7 +7240,9 @@
     "momentum": null,
     "lease": 101,
     "x": "22346.39836",
-    "y": "33152.06116"
+    "y": "33152.06116",
+    "mrt_m": 665,
+    "mrt": "Dover"
    },
    {
     "project": "FYVE DERBYSHIRE",
@@ -6326,7 +7254,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "29380.3931",
-    "y": "33172.04436"
+    "y": "33172.04436",
+    "mrt_m": 482,
+    "mrt": "Novena"
    },
    {
     "project": "ONE BALMORAL",
@@ -6338,7 +7268,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "27605.44776",
-    "y": "32907.54234"
+    "y": "32907.54234",
+    "mrt_m": 691,
+    "mrt": "Stevens"
    },
    {
     "project": "SKY@ELEVEN",
@@ -6350,7 +7282,9 @@
     "momentum": 0.067,
     "lease": "FH",
     "x": "28933.78543",
-    "y": "34873.59305"
+    "y": "34873.59305",
+    "mrt_m": 564,
+    "mrt": "Toa Payoh"
    },
    {
     "project": "THE INTERWEAVE",
@@ -6362,7 +7296,9 @@
     "momentum": -0.093,
     "lease": "FH",
     "x": "30202.79456",
-    "y": "34179.40126"
+    "y": "34179.40126",
+    "mrt_m": 982,
+    "mrt": "Toa Payoh"
    },
    {
     "project": "THE IMPERIAL",
@@ -6374,7 +7310,9 @@
     "momentum": 0.029,
     "lease": "FH",
     "x": "29006.79671",
-    "y": "30774.6928"
+    "y": "30774.6928",
+    "mrt_m": 301,
+    "mrt": "Fort Canning"
    },
    {
     "project": "KIM SIA COURT",
@@ -6386,7 +7324,9 @@
     "momentum": -0.005,
     "lease": "FH",
     "x": "28179.67666",
-    "y": "32036.09268"
+    "y": "32036.09268",
+    "mrt_m": 295,
+    "mrt": "Orchard"
    },
    {
     "project": "THE MEZZO",
@@ -6398,7 +7338,9 @@
     "momentum": -0.021,
     "lease": "FH",
     "x": "30128.84198",
-    "y": "33642.41854"
+    "y": "33642.41854",
+    "mrt_m": 818,
+    "mrt": "Farrer Park"
    },
    {
     "project": "THE RISE @ OXLEY - RESIDENCES",
@@ -6410,7 +7352,9 @@
     "momentum": 0.042,
     "lease": "FH",
     "x": "29099.84261",
-    "y": "31087.31031"
+    "y": "31087.31031",
+    "mrt_m": 290,
+    "mrt": "Dhoby Ghaut"
    },
    {
     "project": "PAVILION 11",
@@ -6422,7 +7366,9 @@
     "momentum": -0.009,
     "lease": "FH",
     "x": "29678.60139",
-    "y": "34065.09819"
+    "y": "34065.09819",
+    "mrt_m": 574,
+    "mrt": "Novena"
    },
    {
     "project": "LEEDON GREEN",
@@ -6434,7 +7380,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "24670.62516",
-    "y": "32748.47583"
+    "y": "32748.47583",
+    "mrt_m": 721,
+    "mrt": "Farrer Road"
    },
    {
     "project": "ARDMORE THREE",
@@ -6446,7 +7394,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "27474.51478",
-    "y": "32305.74158"
+    "y": "32305.74158",
+    "mrt_m": 514,
+    "mrt": "Orchard"
    },
    {
     "project": "WING FONG MANSIONS",
@@ -6458,7 +7408,9 @@
     "momentum": 0.038,
     "lease": "FH",
     "x": "33092.69617",
-    "y": "32542.34677"
+    "y": "32542.34677",
+    "mrt_m": 578,
+    "mrt": "Mountbatten"
    },
    {
     "project": "THE CITRON RESIDENCES",
@@ -6470,7 +7422,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "30659.98958",
-    "y": "32763.65489"
+    "y": "32763.65489",
+    "mrt_m": 147,
+    "mrt": "Farrer Park"
    },
    {
     "project": "10 SHELFORD",
@@ -6482,7 +7436,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "25684.98557",
-    "y": "34226.66726"
+    "y": "34226.66726",
+    "mrt_m": 455,
+    "mrt": "Botanic Gardens"
    },
    {
     "project": "BISHOPSGATE RESIDENCES",
@@ -6494,7 +7450,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "27013.68984",
-    "y": "31190.703"
+    "y": "31190.703",
+    "mrt_m": 461,
+    "mrt": "Orchard Boulevard"
    },
    {
     "project": "LEONIE SUITES",
@@ -6506,7 +7464,9 @@
     "momentum": 0.042,
     "lease": 75,
     "x": "27828.14045",
-    "y": "31236.59137"
+    "y": "31236.59137",
+    "mrt_m": 306,
+    "mrt": "Great World"
    },
    {
     "project": "THE CORNWALL",
@@ -6518,7 +7478,9 @@
     "momentum": 0.056,
     "lease": "FH",
     "x": "24365.81201",
-    "y": "32749.7173"
+    "y": "32749.7173",
+    "mrt_m": 521,
+    "mrt": "Holland Village"
    },
    {
     "project": "NEWTON 18",
@@ -6530,7 +7492,9 @@
     "momentum": -0.027,
     "lease": "FH",
     "x": "28871.6396",
-    "y": "32953.50101"
+    "y": "32953.50101",
+    "mrt_m": 332,
+    "mrt": "Newton"
    },
    {
     "project": "CITYVISTA RESIDENCES",
@@ -6542,7 +7506,9 @@
     "momentum": 0.0,
     "lease": "FH",
     "x": "28474.21849",
-    "y": "32383.9502"
+    "y": "32383.9502",
+    "mrt_m": 334,
+    "mrt": "Newton"
    },
    {
     "project": "SYCAMORE TREE",
@@ -6554,7 +7520,9 @@
     "momentum": -0.023,
     "lease": "FH",
     "x": "35808.27553",
-    "y": "32209.08798"
+    "y": "32209.08798",
+    "mrt_m": 526,
+    "mrt": "Marine Parade"
    },
    {
     "project": "CASUARINA COVE",
@@ -6566,7 +7534,9 @@
     "momentum": 0.02,
     "lease": 66,
     "x": "32543.9896",
-    "y": "31092.30199"
+    "y": "31092.30199",
+    "mrt_m": 102,
+    "mrt": "Tanjong Rhu"
    },
    {
     "project": "SHERWOOD TOWER",
@@ -6578,7 +7548,9 @@
     "momentum": 0.084,
     "lease": 49,
     "x": "21908.78461",
-    "y": "35644.6713"
+    "y": "35644.6713",
+    "mrt_m": 348,
+    "mrt": "Beauty World"
    },
    {
     "project": "THE PROMENADE@PELIKAT",
@@ -6590,7 +7562,9 @@
     "momentum": -0.183,
     "lease": "FH",
     "x": "34069.52349",
-    "y": "37488.77203"
+    "y": "37488.77203",
+    "mrt_m": 589,
+    "mrt": "Kovan"
    },
    {
     "project": "HIGHGATE",
@@ -6602,7 +7576,9 @@
     "momentum": -0.018,
     "lease": "FH",
     "x": "20551.97223",
-    "y": "35952.2883"
+    "y": "35952.2883",
+    "mrt_m": 1007,
+    "mrt": "Beauty World"
    },
    {
     "project": "BISHAN PARK CONDOMINIUM",
@@ -6614,7 +7590,9 @@
     "momentum": 0.044,
     "lease": 64,
     "x": "27738.49422",
-    "y": "38720.39877"
+    "y": "38720.39877",
+    "mrt_m": 381,
+    "mrt": "Bright Hill"
    },
    {
     "project": "SHERWOOD CONDOMINIUM",
@@ -6626,7 +7604,9 @@
     "momentum": -0.022,
     "lease": "FH",
     "x": "20730.80816",
-    "y": "36352.12198"
+    "y": "36352.12198",
+    "mrt_m": 913,
+    "mrt": "Beauty World"
    },
    {
     "project": "CASA CAMBIO",
@@ -6638,7 +7618,9 @@
     "momentum": 0.012,
     "lease": "FH",
     "x": "32769.95659",
-    "y": "37356.84702"
+    "y": "37356.84702",
+    "mrt_m": 479,
+    "mrt": "Serangoon"
    },
    {
     "project": "MIDTOWN RESIDENCES",
@@ -6650,7 +7632,9 @@
     "momentum": 0.027,
     "lease": 86,
     "x": "34877.83814",
-    "y": "39194.6139"
+    "y": "39194.6139",
+    "mrt_m": 274,
+    "mrt": "Hougang"
    },
    {
     "project": "PARBURY HILL CONDOMINIUM",
@@ -6662,7 +7646,9 @@
     "momentum": -0.026,
     "lease": "FH",
     "x": "40209.27451",
-    "y": "33352.98667"
+    "y": "33352.98667",
+    "mrt_m": 488,
+    "mrt": "Bayshore"
    },
    {
     "project": "BLU CORAL",
@@ -6674,7 +7660,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "36993.35194",
-    "y": "32852.02898"
+    "y": "32852.02898",
+    "mrt_m": 727,
+    "mrt": "Marine Terrace"
    },
    {
     "project": "AALTO",
@@ -6686,7 +7674,9 @@
     "momentum": 0.048,
     "lease": "FH",
     "x": "35141.8077",
-    "y": "31167.99795"
+    "y": "31167.99795",
+    "mrt_m": 99,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "HAIG COURT",
@@ -6698,7 +7688,9 @@
     "momentum": 0.028,
     "lease": "FH",
     "x": "35177.07012",
-    "y": "32075.0578"
+    "y": "32075.0578",
+    "mrt_m": 681,
+    "mrt": "Tanjong Katong"
    },
    {
     "project": "HUME PARK I",
@@ -6710,7 +7702,9 @@
     "momentum": 0.043,
     "lease": "FH",
     "x": "20725.01608",
-    "y": "37306.16849"
+    "y": "37306.16849",
+    "mrt_m": 152,
+    "mrt": "Dt4"
    },
    {
     "project": "THE WATERLINE",
@@ -6722,7 +7716,9 @@
     "momentum": 0.017,
     "lease": "FH",
     "x": "32778.51828",
-    "y": "38760.11996"
+    "y": "38760.11996",
+    "mrt_m": 1193,
+    "mrt": "Kovan"
    },
    {
     "project": "SANTA FE MANSIONS",
@@ -6734,7 +7730,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "34171.05012",
-    "y": "31387.67816"
+    "y": "31387.67816",
+    "mrt_m": 343,
+    "mrt": "Katong Park"
    },
    {
     "project": "AVILA GARDENS",
@@ -6746,7 +7744,9 @@
     "momentum": 0.012,
     "lease": "FH",
     "x": "42673.00666",
-    "y": "38025.23802"
+    "y": "38025.23802",
+    "mrt_m": 1108,
+    "mrt": "Tampines East"
    },
    {
     "project": "BUTTERWORTH 8",
@@ -6758,7 +7758,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "34827.11575",
-    "y": "32713.42726"
+    "y": "32713.42726",
+    "mrt_m": 562,
+    "mrt": "Cc9"
    },
    {
     "project": "FLORIDIAN",
@@ -6770,7 +7772,9 @@
     "momentum": 0.022,
     "lease": "FH",
     "x": "22653.21937",
-    "y": "35048.02684"
+    "y": "35048.02684",
+    "mrt_m": 315,
+    "mrt": "King Albert Park"
    },
    {
     "project": "CHANGI COURT",
@@ -6782,7 +7786,9 @@
     "momentum": -0.004,
     "lease": "FH",
     "x": "42375.54402",
-    "y": "36118.65004"
+    "y": "36118.65004",
+    "mrt_m": 141,
+    "mrt": "Upper Changi"
    },
    {
     "project": "SUITES @ PAYA LEBAR",
@@ -6794,7 +7800,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "33192.82463",
-    "y": "36945.28238"
+    "y": "36945.28238",
+    "mrt_m": 631,
+    "mrt": "Serangoon"
    },
    {
     "project": "HUME PARK II",
@@ -6806,7 +7814,9 @@
     "momentum": null,
     "lease": "FH",
     "x": "20698.49092",
-    "y": "37516.49196"
+    "y": "37516.49196",
+    "mrt_m": 123,
+    "mrt": "Dt4"
    },
    {
     "project": "AZALEA PARK CONDOMINIUM",
@@ -6818,7 +7828,9 @@
     "momentum": 0.057,
     "lease": 858,
     "x": "42465.0516",
-    "y": "38035.28308"
+    "y": "38035.28308",
+    "mrt_m": 918,
+    "mrt": "Tampines East"
    },
    {
     "project": "8M RESIDENCES",
@@ -6830,7 +7842,9 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "34162.73299",
-    "y": "31294.41636"
+    "y": "31294.41636",
+    "mrt_m": 264,
+    "mrt": "Katong Park"
    },
    {
     "project": "FERNWOOD TOWERS",
@@ -6842,7 +7856,9 @@
     "momentum": -0.018,
     "lease": "FH",
     "x": "38206.15251",
-    "y": "32417.6211"
+    "y": "32417.6211",
+    "mrt_m": 398,
+    "mrt": "Siglap"
    },
    {
     "project": "NORTHWOOD",
@@ -6854,7 +7870,9 @@
     "momentum": 0.02,
     "lease": "FH",
     "x": "26989.54659",
-    "y": "45328.14573"
+    "y": "45328.14573",
+    "mrt_m": 1224,
+    "mrt": "Yishun"
    },
    {
     "project": "THE ESSENCE",
@@ -6866,7 +7884,9 @@
     "momentum": null,
     "lease": 91,
     "x": "26202.44605",
-    "y": "42812.47529"
+    "y": "42812.47529",
+    "mrt_m": 527,
+    "mrt": "Springleaf"
    },
    {
     "project": "THE WOODGROVE",
@@ -6878,7 +7898,9 @@
     "momentum": null,
     "lease": 69,
     "x": "22232.81678",
-    "y": "45614.91432"
+    "y": "45614.91432",
+    "mrt_m": 902,
+    "mrt": "Marsiling"
    },
    {
     "project": "GLENDALE PARK",
@@ -6890,9 +7912,12 @@
     "momentum": 0.04,
     "lease": "FH",
     "x": "20422.96503",
-    "y": "38290.24278"
+    "y": "38290.24278",
+    "mrt_m": 215,
+    "mrt": "Hillview"
    }
   ],
-  "source": "URA PMI_Resi_Transaction resale, per project"
+  "source": "URA PMI_Resi_Transaction resale, per project",
+  "mrt_ok": true
  }
 }
