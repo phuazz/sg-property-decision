@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-07-11T06:16:00Z",
+  "fetched": "2026-07-11T06:18:43Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -28038,20 +28038,38 @@
     "Success",
     0
    ],
-   "2607": [
+   "0526": [
     "Success",
-    0
+    111
    ],
-   "26q3": [
-    "Error",
-    0
-   ],
-   "2606": [
+   "0426": [
     "Success",
-    0
+    113
+   ],
+   "0326": [
+    "Success",
+    114
+   ],
+   "0226": [
+    "Success",
+    114
+   ],
+   "0126": [
+    "Success",
+    112
    ]
   },
-  "working": null,
-  "n_projects": 0
+  "working": "0526",
+  "n_projects": 111,
+  "_proj_keys": [
+   "street",
+   "district",
+   "propertyType",
+   "project",
+   "developer",
+   "developerSales",
+   "marketSegment"
+  ],
+  "_sample": "{\"street\": \"DUNMAN ROAD\", \"district\": \"15\", \"propertyType\": \"Non-Landed\", \"project\": \"GRAND DUNMAN\", \"developer\": \"Grand Dunman Pte Ltd\", \"developerSales\": [{\"refPeriod\": \"0526\", \"medianPrice\": 2425, \"highestPrice\": 2566, \"lowestPrice\": 2302, \"launchedToDate\": 1008, \"soldInMonth\": 3, \"launchedInMonth\": 0, \"soldToDate\": 910, \"unitsAvail\": 1008}], \"marketSegment\": \"RCR\"}"
  }
 }
