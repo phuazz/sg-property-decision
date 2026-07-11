@@ -403,19 +403,21 @@ def ura_project_scorecard():
                     cd = t.get("contractDate", ""); last_mi, last_ym = mi, "20" + cd[2:] + "-" + cd[:2]
             elif mi > now_i - 24:
                 psf_prev.append(p)
-        if len(psf) < 1:  # any recent resale (thin-data flagged in the UI when < 6)
+        if len(psf) < 2:  # >=2 for any kind of median (single-deal non-medians add noise + bulk); <6 flagged thin
             continue
         med = round(statistics.median(psf))
         prev = round(statistics.median(psf_prev)) if len(psf_prev) >= 4 else None
         out.append({"project": proj.get("project"), "d": dist,
                     "district": ("D" + dist.lstrip("0")) if dist else None, "region": proj.get("marketSegment"),
-                    "median_psf": med, "vol_12m": len(psf), "psf_p": _pctiles(psf),
+                    "median_psf": med, "vol_12m": len(psf), "psf_p": (_pctiles(psf) if len(psf) >= 6 else None),
                     "size": _pctiles(sizes)[2], "size_r": [_pctiles(sizes)[0], _pctiles(sizes)[4]], "price": _pctiles(prices)[2],
                     "momentum": (round(med / prev - 1, 3) if prev else None),
                     "lease": (leases.most_common(1)[0][0] if leases else None), "last": last_ym,
                     "x": proj.get("x"), "y": proj.get("y")})
     out.sort(key=lambda r: -r["vol_12m"])
     _add_mrt(out)
+    for r in out:  # x,y were only needed for the MRT calc; drop to trim the payload
+        r.pop("x", None); r.pop("y", None)
     return {"asof": cur.strftime("%Y-%m"), "n": len(out), "rows": out,
             "mrt_ok": any("mrt_m" in r for r in out),
             "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"}
@@ -430,15 +432,17 @@ def ura_new_launches():
         tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
                   headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
         hdr = {**UA, "AccessKey": key, "Token": tok}
-        j = GET("https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales",
-                headers=hdr, timeout=60).json()
-        res = j.get("Result", []) if isinstance(j, dict) else []
-        out = {"status": (j.get("Status") if isinstance(j, dict) else None), "n_projects": len(res)}
+        res, tried = [], {}
+        for b in (1, 2, 3, 4):
+            j = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Developer_Sales&batch={b}",
+                    headers=hdr, timeout=60).json()
+            r = j.get("Result", []) if isinstance(j, dict) else []
+            tried[b] = (j.get("Status") if isinstance(j, dict) else None, len(r))
+            res += r
+        out = {"tried": tried, "n_projects": len(res)}
         if res:
             out["_proj_keys"] = list(res[0].keys())
-            out["_sample"] = json.dumps(res[0])[:1200]
-        else:
-            out["_raw"] = json.dumps(j)[:500]
+            out["_sample"] = json.dumps(res[0])[:1400]
         return out
     except Exception as e:
         return {"error": repr(e)}
