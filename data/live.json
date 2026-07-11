@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-07-11T01:22:09Z",
+  "fetched": "2026-07-11T01:29:26Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -254,17 +254,322 @@
  },
  "segments_official": {
   "CCR": {
-   "median_psf": 2460,
-   "n": 18850
+   "median_psf": 2804,
+   "n": 4303
   },
   "RCR": {
-   "median_psf": 2103,
-   "n": 36680
+   "median_psf": 2390,
+   "n": 6774
   },
   "OCR": {
-   "median_psf": 1607,
-   "n": 51330
+   "median_psf": 1929,
+   "n": 9949
   },
-  "_source": "URA Data Service PMI_Resi_Transaction (rolling 5y, condo/apartment)"
+  "_source": "URA PMI_Resi_Transaction (last 12 months, condo/apartment)"
+ },
+ "districts": {
+  "asof": "2026-07",
+  "n": 27,
+  "rows": [
+   {
+    "district": "D3",
+    "d": "03",
+    "name": "Tiong Bahru / Queenstown",
+    "region": "RCR",
+    "median_psf": 2836,
+    "vol_12m": 2068,
+    "momentum": 0.291,
+    "fh_share": 0.04,
+    "yield": 0.0276
+   },
+   {
+    "district": "D5",
+    "d": "05",
+    "name": "Buona Vista / Clementi / Dover",
+    "region": "OCR",
+    "median_psf": 2150,
+    "vol_12m": 1790,
+    "momentum": -0.041,
+    "fh_share": 0.11,
+    "yield": 0.0313
+   },
+   {
+    "district": "D9",
+    "d": "09",
+    "name": "Orchard / River Valley",
+    "region": "CCR",
+    "median_psf": 3001,
+    "vol_12m": 1708,
+    "momentum": 0.178,
+    "fh_share": 0.51,
+    "yield": 0.024
+   },
+   {
+    "district": "D10",
+    "d": "10",
+    "name": "Bukit Timah / Holland",
+    "region": "CCR",
+    "median_psf": 2771,
+    "vol_12m": 1595,
+    "momentum": 0.166,
+    "fh_share": 0.62,
+    "yield": 0.0225
+   },
+   {
+    "district": "D16",
+    "d": "16",
+    "name": "Bedok / Upper East Coast",
+    "region": "OCR",
+    "median_psf": 2516,
+    "vol_12m": 1497,
+    "momentum": 0.586,
+    "fh_share": 0.12,
+    "yield": 0.0202
+   },
+   {
+    "district": "D15",
+    "d": "15",
+    "name": "East Coast / Marine Parade",
+    "region": "RCR",
+    "median_psf": 2254,
+    "vol_12m": 1421,
+    "momentum": -0.096,
+    "fh_share": 0.57,
+    "yield": 0.0245
+   },
+   {
+    "district": "D19",
+    "d": "19",
+    "name": "Serangoon / Hougang / Punggol",
+    "region": "OCR",
+    "median_psf": 1722,
+    "vol_12m": 1413,
+    "momentum": -0.045,
+    "fh_share": 0.13,
+    "yield": 0.0322
+   },
+   {
+    "district": "D26",
+    "d": "26",
+    "name": "Upper Thomson / Mandai",
+    "region": "OCR",
+    "median_psf": 2169,
+    "vol_12m": 1101,
+    "momentum": -0.018,
+    "fh_share": 0.05,
+    "yield": 0.0202
+   },
+   {
+    "district": "D23",
+    "d": "23",
+    "name": "Bukit Batok / Choa Chu Kang",
+    "region": "OCR",
+    "median_psf": 1679,
+    "vol_12m": 865,
+    "momentum": 0.037,
+    "fh_share": 0.08,
+    "yield": 0.0286
+   },
+   {
+    "district": "D24",
+    "d": "24",
+    "name": "Lim Chu Kang / Tengah",
+    "region": "OCR",
+    "median_psf": 2113,
+    "vol_12m": 861,
+    "momentum": null,
+    "fh_share": 0.0,
+    "yield": null
+   },
+   {
+    "district": "D18",
+    "d": "18",
+    "name": "Tampines / Pasir Ris",
+    "region": "OCR",
+    "median_psf": 1528,
+    "vol_12m": 821,
+    "momentum": -0.318,
+    "fh_share": 0.01,
+    "yield": 0.0335
+   },
+   {
+    "district": "D21",
+    "d": "21",
+    "name": "Upper Bukit Timah / Clementi Pk",
+    "region": "RCR",
+    "median_psf": 2252,
+    "vol_12m": 761,
+    "momentum": -0.061,
+    "fh_share": 0.28,
+    "yield": 0.0213
+   },
+   {
+    "district": "D27",
+    "d": "27",
+    "name": "Sembawang / Yishun",
+    "region": "OCR",
+    "median_psf": 1900,
+    "vol_12m": 676,
+    "momentum": 0.486,
+    "fh_share": 0.03,
+    "yield": 0.0253
+   },
+   {
+    "district": "D14",
+    "d": "14",
+    "name": "Geylang / Eunos",
+    "region": "RCR",
+    "median_psf": 1744,
+    "vol_12m": 634,
+    "momentum": -0.046,
+    "fh_share": 0.5,
+    "yield": 0.0371
+   },
+   {
+    "district": "D20",
+    "d": "20",
+    "name": "Bishan / Ang Mo Kio",
+    "region": "RCR",
+    "median_psf": 2024,
+    "vol_12m": 421,
+    "momentum": 0.082,
+    "fh_share": 0.12,
+    "yield": 0.0274
+   },
+   {
+    "district": "D12",
+    "d": "12",
+    "name": "Balestier / Toa Payoh",
+    "region": "RCR",
+    "median_psf": 1802,
+    "vol_12m": 392,
+    "momentum": -0.306,
+    "fh_share": 0.5,
+    "yield": 0.033
+   },
+   {
+    "district": "D22",
+    "d": "22",
+    "name": "Jurong",
+    "region": "OCR",
+    "median_psf": 1833,
+    "vol_12m": 378,
+    "momentum": 0.001,
+    "fh_share": 0.0,
+    "yield": 0.031
+   },
+   {
+    "district": "D1",
+    "d": "01",
+    "name": "Raffles Place / Marina",
+    "region": "RCR",
+    "median_psf": 2772,
+    "vol_12m": 372,
+    "momentum": -0.058,
+    "fh_share": 0.01,
+    "yield": 0.0289
+   },
+   {
+    "district": "D11",
+    "d": "11",
+    "name": "Novena / Newton",
+    "region": "CCR",
+    "median_psf": 2089,
+    "vol_12m": 362,
+    "momentum": 0.0,
+    "fh_share": 0.87,
+    "yield": 0.0277
+   },
+   {
+    "district": "D2",
+    "d": "02",
+    "name": "Tanjong Pagar / Anson",
+    "region": "CCR",
+    "median_psf": 2947,
+    "vol_12m": 328,
+    "momentum": 0.199,
+    "fh_share": 0.34,
+    "yield": 0.0287
+   },
+   {
+    "district": "D13",
+    "d": "13",
+    "name": "Macpherson / Potong Pasir",
+    "region": "RCR",
+    "median_psf": 2022,
+    "vol_12m": 320,
+    "momentum": 0.028,
+    "fh_share": 0.18,
+    "yield": 0.0335
+   },
+   {
+    "district": "D4",
+    "d": "04",
+    "name": "Sentosa / Harbourfront",
+    "region": "RCR",
+    "median_psf": 1823,
+    "vol_12m": 276,
+    "momentum": 0.016,
+    "fh_share": 0.1,
+    "yield": 0.0358
+   },
+   {
+    "district": "D17",
+    "d": "17",
+    "name": "Changi / Loyang",
+    "region": "OCR",
+    "median_psf": 1270,
+    "vol_12m": 275,
+    "momentum": 0.006,
+    "fh_share": 0.47,
+    "yield": 0.0333
+   },
+   {
+    "district": "D28",
+    "d": "28",
+    "name": "Seletar / Yio Chu Kang",
+    "region": "OCR",
+    "median_psf": 1556,
+    "vol_12m": 205,
+    "momentum": 0.032,
+    "fh_share": 0.05,
+    "yield": 0.0319
+   },
+   {
+    "district": "D8",
+    "d": "08",
+    "name": "Little India / Farrer Park",
+    "region": "RCR",
+    "median_psf": 1806,
+    "vol_12m": 191,
+    "momentum": 0.03,
+    "fh_share": 0.42,
+    "yield": 0.0375
+   },
+   {
+    "district": "D7",
+    "d": "07",
+    "name": "Bugis / Beach Road",
+    "region": "CCR",
+    "median_psf": 2307,
+    "vol_12m": 170,
+    "momentum": 0.045,
+    "fh_share": 0.0,
+    "yield": 0.0374
+   },
+   {
+    "district": "D25",
+    "d": "25",
+    "name": "Woodlands / Kranji",
+    "region": "OCR",
+    "median_psf": 1279,
+    "vol_12m": 108,
+    "momentum": -0.374,
+    "fh_share": 0.0,
+    "yield": 0.0351
+   }
+  ],
+  "yield_ok": true,
+  "source": "URA PMI_Resi_Transaction (12m median $psf / volume / momentum) + PMI_Resi_Rental (yield)"
  }
 }
