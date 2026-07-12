@@ -54,7 +54,10 @@ h1,h2,h3{font-weight:400}
 .kpi-sub{font-size:11px;color:var(--t3);margin-top:2px}
 .ksrc{color:var(--b);text-decoration:none;font-weight:600;white-space:nowrap} .ksrc:hover{text-decoration:underline}
 #sora-chart{margin:8px 0 2px}
-.pcount{font-size:12.5px;color:var(--t2);margin:2px 0 8px}
+.pcount{font-size:12.5px;color:var(--t2);margin:2px 0 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill-btn{display:inline-flex;align-items:center;gap:4px;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--b);background:var(--b-bg2);border:1px solid var(--b);border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap}
+.pill-btn:hover{background:var(--b);color:#fff}
+.pill-btn:active{transform:scale(.96)}
 .pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
 .pf-grid .field{margin:0}
 
@@ -1033,8 +1036,8 @@ function renderProjects(){
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
   const filt=_pdists.size||_pq||nf;
-  const capTxt=total>40?(_pall?` &middot; showing all ${total.toLocaleString()}`:` &middot; showing the top 40 of ${total.toLocaleString()} (sorted by ${_psort==='score'?'Score':'the chosen column'})`):'';
-  const toggle=total>40?` &middot; <a href="#" id="p-showall" class="xlink">${_pall?'show top 40 only':'show all '+total.toLocaleString()}</a>`:'';
+  const capTxt=total>40?(_pall?` &middot; showing all ${total.toLocaleString()}`:` &middot; showing the top 40 of ${total.toLocaleString()}`):'';
+  const toggle=total>40?` <button id="p-showall" class="pill-btn">${_pall?'&#9652; show top 40':'&#9662; show all '+total.toLocaleString()}</button>`:'';
   const cnt=`<b>${total.toLocaleString()}</b> project${total===1?'':'s'} ${filt?'match your filter':'in the resale data'}${capTxt}${total===0&&filt?' &middot; loosen the filters':''}`;
   $('projects-count').innerHTML=cnt;
   if($('p-topcount')) $('p-topcount').innerHTML=cnt+toggle;
