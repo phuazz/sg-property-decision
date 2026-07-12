@@ -1051,7 +1051,7 @@ function renderNewLaunches(){
   const N=D.market.new_launches, card=$('newlaunch-card'); if(!card) return;
   if(!N||!N.rows||!N.rows.length){ card.style.display='none'; return; }
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
-  const rows=N.rows.filter(r=>r.psf).slice(0,40);
+  const rows=N.rows.filter(r=>r.psf);   // show all selling launches — small set (~50), no cap needed; the freeze panel bounds it
   $('newlaunch-table').innerHTML=`<thead><tr><th>Project</th><th>Developer</th><th>Seg</th><th class="num">New $psf</th><th class="num">Take-up</th><th class="num">Units</th><th>Explore</th></tr></thead><tbody>`+
     rows.map(r=>`<tr><td>${r.project||'—'} <span class="mono" style="color:var(--t3);font-size:11px">${r.district||''}</span></td>`+
       `<td style="font-size:12px">${r.developer||'—'}</td>`+
