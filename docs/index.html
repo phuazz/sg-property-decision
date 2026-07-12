@@ -88,11 +88,11 @@ h1,h2,h3{font-weight:400}
 .preset:hover{border-color:var(--b);color:var(--b)}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
 th.dsort,th.psort{cursor:pointer} th.dsort:hover,th.psort:hover{color:var(--t1);text-decoration:underline}
-#projects-table th{z-index:2}
-#projects-table td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
-#projects-table th:first-child{left:0;z-index:3}
+.tbl-freeze th{z-index:2}
+.tbl-freeze td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
+.tbl-freeze th:first-child{left:0;z-index:3}
 .mob-hint{display:none;font-size:11.5px;color:var(--t3);margin:2px 0 8px}
-@media(max-width:640px){.mob-hint{display:block} #projects-table td,#projects-table th{padding:7px 8px}}
+@media(max-width:640px){.mob-hint{display:block} .tbl-freeze td,.tbl-freeze th{padding:7px 8px}}
 #district-map{position:relative;margin:8px auto 16px;max-width:1080px}
 #district-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:8px 11px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;white-space:nowrap}
 .dlegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--t2);margin:2px 0 8px}
@@ -136,7 +136,7 @@ td{padding:9px 10px;border-bottom:1px solid var(--bd)}
 tr:hover td{background:var(--bg-hover)}
 td.num,th.num{text-align:right;font-family:var(--mono)}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:var(--radius-lg)}
-.tbl-freeze{max-height:74vh;overflow:auto}
+.tbl-freeze{max-height:74vh;overflow:auto;overscroll-behavior:contain}
 .chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
 .chip-g{background:var(--g-bg2);color:var(--g)} .chip-a{background:var(--a-bg);color:var(--a)} .chip-r{background:var(--r-bg2);color:var(--r)} .chip-b{background:var(--b-bg2);color:var(--b)} .chip-n{background:var(--bg4);color:var(--t2)}
 
@@ -420,7 +420,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <h3>Current new launches — <em style="font-style:normal;color:var(--t3)">live URA developer sales</em></h3>
         <p class="intro">Buying from the developer, not resale — the projects still selling, with the <b>developer</b>, new-sale median $psf, total units and <b>take-up</b> (share sold). This is the stock too new for the resale table above.</p>
         <div class="mob-hint">&#8596; Scroll sideways, or rotate to landscape for all columns.</div>
-        <div class="tbl-wrap"><table id="newlaunch-table"></table></div>
+        <div class="tbl-wrap tbl-freeze"><table id="newlaunch-table"></table></div>
         <div class="note" id="newlaunch-note"></div>
       </div>
       <div class="card" id="fair-card">
@@ -450,7 +450,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="presets" id="district-lenses"></div>
         <div class="dlegend" id="district-legend"></div>
         <div id="district-map"><div id="district-svg"></div><div id="district-tip"></div></div>
-        <div class="tbl-wrap"><table id="district-table"></table></div>
+        <div class="tbl-wrap tbl-freeze"><table id="district-table"></table></div>
         <div class="note" id="district-note"></div>
       </div>
       <div class="card">
