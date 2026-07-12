@@ -981,7 +981,7 @@ function renderProjects(){
   // recognisable area name + Balanced attractiveness per district (shared with the choropleth map)
   const {dnm,dsc,dnfo,shortNm,t}=_districtMeta();
   allD.sort((a,b)=>(dsc[b]||0)-(dsc[a]||0)||(+a.slice(1))-(+b.slice(1)));  // most attractive first
-  $('p-districts').innerHTML=allD.map(d=>{const s=dsc[d], act=_pdists.has(d);
+  $('p-districts').innerHTML=allD.filter(d=>dnm[d]).map(d=>{const s=dsc[d], act=_pdists.has(d);  /* named/ranked districts only — drop thin orphans (e.g. D6, a single CBD project too small to rank) */
     const u=t(s), st=(!act&&u!=null)?` style="background:rgba(${_attrRGB(u)},0.42);border-color:rgba(${_attrRGB(u)},0.66)"`:'';
     return `<button class="preset${act?' active':''}" data-d="${d}"${st} title="${dnfo[d]||d}">${act?'&#10003; ':''}${shortNm(d)}</button>`;}).join('');
   $('p-clear').style.display=_pdists.size?'inline':'none';
