@@ -19,6 +19,11 @@
   --p:#7c3aed; --p-bg:rgba(124,58,237,0.06);
   --c:#0891b2; --c-bg:rgba(8,145,178,0.06);
   --pk:#be185d; --pk-bg:rgba(190,24,93,0.06);
+  /* -text variants per C:\dev\design.md — for TEXT; the values above are for
+     fills, borders, chart marks and large type. At 11px label size the base
+     colours fail WCAG AA (--t3 3.48, --g 3.97 in a pill, --a 4.38). */
+  --g-text:#146c43; --r-text:#a93226; --b-text:#1d4ed8; --a-text:#92400e;
+  --p-text:#7c3aed; --c-text:#0e7490; --pk-text:#be185d; --t3-text:#66665e;
   --serif:'Instrument Serif',Georgia,serif; --sans:'DM Sans',-apple-system,sans-serif; --mono:'JetBrains Mono','SF Mono','Menlo',monospace;
   --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
   --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
@@ -30,20 +35,20 @@ html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--t1);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 .shell{max-width:1520px;margin:0 auto;padding:20px 32px 60px}
 .mono{font-family:var(--mono)}
-.pos{color:var(--g)} .neg{color:var(--r)} .neu{color:var(--b)}
+.pos{color:var(--g-text)} .neg{color:var(--r-text)} .neu{color:var(--b-text)}
 h1,h2,h3{font-weight:400}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3)}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3-text)}
 
 /* masthead */
 .masthead{padding:26px 0 20px;border-bottom:2px solid var(--t1);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
 .masthead h1{font-family:var(--serif);font-size:34px;letter-spacing:-0.5px}
-.masthead h1 em{font-style:italic;color:var(--t3)}
+.masthead h1 em{font-style:italic;color:var(--t3)}  /* 30px+ = large text, passes at 3:1; keep the muted tone */
 .masthead .sub{font-size:13px;color:var(--t2);margin-top:4px;max-width:640px}
 .pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
-.pill-live{background:var(--g-bg);color:var(--g);border-color:var(--g-bg2)}
+.pill-live{background:var(--g-bg);color:var(--g-text);border-color:var(--g-bg2)}
 .pill-date{background:var(--bg3);color:var(--t2);border-color:var(--bd)}
-.pill-warn{background:var(--a-bg);color:var(--a);border-color:rgba(180,83,9,0.2)}
+.pill-warn{background:var(--a-bg);color:var(--a-text);border-color:rgba(180,83,9,0.2)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--g);display:inline-block}
 
 /* kpi strip */
@@ -51,11 +56,11 @@ h1,h2,h3{font-weight:400}
 .kpi{background:var(--bg2);padding:13px 15px}
 .kpi .label{margin-bottom:6px}
 .kpi-val{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-0.5px}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:2px}
-.ksrc{color:var(--b);text-decoration:none;font-weight:600;white-space:nowrap} .ksrc:hover{text-decoration:underline}
+.kpi-sub{font-size:11px;color:var(--t3-text);margin-top:2px}
+.ksrc{color:var(--b-text);text-decoration:none;font-weight:600;white-space:nowrap} .ksrc:hover{text-decoration:underline}
 #sora-chart{margin:8px 0 2px}
 .pcount{font-size:12.5px;color:var(--t2);margin:2px 0 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pill-btn{display:inline-flex;align-items:center;gap:4px;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--b);background:var(--b-bg2);border:1px solid var(--b);border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap}
+.pill-btn{display:inline-flex;align-items:center;gap:4px;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--b-text);background:var(--b-bg2);border:1px solid var(--b);border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap}
 .pill-btn:hover{background:var(--b);color:#fff}
 .pill-btn:active{transform:scale(.96)}
 .pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
@@ -90,7 +95,7 @@ h1,h2,h3{font-weight:400}
 /* form */
 .field{margin-bottom:13px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:4px}
-.field .hint{font-size:11px;color:var(--t3);font-weight:400}
+.field .hint{font-size:11px;color:var(--t3-text);font-weight:400}
 .field input,.field select{width:100%;padding:8px 10px;border:1px solid var(--bd2);border-radius:var(--radius);font-family:var(--mono);font-size:14px;background:var(--bg2);color:var(--t1)}
 .field input:focus,.field select:focus{outline:none;border-color:var(--b);box-shadow:0 0 0 3px var(--b-bg)}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -99,13 +104,13 @@ h1,h2,h3{font-weight:400}
 .slider-val{font-family:var(--mono);font-size:14px;font-weight:600;min-width:64px;text-align:right}
 .presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .preset{font-size:11.5px;padding:5px 10px;border:1px solid var(--bd2);border-radius:999px;background:var(--bg2);cursor:pointer;color:var(--t2)}
-.preset:hover{border-color:var(--b);color:var(--b)}
+.preset:hover{border-color:var(--b);color:var(--b-text)}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
 th.dsort,th.psort{cursor:pointer} th.dsort:hover,th.psort:hover{color:var(--t1);text-decoration:underline}
 .tbl-freeze th{z-index:2}
 .tbl-freeze td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
 .tbl-freeze th:first-child{left:0;z-index:3}
-.mob-hint{display:none;font-size:11.5px;color:var(--t3);margin:2px 0 8px}
+.mob-hint{display:none;font-size:11.5px;color:var(--t3-text);margin:2px 0 8px}
 @media(max-width:640px){
   .mob-hint{display:block}
   .tbl-freeze td,.tbl-freeze th{padding:7px 8px}
@@ -126,9 +131,9 @@ th.dsort,th.psort{cursor:pointer} th.dsort:hover,th.psort:hover{color:var(--t1);
 #dmap path:hover{stroke:var(--t1);stroke-width:1.8}
 #dmap text{font-size:19px;font-weight:600;fill:#12261d;font-family:var(--mono);pointer-events:none;paint-order:stroke;stroke:rgba(255,255,255,0.92);stroke-width:3.5px;stroke-linejoin:round}
 #dmap-tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;box-shadow:var(--shadow-md);padding:7px 10px;font-size:11.5px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:6;max-width:240px}
-#dmap-legend{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3);margin-top:7px}
+#dmap-legend{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3-text);margin-top:7px}
 #dmap-legend i{width:130px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgb(201,93,73),rgb(239,233,219),rgb(26,135,84))}
-.xlink{color:var(--b);text-decoration:none}
+.xlink{color:var(--b-text);text-decoration:none}
 .xlink:hover{text-decoration:underline}
 .xlinks{white-space:nowrap;font-size:11.5px}
 
@@ -137,7 +142,7 @@ th.dsort,th.psort{cursor:pointer} th.dsort:hover,th.psort:hover{color:var(--t1);
 .tile{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius);padding:12px 14px}
 .tile .label{margin-bottom:5px}
 .tile .v{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:-0.5px}
-.tile .vs{font-size:11px;color:var(--t3);margin-top:3px}
+.tile .vs{font-size:11px;color:var(--t3-text);margin-top:3px}
 .tile.hl{background:var(--b-bg);border-color:var(--b-bg2)}
 .tile.good{background:var(--g-bg);border-color:var(--g-bg2)}
 .tile.warn{background:var(--a-bg);border-color:rgba(180,83,9,0.2)}
@@ -158,7 +163,7 @@ td.num,th.num{text-align:right;font-family:var(--mono)}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:var(--radius-lg)}
 .tbl-freeze{max-height:74vh;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
-.chip-g{background:var(--g-bg2);color:var(--g)} .chip-a{background:var(--a-bg);color:var(--a)} .chip-r{background:var(--r-bg2);color:var(--r)} .chip-b{background:var(--b-bg2);color:var(--b)} .chip-n{background:var(--bg4);color:var(--t2)}
+.chip-g{background:var(--g-bg2);color:var(--g-text)} .chip-a{background:var(--a-bg);color:var(--a-text)} .chip-r{background:var(--r-bg2);color:var(--r-text)} .chip-b{background:var(--b-bg2);color:var(--b-text)} .chip-n{background:var(--bg4);color:var(--t2)}
 
 /* bars */
 .bars{display:flex;flex-direction:column;gap:8px}
@@ -167,11 +172,11 @@ td.num,th.num{text-align:right;font-family:var(--mono)}
 .bar-fill{height:100%;border-radius:4px}
 .bar-num{font-family:var(--mono);font-weight:600;text-align:right}
 
-.note{font-size:12px;color:var(--t3);margin-top:10px;line-height:1.55}
-.flag{color:var(--a);font-weight:600}
+.note{font-size:12px;color:var(--t3-text);margin-top:10px;line-height:1.55}
+.flag{color:var(--a-text);font-weight:600}
 .callout{background:var(--bg3);border-left:3px solid var(--b);border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;font-size:13px;color:var(--t2);margin:14px 0}
 .callout b{color:var(--t1)}
-footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--bd);font-size:11.5px;color:var(--t3);line-height:1.7}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--bd);font-size:11.5px;color:var(--t3-text);line-height:1.7}
 footer b{color:var(--t2)}
 .disc{background:var(--a-bg);border:1px solid rgba(180,83,9,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#7c4406;margin-top:16px}
 h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
@@ -187,30 +192,30 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .step-n{width:26px;height:26px;border-radius:50%;background:var(--t1);color:#fff;font-weight:700;font-family:var(--mono);font-size:13px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
 .step-t{font-weight:700;font-size:15px;margin-bottom:4px;color:var(--t1)}
 .step-d{font-size:12.5px;color:var(--t2);line-height:1.5;flex:1}
-.step-go{font-size:12px;font-weight:600;color:var(--b);margin-top:11px}
+.step-go{font-size:12px;font-weight:600;color:var(--b-text);margin-top:11px}
 .startrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:2px 0 20px}
 .btn-primary{font-family:var(--sans);font-size:14px;font-weight:600;color:#fff;background:var(--t1);border:none;border-radius:var(--radius);padding:11px 18px;cursor:pointer}
 .btn-primary:hover{background:#000}
-.startrow-note{font-size:12.5px;color:var(--t3);max-width:440px}
+.startrow-note{font-size:12.5px;color:var(--t3-text);max-width:440px}
 .atglance{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:15px 18px;font-size:14px;color:var(--t2);line-height:1.65}
 .atglance b{color:var(--t1);font-family:var(--mono);font-weight:700}
 .fp{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);margin:0 0 16px}
 .fp>summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--t2);list-style:none;display:flex;align-items:center;gap:8px}
-.fp>summary::before{content:'▸';color:var(--b);transition:transform .15s;font-size:11px}
+.fp>summary::before{content:'▸';color:var(--b-text);transition:transform .15s;font-size:11px}
 .fp[open]>summary::before{transform:rotate(90deg)}
 .fp>summary::-webkit-details-marker{display:none}
 .fp-body{padding:0 16px 15px;font-size:13px;color:var(--t2);line-height:1.6}
 .fp.inline{border:none;background:none;margin:4px 0 0}
-.fp.inline>summary{padding:9px 0;color:var(--b)}
+.fp.inline>summary{padding:9px 0;color:var(--b-text)}
 .fp.inline .fp-body{padding:9px 0 2px}
 .nextnav{margin-top:24px;display:flex;justify-content:flex-end}
-.nextbtn{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--b);background:var(--b-bg);border:1px solid var(--b-bg2);border-radius:999px;padding:9px 16px;cursor:pointer}
+.nextbtn{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--b-text);background:var(--b-bg);border:1px solid var(--b-bg2);border-radius:999px;padding:9px 16px;cursor:pointer}
 .nextbtn:hover{background:var(--b-bg2)}
 @media(max-width:700px){.steps{grid-template-columns:1fr 1fr}}
 @media(max-width:460px){.steps{grid-template-columns:1fr}}
 
 /* engaging hook hero */
-.hook-kicker{display:inline-block;font-size:12.5px;font-weight:600;color:var(--a);background:var(--a-bg);border:1px solid rgba(180,83,9,0.22);border-radius:999px;padding:5px 13px;margin-bottom:13px}
+.hook-kicker{display:inline-block;font-size:12.5px;font-weight:600;color:var(--a-text);background:var(--a-bg);border:1px solid rgba(180,83,9,0.22);border-radius:999px;padding:5px 13px;margin-bottom:13px}
 .hook-h1{font-family:var(--serif);font-size:31px;line-height:1.12;letter-spacing:-0.5px;margin:2px 0 10px;max-width:780px}
 @media(max-width:600px){.hook-h1{font-size:25px}}
 .hook-buys{margin:8px 0 16px}
@@ -222,18 +227,18 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .buy{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius);padding:15px 16px;position:relative}
 .buy.best{background:var(--g-bg);border-color:var(--g-bg2)}
 .buy-emoji{font-size:26px;line-height:1}
-.buy-seg{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;color:var(--t3);margin:9px 0 3px}
+.buy-seg{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;color:var(--t3-text);margin:9px 0 3px}
 .buy-what{font-size:16px;font-weight:700;color:var(--t1);line-height:1.25}
 .buy-size{font-family:var(--mono);font-size:12.5px;color:var(--t2);margin-top:4px}
-.buy-tag{position:absolute;top:13px;right:13px;font-size:10px;font-weight:700;color:var(--g);background:var(--g-bg2);border-radius:999px;padding:2px 8px}
+.buy-tag{position:absolute;top:13px;right:13px;font-size:10px;font-weight:700;color:var(--g-text);background:var(--g-bg2);border-radius:999px;padding:2px 8px}
 .hooks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 24px}
 @media(max-width:640px){.hooks{grid-template-columns:1fr}}
 .hookcard{text-align:left;background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--b);border-radius:var(--radius-lg);padding:15px 16px;cursor:pointer;font-family:var(--sans);transition:box-shadow .15s,transform .15s}
 .hookcard:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .hook-num{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-0.5px;color:var(--t1)}
 .hook-txt{font-size:12.5px;color:var(--t2);line-height:1.45;margin-top:5px}
-.hook-go{font-size:11.5px;font-weight:600;color:var(--b);margin-top:9px}
-.goalq{font-size:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3);margin:8px 0 12px}
+.hook-go{font-size:11.5px;font-weight:600;color:var(--b-text);margin-top:9px}
+.goalq{font-size:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3-text);margin:8px 0 12px}
 </style>
 </head>
 <body>
@@ -351,7 +356,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <p class="lead">With interest rates near 1%, the loan costs <b>less</b> than what your cash could earn elsewhere — so on the maths, borrowing and keeping cash invested usually wins. But "no mortgage, less stress" is real too. This weighs both, and the <b>safety buffer</b> that matters more than either.</p>
     <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.3–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
     <div class="card" id="rates-card">
-      <h3>3-month SORA &mdash; the rate this rests on <em style="font-style:normal;color:var(--t3)">curated &middot; MAS-published benchmark</em></h3>
+      <h3>3-month SORA &mdash; the rate this rests on <em style="font-style:normal;color:var(--t3-text)">curated &middot; MAS-published benchmark</em></h3>
       <p class="intro">The cash-versus-loan case turns on how cheap the mortgage is, and most floating packages price off <b>3-month compounded SORA</b>. Here is where the benchmark has been. <span id="sora-now"></span></p>
       <div id="sora-chart"></div>
       <div class="note" id="sora-note"></div>
@@ -407,8 +412,8 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <p class="lead">Now the actual buildings, on live URA data. Compare individual condos on price, unit size, resale liquidity, remaining lease, nearest MRT and value versus their district; see what is selling brand-new from developers; and sense-check whether a given asking price is fair. <b>Comparable context, not a valuation.</b></p>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
       <div class="card" id="projects-card">
-        <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3)">live URA resale</em></h3>
-        <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
+        <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3-text)">live URA resale</em></h3>
+        <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3-text)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
         <div id="dmap-card">
           <div class="dmap-cap">Tap a district on the map to filter the list &mdash; colour runs <b>clay (less attractive) &rarr; green (more)</b> on the Balanced score, matching the chips. Approximate zones around each district's resale activity, not official boundaries.</div>
           <div id="dmap-wrap"><div id="dmap"></div><div id="dmap-tip"></div></div>
@@ -416,7 +421,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         </div>
         <div class="field" style="max-width:340px;margin-bottom:10px"><input id="p-search" placeholder="Search project name…"></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px">
-          <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap any (pick as many as you like); ordered by attractiveness (clay = less, green = more), hover for detail</span></span>
+          <span class="label" style="margin-right:2px">Filter by area <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3-text)">— tap any (pick as many as you like); ordered by attractiveness (clay = less, green = more), hover for detail</span></span>
           <span id="p-districts" style="display:contents"></span>
           <a id="p-clear" class="xlink" href="#" style="display:none">clear</a>
         </div>
@@ -429,7 +434,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
             <div class="field"><label>Max $psf</label><input id="pf-psfmax" inputmode="numeric" placeholder="e.g. 1,800" oninput="renderProjects()"></div>
             <div class="field"><label>Max MRT (m)</label><input id="pf-mrtmax" inputmode="numeric" placeholder="e.g. 500" oninput="renderProjects()"></div>
           </div>
-          <div style="margin-top:8px;font-size:12px"><a href="#" class="xlink" onclick="pfReset();return false;">clear these filters</a> <span style="color:var(--t3)">— blank = no limit; freehold / 999-yr pass any minimum lease</span></div>
+          <div style="margin-top:8px;font-size:12px"><a href="#" class="xlink" onclick="pfReset();return false;">clear these filters</a> <span style="color:var(--t3-text)">— blank = no limit; freehold / 999-yr pass any minimum lease</span></div>
         </div></details>
         <div class="mob-hint">&#8596; Scroll the table sideways (the project name stays pinned), or rotate to landscape for every column.</div>
         <div class="pcount" id="p-topcount"></div>
@@ -437,7 +442,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="note"><span id="projects-count"></span> · Resale, last 12 months, every project with at least one resale; a project with fewer than 6 resales is marked <span style="color:var(--a)">thin</span> — its median is indicative, so weigh it lightly. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (the same 12-month turnover, log-scaled) + remaining lease + MRT proximity, each percentile-ranked across all projects so no single factor dominates, equal-weight; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
       </div>
       <div class="card" id="newlaunch-card">
-        <h3>Current new launches — <em style="font-style:normal;color:var(--t3)">live URA developer sales</em></h3>
+        <h3>Current new launches — <em style="font-style:normal;color:var(--t3-text)">live URA developer sales</em></h3>
         <p class="intro">Buying from the developer, not resale — the projects still selling, with the <b>developer</b>, new-sale median $psf, total units and <b>take-up</b> (share sold). This is the stock too new for the resale table above.</p>
         <div class="mob-hint">&#8596; Scroll sideways, or rotate to landscape for all columns.</div>
         <div class="tbl-wrap tbl-freeze"><table id="newlaunch-table"></table></div>
@@ -465,7 +470,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <details class="fp"><summary>How to read a land bid</summary><div class="fp-body">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space — so the eventual launch price is roughly that bid × 1.8–2.0 (to cover construction, financing and margin). A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
       <div class="card" id="district-card">
-        <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3)">live URA resale data</em></h3>
+        <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3-text)">live URA resale data</em></h3>
         <p class="intro" id="district-intro"></p>
         <div class="presets" id="district-lenses"></div>
         <div class="dlegend" id="district-legend"></div>
@@ -869,8 +874,8 @@ function _valueMap(rows){
   const xlo=Math.min(...xs)*0.97,xhi=Math.max(...xs)*1.03,ylo=Math.min(...ys)*0.94,yhi=Math.max(...ys)*1.06;
   const X=v=>m.l+(v-xlo)/(xhi-xlo)*(W-m.l-m.r), Y=v=>H-m.b-(v-ylo)/(yhi-ylo)*(H-m.t-m.b);
   let g=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" font-family="var(--sans)">`;
-  for(let i=0;i<=4;i++){const xv=xlo+(xhi-xlo)*i/4,x=X(xv);g+=`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H-m.b}" stroke="var(--bg4)"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="10" fill="var(--t3)" font-family="var(--mono)">$${fmt0(Math.round(xv/10)*10)}</text>`;}
-  for(let i=0;i<=4;i++){const yv=ylo+(yhi-ylo)*i/4,y=Y(yv);g+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="var(--bg4)"/><text x="${m.l-8}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--t3)" font-family="var(--mono)">${yv.toFixed(1)}%</text>`;}
+  for(let i=0;i<=4;i++){const xv=xlo+(xhi-xlo)*i/4,x=X(xv);g+=`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H-m.b}" stroke="var(--bg4)"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="10" fill="var(--t3-text)" font-family="var(--mono)">$${fmt0(Math.round(xv/10)*10)}</text>`;}
+  for(let i=0;i<=4;i++){const yv=ylo+(yhi-ylo)*i/4,y=Y(yv);g+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="var(--bg4)"/><text x="${m.l-8}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--t3-text)" font-family="var(--mono)">${yv.toFixed(1)}%</text>`;}
   g+=`<text x="${(m.l+W-m.r)/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--t2)">Resale median $psf (cheaper &larr;)</text>`;
   g+=`<text x="16" y="${(m.t+H-m.b)/2}" text-anchor="middle" font-size="11" fill="var(--t2)" transform="rotate(-90 16 ${(m.t+H-m.b)/2})">Gross yield &rarr;</text>`;
   g+=`<text x="${m.l+6}" y="${m.t+2}" font-size="10.5" fill="var(--g)" font-weight="700">&#8598; more attractive: cheaper + higher yield</text>`;
@@ -888,9 +893,9 @@ function renderDistricts(){
     $('district-lenses').innerHTML=''; $('district-map').innerHTML=''; $('district-table').innerHTML=''; $('district-note').innerHTML='';
     return;
   }
-  $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield (valuation), price, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3)">${DS.n} districts · ${DS.basis}</span>`;
+  $('district-intro').innerHTML=`Every private district ranked on what matters for a resale buyer — <b>yield (valuation), price, and how easily you can sell</b>. Pick a lens or sort a column. <span class="mono" style="color:var(--t3-text)">${DS.n} districts · ${DS.basis}</span>`;
   $('district-lenses').innerHTML=Object.keys(D_LENS).map(k=>`<button class="preset${k===_dlens?' active':''}" data-lens="${k}">${k}</button>`).join('');
-  $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3)">&mdash; bubble size = score &middot; hover for details</span>`;
+  $('district-legend').innerHTML=[['OCR','var(--g)'],['RCR','var(--a)'],['CCR','var(--b)']].map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+`<span style="color:var(--t3-text)">&mdash; bubble size = score &middot; hover for details</span>`;
   const scored=_scoreDistricts(DS.rows);
   const val=r=>_dsort==='name'?r.name:(_dsort==='district'?+r.d:(r[_dsort]==null?-Infinity:r[_dsort]));
   const _dd=_dasc?1:-1;
@@ -1030,7 +1035,7 @@ function renderProjects(){
       `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
       `<td class="num"${r.vol_12m<6?' title="few resales — treat the median as indicative"':''}>${fmt0(r.vol_12m)}${r.vol_12m<6?' <span style="color:var(--a);font-size:10px">thin</span>':''}</td>`+
-      (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+
+      (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3-text)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+
       `<td class="num ${leaseCls}">${_leaseTxt(r.lease)}</td>`+
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
@@ -1056,7 +1061,7 @@ function renderNewLaunches(){
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   const rows=N.rows.filter(r=>r.psf);   // show all selling launches — small set (~50), no cap needed; the freeze panel bounds it
   $('newlaunch-table').innerHTML=`<thead><tr><th>Project</th><th>Developer</th><th>Seg</th><th class="num">New $psf</th><th class="num">Take-up</th><th class="num">Units</th><th>Explore</th></tr></thead><tbody>`+
-    rows.map(r=>`<tr><td>${r.project||'—'} <span class="mono" style="color:var(--t3);font-size:11px">${r.district||''}</span></td>`+
+    rows.map(r=>`<tr><td>${r.project||'—'} <span class="mono" style="color:var(--t3-text);font-size:11px">${r.district||''}</span></td>`+
       `<td style="font-size:12px">${r.developer||'—'}</td>`+
       `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
       `<td class="num">$${fmt0(r.psf)}</td>`+
@@ -1144,7 +1149,7 @@ function renderWhere(){
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
     G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
-      return `<tr><td>${_xa(_gmap(t.site),t.site)}${t.note?`<div style="font-size:11px;color:var(--t3);margin-top:1px">${t.note}</div>`:''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
+      return `<tr><td>${_xa(_gmap(t.site),t.site)}${t.note?`<div style="font-size:11px;color:var(--t3-text);margin-top:1px">${t.note}</div>`:''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
   $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) — but the average is <b>mix-unadjusted</b>: a year with more prime sites lifts it without any like-for-like inflation, so read it with the segment column. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there. Supply cuts both ways, though: the same nearby pipeline that floors prices also competes with your unit when you sell. Segment tags are approximated from the planning area — Bukit Timah-area sites can be CCR by postal district. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
 
   const b=D.market.brief, f=b.fit_summary;
@@ -1169,13 +1174,13 @@ function renderRatesChart(){
   let g=`<svg viewBox="0 0 ${W} ${Ht}" width="100%" style="max-width:720px;height:auto">`;
   for(let kk=0;kk<=4;kk++){const v=ymin+(ymax-ymin)*kk/4,y=Y(v);
     g+=`<line x1="${pL}" y1="${y.toFixed(1)}" x2="${W-pR}" y2="${y.toFixed(1)}" stroke="var(--bd)" stroke-width="1"/>`
-      +`<text x="${pL-7}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--t3)">${v.toFixed(2)}%</text>`;}
+      +`<text x="${pL-7}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--t3-text)">${v.toFixed(2)}%</text>`;}
   const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
   g+=`<path d="M${X(0).toFixed(1)},${Y(ymin).toFixed(1)} L${pts.join(' L')} L${X(n-1).toFixed(1)},${Y(ymin).toFixed(1)} Z" fill="var(--b-bg)"/>`
     +`<polyline points="${pts.join(' ')}" fill="none" stroke="var(--b)" stroke-width="2.2" stroke-linejoin="round"/>`;
   vals.forEach((v,i)=>{const last=i===n-1;g+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${last?4:2.2}" fill="var(--b)"/>`;
     if(last)g+=`<text x="${(X(i)-7).toFixed(1)}" y="${(Y(v)-9).toFixed(1)}" text-anchor="end" font-size="12" font-weight="700" fill="var(--b)">${v.toFixed(2)}%</text>`;});
-  s.forEach((p,i)=>{if(i%3===0||i===n-1){const pr=p[0].split('-');g+=`<text x="${X(i).toFixed(1)}" y="${Ht-9}" text-anchor="middle" font-size="10" fill="var(--t3)">${MON[+pr[1]]} '${pr[0].slice(2)}</text>`;}});
+  s.forEach((p,i)=>{if(i%3===0||i===n-1){const pr=p[0].split('-');g+=`<text x="${X(i).toFixed(1)}" y="${Ht-9}" text-anchor="middle" font-size="10" fill="var(--t3-text)">${MON[+pr[1]]} '${pr[0].slice(2)}</text>`;}});
   g+=`</svg>`; el.innerHTML=g;
   const cur=vals[n-1], first=vals[0];
   const now=$('sora-now'); if(now) now.innerHTML=`It is about <b>${cur.toFixed(2)}%</b> now, down from ${first.toFixed(2)}% ${n-1} months earlier.`;
