@@ -1,0 +1,40 @@
+name: Study — new launch vs resale
+
+# Manual only. This is a one-off research run, not part of the weekly refresh.
+# It runs here rather than locally so URA_ACCESS_KEY never leaves GitHub.
+# The script is read-only against URA and commits nothing to the repo.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The study script is stdlib-only by design, so there is nothing to install.
+      - name: Self-test (no key needed)
+        run: python scripts/study_launch_vs_resale.py --self-test
+
+      - name: Run study
+        env:
+          URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}
+        run: python scripts/study_launch_vs_resale.py --run
+
+      - name: Print full result
+        run: cat reviews/launch_vs_resale_result.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: launch-vs-resale-result
+          path: reviews/launch_vs_resale_result.json
+          if-no-files-found: error
