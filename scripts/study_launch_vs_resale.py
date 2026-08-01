@@ -34,7 +34,18 @@ PRE-REGISTERED NULL
     pattern, the finding is "this is not a rule you can lean on" — and that is the result
     we publish. It is more useful than either the agent claim or the editorial one.
 
-THREE (FOUR) WAYS THIS COULD BE SILENTLY WRONG
+WAYS THIS COULD BE SILENTLY WRONG
+    0. LEFT-CENSORED LAUNCH QUARTER. **This one actually happened.** The first live run
+       reported -4.04%/yr excess across 24 projects and every "launch" quarter was 2021Q3 or
+       2021Q4 - the first two quarters of the data window. Those were not launches. Avenue
+       South Residence, Treasure at Tampines, Parc Clematis and Jadescape all launched in
+       2018-19 and were still selling remaining units when the window opened. A late-phase
+       price is biased HIGH (developers raise prices as they sell through), which biases the
+       excess DOWN and manufactured the entire result. That run is VOID. Projects whose first
+       visible new sale falls within CENSOR_BUFFER_QUARTERS of the window start are now
+       excluded and counted separately. The deeper consequence: a ~5-year window cannot hold
+       both a genuine launch and a resale 4+ years later, so this test may be infeasible on
+       free URA data. If coverage comes back at or near zero, THAT is the finding.
     1. MIX SHIFT. A project-quarter median $psf moves with which unit sizes happened to
        transact; a quarter of small units reads as a price rise. Mitigated by computing
        within size bands and enforcing MIN_CELL_N. Never compare across size bands.
@@ -69,6 +80,7 @@ from collections import defaultdict
 SQM_TO_SQFT = 10.7639
 MIN_CELL_N = 5           # minimum transactions before a project-quarter median is trusted
 MIN_HOLD_QUARTERS = 16   # 4 years — below the SSD lock, resales are non-random
+CENSOR_BUFFER_QUARTERS = 2  # a "launch" this close to the window start is probably not one
 CONDO_TYPES = ("Condominium", "Apartment")
 SALE_NEW, SALE_SUB, SALE_RESALE = "1", "2", "3"
 
@@ -208,9 +220,22 @@ def test_b_premium_recovery(rows) -> dict:
     for r in rows:
         proj_meta.setdefault(r["project"], (r["district"], r["segment"]))
 
-    launch_q = {}
+    # LEFT-CENSORING GUARD. `min(quarter with a new sale)` is NOT the launch quarter for a
+    # project that launched before the data window opened - it is merely the first quarter we
+    # can see, i.e. a late-phase price. Developers raise prices as they sell through, so a
+    # censored entry is biased HIGH, which biases the excess DOWN. The first run of this study
+    # returned -4%/yr on 24 projects whose "launch" quarters were all the window's first two
+    # quarters (Avenue South Residence, Treasure at Tampines, Parc Clematis and Jadescape all
+    # actually launched in 2018-19). That result was an artefact of this, and is void.
+    window_start = min(r["quarter"] for r in rows)
+
+    launch_q, censored = {}, set()
     for (proj, q), _ in by_proj_q_new.items():
         launch_q[proj] = min(q, launch_q.get(proj, q))
+    for proj, q in list(launch_q.items()):
+        if q <= window_start + CENSOR_BUFFER_QUARTERS:
+            censored.add(proj)
+            del launch_q[proj]
 
     exit_q = {}
     for (proj, q), _ in by_proj_q_res.items():
@@ -244,7 +269,10 @@ def test_b_premium_recovery(rows) -> dict:
         "all": _describe([e["excess_pa_pct"] for v in excess.values() for e in v]),
         "detail": sorted((e for v in excess.values() for e in v), key=lambda e: e["excess_pa_pct"]),
         "coverage": {
-            "launched_in_window": len(launch_q),
+            "window": [quarter_label(window_start),
+                       quarter_label(max(r["quarter"] for r in rows))],
+            "genuinely_launched_in_window": len(launch_q),
+            "skipped_left_censored": len(censored),
             "skipped_no_resale_yet": skipped_no_resale,
             "skipped_hold_under_4y": skipped_short,
         },
@@ -327,60 +355,84 @@ def self_test() -> int:
     sqm = 100.0
     sqft = sqm * SQM_TO_SQFT
 
-    def units(psf, n, mmyy, sale, project):
+    def units(psf, n, mmyy, sale):
         # Do NOT round the price: rounding to whole dollars perturbs the recovered $psf and
-        # makes the expected CAGR non-exact, which would force a tolerance into an
-        # exact-equality check. The fixture is arithmetic, not a realistic price.
+        # makes the expected CAGR non-exact, forcing a tolerance into an exact-equality check.
         return [_tx(mmyy, psf * sqft, sqm, sale) for _ in range(n)]
 
+    def proj(name, *groups):
+        return {"project": name, "district": "19", "marketSegment": "OCR",
+                "transaction": [t for g in groups for t in g]}
+
+    # Anchors the observed window at 2020Q1 so NEWPROJ's 2021Q1 launch sits clear of the
+    # left-censoring buffer and is treated as a genuine launch.
+    anchor = proj("WINDOW ANCHOR", units(900, MIN_CELL_N, "0120", SALE_RESALE))
+
+    # DISTRICT resale benchmark: 1000 -> 1200 psf over exactly 5 years (20 quarters).
+    # NEWPROJ launches at 1200 psf and resells at 1320 psf over the same 5 years.
+    #   project CAGR  = (1320/1200)^(1/5) - 1 = 1.924488%
+    #   district CAGR = (1200/1000)^(1/5) - 1 = 3.713729%
+    #   excess        = -1.789241 %/yr -> -1.7892 (a launch premium NOT earned back)
+    # Expected value recomputed independently of this harness before being asserted.
     payload = [
-        {"project": "BENCHMARK ONE", "district": "19", "marketSegment": "OCR",
-         "transaction": units(1000, MIN_CELL_N, "0121", SALE_RESALE, "BENCHMARK ONE")
-                      + units(1200, MIN_CELL_N, "0126", SALE_RESALE, "BENCHMARK ONE")},
-        {"project": "NEWPROJ", "district": "19", "marketSegment": "OCR",
-         "transaction": units(1200, MIN_CELL_N, "0121", SALE_NEW, "NEWPROJ")
-                      + units(1320, MIN_CELL_N, "0126", SALE_RESALE, "NEWPROJ")},
+        anchor,
+        proj("BENCHMARK ONE", units(1000, MIN_CELL_N, "0121", SALE_RESALE),
+                              units(1200, MIN_CELL_N, "0126", SALE_RESALE)),
+        proj("NEWPROJ", units(1200, MIN_CELL_N, "0121", SALE_NEW),
+                        units(1320, MIN_CELL_N, "0126", SALE_RESALE)),
     ]
 
     rows = flatten(payload)
-    check("flatten kept all rows", len(rows), MIN_CELL_N * 4)
+    check("flatten kept all rows", len(rows), MIN_CELL_N * 5)
 
     b = test_b_premium_recovery(rows)
     detail = {e["project"]: e for e in b["detail"]}
     if "NEWPROJ" not in detail:
         fails.append(f"Test B dropped NEWPROJ; coverage={b['coverage']}")
     else:
-        got = round(detail["NEWPROJ"]["excess_pa_pct"], 4)
-        check("Test B excess p.a.", got, -1.7892)
+        check("Test B excess p.a.", round(detail["NEWPROJ"]["excess_pa_pct"], 4), -1.7892)
         check("Test B holding years", detail["NEWPROJ"]["years"], 5.0)
         check("Test B window", (detail["NEWPROJ"]["from"], detail["NEWPROJ"]["to"]),
               ("2021Q1", "2026Q1"))
+    check("genuine launch is counted", b["coverage"]["genuinely_launched_in_window"], 1)
+    check("genuine launch is not flagged censored", b["coverage"]["skipped_left_censored"], 0)
+    check("observed window reported", b["coverage"]["window"], ["2020Q1", "2026Q1"])
+
+    # LEFT-CENSORING GUARD — the bug that voided the first live run. Without the anchor,
+    # LATEPHASE's first visible new sale IS the window's opening quarter, so it cannot be
+    # shown to be a launch (it is more likely a late phase of an older project) and must be
+    # excluded rather than measured.
+    censored_fx = [
+        proj("BENCHMARK ONE", units(1000, MIN_CELL_N, "0121", SALE_RESALE),
+                              units(1200, MIN_CELL_N, "0126", SALE_RESALE)),
+        proj("LATEPHASE", units(1200, MIN_CELL_N, "0121", SALE_NEW),
+                          units(1320, MIN_CELL_N, "0126", SALE_RESALE)),
+    ]
+    cov_c = test_b_premium_recovery(flatten(censored_fx))["coverage"]
+    check("left-censored launch excluded", cov_c["skipped_left_censored"], 1)
+    check("left-censored launch not measured", cov_c["genuinely_launched_in_window"], 0)
 
     # A project resold inside the SSD lock must be excluded, not silently averaged in.
-    short = [{"project": "QUICKFLIP", "district": "19", "marketSegment": "OCR",
-              "transaction": units(1200, MIN_CELL_N, "0121", SALE_NEW, "QUICKFLIP")
-                           + units(1400, MIN_CELL_N, "0123", SALE_RESALE, "QUICKFLIP")}]
+    short = [anchor, proj("QUICKFLIP", units(1200, MIN_CELL_N, "0121", SALE_NEW),
+                                       units(1400, MIN_CELL_N, "0123", SALE_RESALE))]
     b2 = test_b_premium_recovery(flatten(short))
     check("sub-4y hold excluded", b2["coverage"]["skipped_hold_under_4y"], 1)
     check("sub-4y produced no rows", len(b2["detail"]), 0)
 
-    # SELF-CONTAMINATION GUARD. Adding a second, identical benchmark project must not change
+    # SELF-CONTAMINATION GUARD. Adding a second, identical benchmark project must not move
     # NEWPROJ's excess: its own resales are excluded from the district median either way.
-    # Without the exclusion this figure moves (it was -2.8062 when NEWPROJ polluted its own
-    # benchmark), which is how this bias was found.
+    # Without the exclusion this read -2.8062, which is how the bias was found.
     payload2 = payload + [
-        {"project": "BENCHMARK TWO", "district": "19", "marketSegment": "OCR",
-         "transaction": units(1000, MIN_CELL_N, "0121", SALE_RESALE, "BENCHMARK TWO")
-                      + units(1200, MIN_CELL_N, "0126", SALE_RESALE, "BENCHMARK TWO")},
+        proj("BENCHMARK TWO", units(1000, MIN_CELL_N, "0121", SALE_RESALE),
+                              units(1200, MIN_CELL_N, "0126", SALE_RESALE)),
     ]
     d2 = {e["project"]: e for e in test_b_premium_recovery(flatten(payload2))["detail"]}
     check("excess is invariant to benchmark size",
           round(d2.get("NEWPROJ", {}).get("excess_pa_pct", 0), 4), -1.7892)
 
     # Cells below MIN_CELL_N must be dropped, not trusted.
-    thin = [{"project": "THIN", "district": "19", "marketSegment": "OCR",
-             "transaction": units(1200, MIN_CELL_N - 1, "0121", SALE_NEW, "THIN")
-                          + units(1400, MIN_CELL_N - 1, "0126", SALE_RESALE, "THIN")}]
+    thin = [anchor, proj("THIN", units(1200, MIN_CELL_N - 1, "0121", SALE_NEW),
+                                 units(1400, MIN_CELL_N - 1, "0126", SALE_RESALE))]
     check("thin cells dropped", len(test_b_premium_recovery(flatten(thin))["detail"]), 0)
 
     # Test A: NEWPROJ at 1200 vs district resale 1000 in the same quarter = +20%.
