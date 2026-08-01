@@ -300,6 +300,15 @@ def self_test() -> int:
     check("bad input is None", month_index("xxxx"), None)
     check("month 13 rejected", month_index("1322"), None)
 
+    # --- response decoding (a strict utf-8 decode killed the first live run) ---
+    check("utf-8 body decodes", decode_body("PARC CLEMATIS".encode("utf-8"), "utf-8"), "PARC CLEMATIS")
+    check("cp1252 body does not raise",
+          decode_body("CAFÉ ROYALE".encode("cp1252"), None), "CAFÉ ROYALE")
+    check("bogus declared charset falls through",
+          decode_body("PARC".encode("utf-8"), "not-a-charset"), "PARC")
+    check("undecodable bytes still return a string",
+          isinstance(decode_body(b"\xff\xfe\x00\x01", None), str), True)
+
     # --- classification ---
     check("size band lower edge", size_band(599.9), 0)
     check("size band 600 edge", size_band(600), 1)
@@ -390,14 +399,32 @@ def self_test() -> int:
 
 # ---------------------------------------------------------------- run
 
+def decode_body(raw: bytes, charset: str | None = None) -> str:
+    """Decode a URA response body.
+
+    The URA payload is NOT reliably UTF-8 — some project names carry cp1252 bytes, which
+    raises UnicodeDecodeError on a strict utf-8 decode partway through a multi-megabyte
+    batch. fetch_data.py never hit this because `requests` sniffs the charset for it.
+    Try the declared charset, then utf-8, then cp1252; latin-1 cannot fail, so it is the
+    terminal fallback. Project names are grouping keys, so a consistent decode matters
+    more than perfect fidelity, but we prefer a correct one where available.
+    """
+    for enc in [c for c in (charset, "utf-8", "cp1252") if c]:
+        try:
+            return raw.decode(enc)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return raw.decode("latin-1")
+
+
 def load_live(key: str) -> list:
     import urllib.request
     ua = {"User-Agent": "Mozilla/5.0"}
 
     def get(url, headers):
         req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=90) as r:
-            return json.loads(r.read().decode())
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return json.loads(decode_body(r.read(), r.headers.get_content_charset()))
 
     token = get("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
                 {**ua, "AccessKey": key}).get("Result")
