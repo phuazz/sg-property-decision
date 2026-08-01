@@ -1,0 +1,56 @@
+{
+  "_design": "pre-registered; see module docstring",
+  "_caveats": [
+    "no unit identity - project-level psf, NOT repeat sales",
+    "sample conditioned on a resale existing (SSD selection)",
+    "floor mix not controlled",
+    "~5-year window = one rate/cooling regime"
+  ],
+  "test_a_launch_premium_pct": {
+    "CCR": {
+      "n": 333,
+      "median": 82.69,
+      "mean": 85.14,
+      "p10": 59.76,
+      "p25": 70.71,
+      "p75": 97.22,
+      "p90": 112.74,
+      "share_positive_pct": 100.0
+    },
+    "OCR": {
+      "n": 493,
+      "median": 34.36,
+      "mean": 33.98,
+      "p10": 14.91,
+      "p25": 24.35,
+      "p75": 42.57,
+      "p90": 51.07,
+      "share_positive_pct": 99.4
+    },
+    "RCR": {
+      "n": 547,
+      "median": 62.11,
+      "mean": 63.6,
+      "p10": 36.17,
+      "p25": 48.22,
+      "p75": 76.35,
+      "p90": 93.28,
+      "share_positive_pct": 100.0
+    }
+  },
+  "test_b_premium_recovery": {
+    "by_segment": {},
+    "all": null,
+    "detail": [],
+    "coverage": {
+      "window": [
+        "2021Q3",
+        "2026Q3"
+      ],
+      "genuinely_launched_in_window": 98,
+      "skipped_left_censored": 86,
+      "skipped_no_resale_yet": 94,
+      "skipped_hold_under_4y": 4
+    }
+  }
+}
