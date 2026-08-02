@@ -81,6 +81,7 @@ SQM_TO_SQFT = 10.7639
 MIN_CELL_N = 5           # minimum transactions before a project-quarter median is trusted
 MIN_HOLD_QUARTERS = 16   # 4 years — below the SSD lock, resales are non-random
 CENSOR_BUFFER_QUARTERS = 2  # a "launch" this close to the window start is probably not one
+MIN_YEAR_CELLS = 20      # per segment per year, before a year is reported as a trend point
 CONDO_TYPES = ("Condominium", "Apartment")
 SALE_NEW, SALE_SUB, SALE_RESALE = "1", "2", "3"
 
@@ -196,6 +197,42 @@ def test_a_launch_premium(rows) -> dict:
         prem[seg].append((npsf / statistics.median(vals) - 1) * 100.0)
 
     return {seg: _describe(v) for seg, v in sorted(prem.items()) if v}
+
+
+def test_a_by_year(rows) -> dict:
+    """Test A, split by calendar year — is the new-build premium widening or narrowing?
+
+    The headline Test A is a single median across the whole window, which cannot tell a
+    level from a trend. The article says as much; this answers it. Same comparison, same
+    self-contamination guard, grouped by the year the comparison falls in.
+
+    A year is reported only if every segment in it clears MIN_YEAR_CELLS, so a thin
+    partial year at either end of the window cannot masquerade as a turning point.
+    """
+    new = _medians([r for r in rows if r["sale"] == SALE_NEW],
+                   lambda r: (r["project"], r["quarter"], r["band"], r["tenure"], r["district"], r["segment"]))
+    dist_vals = defaultdict(list)
+    for r in rows:
+        if r["sale"] == SALE_RESALE:
+            dist_vals[(r["district"], r["quarter"], r["band"], r["tenure"])].append((r["project"], r["psf"]))
+
+    by = defaultdict(list)
+    for (proj, q, band, ten, district, seg), (npsf, _n) in new.items():
+        vals = [p for pj, p in dist_vals.get((district, q, band, ten), []) if pj != proj]
+        if len(vals) < MIN_CELL_N:
+            continue
+        by[(seg, q // 4)].append((npsf / statistics.median(vals) - 1) * 100.0)
+
+    years = sorted({y for _s, y in by})
+    out, dropped = {}, []
+    for y in years:
+        cells = {seg: by.get((seg, y), []) for seg in ("CCR", "RCR", "OCR")}
+        if any(len(v) < MIN_YEAR_CELLS for v in cells.values()):
+            dropped.append({"year": y, "n": {s: len(v) for s, v in cells.items()}})
+            continue
+        out[str(y)] = {seg: _describe(v) for seg, v in cells.items()}
+    return {"by_year": out, "dropped_thin_years": dropped,
+            "min_cells_per_segment_year": MIN_YEAR_CELLS}
 
 
 def test_b_premium_recovery(rows) -> dict:
@@ -519,6 +556,7 @@ def main() -> int:
                      "floor mix not controlled",
                      "~5-year window = one rate/cooling regime"],
         "test_a_launch_premium_pct": test_a_launch_premium(rows),
+        "test_a_by_year": test_a_by_year(rows),
         "test_b_premium_recovery": test_b_premium_recovery(rows),
     }
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
@@ -529,6 +567,18 @@ def main() -> int:
     print("\nTest A — launch premium at entry (% over contemporaneous district resale):")
     for seg, d in (result["test_a_launch_premium_pct"] or {}).items():
         print(f"  {seg}: median {d['median']}%  (p25 {d['p25']} / p75 {d['p75']}, n={d['n']})")
+    ty = result["test_a_by_year"]
+    if ty["by_year"]:
+        print("\nTest A by year — is the premium widening? (median %, n per cell)")
+        for y in sorted(ty["by_year"]):
+            row = " · ".join(f"{seg} {d['median']:+.1f}% (n={d['n']})"
+                             for seg, d in ty["by_year"][y].items() if d)
+            print(f"  {y}: {row}")
+        if ty["dropped_thin_years"]:
+            print(f"  dropped as too thin: {[d['year'] for d in ty['dropped_thin_years']]}")
+    else:
+        print("\nTest A by year — no year had enough comparisons in every segment.")
+
     print("\nTest B — excess $psf growth vs district, per annum (FLAGSHIP):")
     print(f"  coverage: {b['coverage']}")
     for seg, d in (b["by_segment"] or {}).items():
