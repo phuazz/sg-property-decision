@@ -62,6 +62,7 @@ def dg_tail(rid, n=4000):
 # Approximation: URA defines CCR by postal district (9/10/11 + Downtown Core + Sentosa),
 # not by planning area. Bukit Timah PA spans CCR districts (10/11) and OCR (21) but is
 # tagged RCR here; the page flags segment tags as approximate for this reason.
+MAX_UNIT_SQFT = 10000   # above this the "area" is land or strata, not a unit — see ura_project_scorecard
 CCR = {"downtown core","orchard","newton","river valley","rochor","museum","singapore river",
        "marina south","straits view","tanglin","marina east"}
 RCR = {"kallang","geylang","queenstown","bukit merah","toa payoh","marine parade","novena",
@@ -416,6 +417,13 @@ def ura_project_scorecard():
             except (KeyError, ValueError, ZeroDivisionError):
                 continue
             if not p:
+                continue
+            # URA occasionally carries a land or strata area where a unit area belongs:
+            # LOYANG VALLEY reports 626,545 sqft. One such record is enough to wreck any
+            # size-weighted aggregate downstream (it moved a district's mean unit size by
+            # 5x, and a correlation from -0.53 to -0.14). No condominium unit is this big,
+            # so treat it as a bad record rather than an outlier and drop the transaction.
+            if area > MAX_UNIT_SQFT:
                 continue
             ll = _lease_left(t.get("tenure"), cur.year)
             if ll is not None:
