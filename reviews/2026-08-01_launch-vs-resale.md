@@ -84,6 +84,33 @@ new instead of existing costs roughly a third more per square foot in OCR and ov
 RCR and CCR. That is a real constraint on what a given budget reaches, and it is computed from
 primary data rather than asserted.
 
+## Follow-up, 2026-08-02: is the gap widening?
+
+Test A extended to break out by calendar year, guarded so a year is reported only if
+every segment clears 20 comparisons. The answer is not a single direction — the segments
+are **converging**.
+
+| Year | OCR | RCR | CCR |
+|---|---|---|---|
+| 2021 *(H2 only — window opens 2021Q3)* | +28.5% | +60.4% | **+91.8%** |
+| 2022 | +33.9% | +66.4% | +84.2% |
+| 2023 | +37.9% | +67.9% | +81.9% |
+| 2024 | +35.4% | +64.3% | +83.5% |
+| 2025 | **+37.5%** | +59.1% | **+71.8%** |
+
+Outside central widened by about nine points; core central narrowed by about twenty; the
+rest of central barely moved. The spread between cheapest and dearest segment roughly
+halved, from ~63 points to ~34.
+
+**Caveats.** 2021 covers only Q3–Q4, so it is a half-year and its level should not be
+read as a full-year figure. 2026 was dropped by the guard (CCR had 17 comparisons against
+the floor of 20). Some cells are thin — CCR 2024 has n=22. And this is a level series, not
+a like-for-like cohort: the mix of projects launching changes each year, so part of any
+move is composition rather than pricing.
+
+**Not tested:** why. Land cost, GLS site locations and the shrinking supply of new
+core-central stock are all plausible and none is checked here.
+
 ## What this means for the dashboard
 
 The tool must not tell readers that resale beats new launch. We could not test it, and neither
