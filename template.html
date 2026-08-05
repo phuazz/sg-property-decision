@@ -489,6 +489,12 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="tbl-wrap"><table id="gls-table"></table></div>
         <div class="note" id="gls-note"></div>
       </div>
+      <div class="card" id="unsold-card">
+        <h3>Where the unsold stock is — <em style="font-style:normal;color:var(--t3-text)">live URA developer sales</em></h3>
+        <p class="intro" id="unsold-intro"></p>
+        <div class="tbl-wrap tbl-freeze"><table id="unsold-table"></table></div>
+        <div class="note" id="unsold-note"></div>
+      </div>
       <div class="card">
         <h3>What S$1.2–1.5m buys today</h3>
         <div id="brief-map"></div>
@@ -1071,6 +1077,61 @@ function renderNewLaunches(){
   const ym=N.asof?('20'+N.asof.slice(2)+'-'+N.asof.slice(0,2)):'—';
   $('newlaunch-note').innerHTML=`URA developer-sales, latest published month (${ym}); new-sale prices sit above resale (a different product). <b>Take-up</b> = units sold &divide; launched, top-selling first. ${N.n} projects still selling. Developer is shown here because URA's resale caveats omit it.`;
 }
+/* ---------- supply: unsold new-launch inventory by district ----------
+   Aggregates URA developer-sales (the same feed as the table above) up to district level.
+   The point it answers: a national "supply glut" headline says nothing about whether the
+   overhang is in the district you are buying. It usually is not evenly spread. */
+let _usort='unsold', _uasc=false;
+function _unsoldRows(){
+  const N=(D.market.new_launches||{}).rows||[], DS=(D.market.districts||{}).rows||[];
+  const meta={}; DS.forEach(r=>{meta[r.district]=r;});
+  const agg={};
+  N.forEach(r=>{
+    if(r.units==null||r.sold==null||!r.district) return;
+    const a=agg[r.district]=(agg[r.district]||{district:r.district,proj:0,units:0,sold:0,region:r.region});
+    a.proj++; a.units+=r.units; a.sold+=r.sold;
+  });
+  return Object.values(agg).map(a=>{const m=meta[a.district]||{};
+    return Object.assign({},a,{unsold:a.units-a.sold, takeup:a.units?a.sold/a.units:null,
+      name:m.name||'—', region:m.region||a.region||null, momentum:(m.momentum==null?null:m.momentum)});});
+}
+function renderUnsold(){
+  const card=$('unsold-card'); if(!card) return;
+  const N=D.market.new_launches, DS=D.market.districts;
+  if(!N||!N.rows||!N.rows.length){ card.style.display='none'; return; }
+  const rows=_unsoldRows();
+  if(!rows.length){ card.style.display='none'; return; }
+  const tot=rows.reduce((s,r)=>({units:s.units+r.units,unsold:s.unsold+r.unsold}),{units:0,unsold:0});
+  const maxU=Math.max(...rows.map(r=>r.unsold),1);
+  const ym=N.asof?('20'+N.asof.slice(2)+'-'+N.asof.slice(0,2)):'—';
+  $('unsold-intro').innerHTML=`New homes the developer has <b>not yet sold</b>, grouped by district — the supply that competes with you on the way in, and with you again on the way out. `+
+    `Across all ${N.n} projects still selling: <b>${fmt0(tot.unsold)}</b> unsold of <b>${fmt0(tot.units)}</b> launched (<b>${pct(1-tot.unsold/tot.units,0)}</b> sold). `+
+    `<span class="mono" style="color:var(--t3-text)">URA developer sales · ${ym}</span>`;
+  const val=r=>_usort==='name'?r.name:(_usort==='district'?+String(r.district).replace(/\D/g,''):(r[_usort]==null?-Infinity:r[_usort]));
+  const dd=_uasc?1:-1;
+  rows.sort((a,b)=>{const va=val(a),vb=val(b),c=(typeof va==='string'||typeof vb==='string')?String(va).localeCompare(String(vb)):(va-vb);return dd*c;});
+  const cols=[['district','Dist'],['name','Area'],['region','Seg'],['proj','Projects'],['units','Launched'],['unsold','Unsold'],['takeup','% sold'],['momentum','Resale 1yr']];
+  const numk=['proj','units','unsold','takeup','momentum'];
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}usort" data-k="${k}">${l}${_usort===k?(_uasc?' ▴':' ▾'):''}</th>`).join('')+`<th>Explore</th>`;
+  const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
+  const body=rows.map(r=>{const area=(r.name||'').split('/')[0].trim(), n=String(r.district).replace(/\D/g,'');
+    return `<tr><td class="mono">${r.district}</td><td>${r.name}</td>`+
+    `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
+    `<td class="num">${fmt0(r.proj)}</td>`+
+    `<td class="num">${fmt0(r.units)}</td>`+
+    `<td class="num" style="background:rgba(192,57,43,${(0.22*r.unsold/maxU).toFixed(3)})"><b>${fmt0(r.unsold)}</b></td>`+
+    `<td class="num">${r.takeup==null?'—':pct(r.takeup,0)}</td>`+
+    `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
+    `<td class="xlinks">${_xa(_pguru(n),'Listings')} &middot; ${_xa(_gmap(area),'Map')}</td></tr>`;}).join('');
+  $('unsold-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
+  $('unsold-table').querySelectorAll('.usort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_usort===k){_uasc=!_uasc;}else{_usort=k;_uasc=(k==='name'||k==='district'||k==='region');} renderUnsold();});
+  // Districts with resale activity but no launch in this file — the "nothing competing here" list.
+  const live=new Set(rows.map(r=>r.district));
+  const quiet=((DS&&DS.rows)||[]).filter(r=>!live.has(r.district)).map(r=>r.district).sort((a,b)=>+a.slice(1)-+b.slice(1));
+  $('unsold-note').innerHTML=`<b>Read this as "where the competition is", not "where the bargains are".</b> A high unsold count means the developer still has stock to move in that district — which caps how fast nearby prices can run, and means you would meet the same stock again as resale in a few years. Deep red = most unsold.`+
+    (quiet.length?` <b>No active launch appears at all in ${quiet.length} district${quiet.length===1?'':'s'}:</b> <span class="mono">${quiet.join(' · ')}</span>. In those, a new launch arrives with no developer stock competing beside it.`:``)+
+    ` <b>Three limits.</b> (1) This is the URA developer-sales file for ${ym} — projects with sales activity that month. A district showing nothing means <i>no active launch in this file</i>, not zero unsold homes; a fully-sold or not-yet-launched project simply does not appear. (2) <b>% sold is cumulative since launch, not a rate</b> — a project launched last month and one launched three years ago are not comparable, and the file carries no launch date. (3) New-sale stock only; resale listings are not counted here.`;
+}
 const _sizeband=s=>s<600?0:s<850?1:s<1150?2:3;
 const _bandLabel=b=>['≤600 sqft (compact)','600–850 sqft (2-bed)','850–1150 sqft (3-bed)','>1150 sqft (large)'][b];
 function renderFairValue(){
@@ -1286,7 +1347,7 @@ function wire(){
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderRatesChart(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderFairValue(); renderAtGlance();
+    renderKPIs(); renderRatesChart(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderUnsold(); renderFairValue(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);

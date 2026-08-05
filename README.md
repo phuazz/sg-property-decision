@@ -31,7 +31,14 @@ seller — but any age, income, budget, property type and buyer profile can be e
    and **recent GLS land bids** ($psf per plot ratio + bidder count). Land bids are the forward input the
    brief asked for: a competitive winning bid sets a floor under nearby future launch and resale prices
    (`launch psf ≈ land psf ppr × ~1.8–2.0`). The $1.2–1.5m brief is mapped to the segments/districts it
-   actually fits.
+   actually fits. **Unsold new-launch inventory by district** (added 2026-08-06) aggregates the URA
+   developer-sales feed up to district level — projects, units launched, units unsold, cumulative % sold
+   and the district's resale momentum beside it. It exists because a national "supply glut" headline says
+   nothing about the district you are actually buying in, and the overhang is not evenly spread: it
+   concentrates in D1/D9/D23/D21, while five districts (D4, D8, D13, D14, D20) have no active launch in
+   the file at all. Three limits are stated on the card: a district showing nothing means *no active
+   launch in this month's file*, not zero unsold homes; % sold is cumulative since launch, not a rate,
+   and the feed carries no launch date; and resale listings are not counted.
 
 ## Data sources
 
@@ -146,4 +153,11 @@ approximation; segment "read" labels made momentum-aware; landing-page hook copy
 affordability note corrected. Engine re-verified against an independent Python recomputation
 (14 cases, exact agreement).
 
-_Last updated: 2026-07-10._
+**Unsold-inventory card (2026-08-06).** Added to the Where module, computed client-side from the
+existing `new_launches` feed — no pipeline or fetch change. Verified against the standing
+pre-publication check (`C:\dev\MOBILE_CHECK.md`): static pass, and rendered at a real 390px viewport
+with the table scrolling inside its own container, no page-level horizontal scroll and nothing under
+11px. The card was prompted by a live error caught in a related brief — a national supply figure had
+been applied to a single district without checking that district, which reversed the conclusion.
+
+_Last updated: 2026-08-06._
