@@ -15,7 +15,7 @@ Every feed is wrapped so one failure does not abort the others; failures are
 recorded in live.json._meta.errors so a partial refresh is transparent.
 Usage: python scripts/fetch_data.py
 """
-import io, os, re, sys, json, time, collections, statistics, datetime, pathlib
+import io, os, re, sys, json, time, collections, statistics, datetime, pathlib, urllib.parse
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -118,6 +118,53 @@ def hdb_resale():
             "median_price": round(statistics.median(prices)),
             "median_psf": round(statistics.median(psfs)),
             "by_type": by_type, "source": "data.gov.sg d_8b84c4ee (HDB resale register)"}
+
+HDB_TOWN = "MARINE PARADE"                                  # estate flat's town
+HDB_RESALE_RID = "d_8b84c4ee58e3cfc0ece0d773c8ca6abc"
+
+def hdb_town():
+    """Full resale history for HDB_TOWN by flat type, plus every print of the largest flat type.
+
+    hdb_resale() above is national and latest-month only. A thin town cannot be valued off one
+    month: Marine Parade prints well under 200 flats a year and the sample for its largest type
+    is smaller still, so the comp range has to come from the whole register. Filtered server-side
+    rather than via dg_tail, which only reaches the most recent few thousand national records.
+    """
+    q = urllib.parse.urlencode({"resource_id": HDB_RESALE_RID, "limit": 8000,
+                                "filters": json.dumps({"town": HDB_TOWN})})
+    recs = GET(f"{DG}?{q}", timeout=90).json()["result"]["records"]
+    if not recs:
+        raise RuntimeError(f"no resale records for town={HDB_TOWN}")
+    cur = datetime.date.today()
+    now_i = cur.year * 12 + cur.month
+    def mix(m):
+        y, mm = m.split("-"); return int(y) * 12 + int(mm)
+    def px(rs):
+        return _pctiles([float(r["resale_price"]) for r in rs]) if len(rs) >= 6 else None
+    by_type = {}
+    for t in sorted(set(r["flat_type"] for r in recs)):
+        rows = [r for r in recs if r["flat_type"] == t]
+        sqm = [float(r["floor_area_sqm"]) for r in rows]
+        by_type[t] = {"n_all": len(rows),
+                      "n_12m": sum(1 for r in rows if now_i - mix(r["month"]) <= 12),
+                      "n_36m": sum(1 for r in rows if now_i - mix(r["month"]) <= 36),
+                      "price_p_12m": px([r for r in rows if now_i - mix(r["month"]) <= 12]),
+                      "price_p_36m": px([r for r in rows if now_i - mix(r["month"]) <= 36]),
+                      "sqm_range": [min(sqm), max(sqm)],
+                      "models": dict(collections.Counter(r["flat_model"] for r in rows))}
+    largest = max(by_type, key=lambda t: by_type[t]["sqm_range"][1])
+    big = sorted(({"month": r["month"], "block": r["block"], "street": r["street_name"],
+                   "type": r["flat_type"], "model": r["flat_model"],
+                   "sqm": float(r["floor_area_sqm"]),
+                   "sqft": round(float(r["floor_area_sqm"]) * 10.7639),
+                   "storey": r["storey_range"], "price": round(float(r["resale_price"])),
+                   "lease_from": r["lease_commence_date"], "remaining": r.get("remaining_lease")}
+                  for r in recs if r["flat_type"] == largest), key=lambda r: r["month"])
+    return {"town": HDB_TOWN, "asof_month": max(r["month"] for r in recs), "n": len(recs),
+            "by_type": by_type, "largest_type": largest, "largest_rows": big,
+            "lease_commence": dict(sorted(collections.Counter(
+                r["lease_commence_date"] for r in recs).items())),
+            "source": f"data.gov.sg {HDB_RESALE_RID[:10]} (HDB resale register), town={HDB_TOWN}"}
 
 def gls():
     page = GET("https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites").text
@@ -453,6 +500,133 @@ def ura_project_scorecard():
             "mrt_ok": any("mrt_m" in r for r in out),
             "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"}
 
+EC_TARGET = "HUNDRED PALMS RESIDENCES"      # subject property for the estate/sequencing model
+TARGET_DISTRICTS = ("15",)                  # replacement-home search area (D15 East Coast / Marine Parade)
+MIN_SQFT_LARGE = 1200                       # floor-area proxy for a 4-bedroom unit: URA has no bedroom field
+LANDED_TYPES = ("Detached House", "Semi-Detached House", "Terrace House",
+                "Strata Detached House", "Strata Semi-Detached House", "Strata Terrace House")
+
+def ec_resale():
+    """EC resale pricing, per project, plus the full caveat history for EC_TARGET.
+
+    ura_project_scorecard() filters propertyType to Condominium/Apartment, so every Executive
+    Condominium is excluded from the main dataset. This is the only place EC pricing enters it.
+    The target project's caveats are returned unwindowed and unfiltered by typeOfSale so the
+    2017 launch prices (cost basis) and the post-MOP resale run (time-to-sale) are both visible.
+    """
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    projs = _ura_projects(key)
+    cur = datetime.date.today()
+    now_i = cur.year * 12 + cur.month
+    per, target, target_d = [], [], None
+    for proj in projs:
+        is_target = (proj.get("project") or "").strip().upper() == EC_TARGET
+        psf, sizes, prices, dist = [], [], [], None
+        for t in proj.get("transaction", []):
+            if t.get("propertyType") != "Executive Condominium":
+                continue
+            mi = _midx(t.get("contractDate", ""))
+            if mi is None:
+                continue
+            try:
+                area = float(t["area"]) * 10.7639
+                p = float(t["price"]) / area if area else None
+            except (KeyError, ValueError, ZeroDivisionError):
+                continue
+            if not p or area > MAX_UNIT_SQFT:
+                continue
+            d = str(t.get("district") or "").zfill(2)
+            if d in DISTRICT_NAME:
+                dist = d
+            cd = t.get("contractDate", "")
+            if is_target:
+                target_d = dist or target_d
+                target.append({"month": "20" + cd[2:] + "-" + cd[:2], "psf": round(p),
+                               "sqft": round(area), "price": round(float(t["price"])),
+                               "sale_type": str(t.get("typeOfSale", "")).strip(),
+                               "floor": t.get("floorRange"), "tenure": t.get("tenure")})
+            if str(t.get("typeOfSale", "")).strip() == "3" and mi > now_i - 12:   # resale, last 12m
+                psf.append(p); sizes.append(area); prices.append(float(t["price"]))
+        if len(psf) >= 2:
+            per.append({"project": proj.get("project"), "d": dist,
+                        "district": ("D" + dist.lstrip("0")) if dist else None,
+                        "region": proj.get("marketSegment"),
+                        "median_psf": round(statistics.median(psf)), "vol_12m": len(psf),
+                        "psf_p": (_pctiles(psf) if len(psf) >= 6 else None),
+                        "size": _pctiles(sizes)[2], "price": _pctiles(prices)[2]})
+    per.sort(key=lambda r: -r["vol_12m"])
+    target.sort(key=lambda r: r["month"])
+    # monthly resale caveat counts for the target — the empirical time-to-sale input
+    tr = [c for c in target if c["sale_type"] == "3"]
+    by_month = collections.Counter(c["month"] for c in tr)
+    return {"asof": cur.strftime("%Y-%m"), "n": len(per), "rows": per,
+            "target": {"project": EC_TARGET, "district": ("D" + target_d.lstrip("0")) if target_d else None,
+                       "n_all": len(target), "n_resale": len(tr),
+                       "resale_psf_p": (_pctiles([c["psf"] for c in tr]) if len(tr) >= 6 else None),
+                       "resale_by_month": dict(sorted(by_month.items())),
+                       "caveats": target},
+            "source": "URA PMI_Resi_Transaction, propertyType=Executive Condominium "
+                      "(sale_type: 1=new sale, 2=subsale, 3=resale)"}
+
+def target_homes():
+    """Unit-level resale transactions in TARGET_DISTRICTS for the replacement-home screen.
+
+    Split non-landed (>=MIN_SQFT_LARGE only) from landed (all sizes). Keeps tenure and
+    typeOfArea per record: for landed, URA's `area` may be LAND area rather than strata, and a
+    $psf computed across the two bases is meaningless. Window is 24 months, not 12, because
+    large-unit and landed samples are thin. URA publishes no bedroom count, so floor area is
+    the only available adequacy proxy and callers must treat it as a proxy.
+    """
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    projs = _ura_projects(key)
+    cur = datetime.date.today()
+    now_i = cur.year * 12 + cur.month
+    nonlanded, landed = [], []
+    for proj in projs:
+        for t in proj.get("transaction", []):
+            d = str(t.get("district") or "").zfill(2)
+            if d not in TARGET_DISTRICTS:
+                continue
+            if str(t.get("typeOfSale", "")).strip() != "3":     # resale only
+                continue
+            mi = _midx(t.get("contractDate", ""))
+            if mi is None or mi <= now_i - 24:
+                continue
+            pt = t.get("propertyType")
+            is_landed = pt in LANDED_TYPES
+            if not is_landed and pt not in ("Condominium", "Apartment"):
+                continue
+            try:
+                area = float(t["area"]) * 10.7639
+                price = float(t["price"])
+                p = price / area if area else None
+            except (KeyError, ValueError, ZeroDivisionError):
+                continue
+            if not p or area > MAX_UNIT_SQFT:
+                continue
+            if not is_landed and area < MIN_SQFT_LARGE:
+                continue
+            cd = t.get("contractDate", "")
+            lease = _lease_left(t.get("tenure"), cur.year)
+            rec = {"project": proj.get("project"), "month": "20" + cd[2:] + "-" + cd[:2],
+                   "type": pt, "sqft": round(area), "price": round(price), "psf": round(p),
+                   "area_basis": t.get("typeOfArea"), "lease": lease, "floor": t.get("floorRange")}
+            (landed if is_landed else nonlanded).append(rec)
+    for lst in (nonlanded, landed):
+        lst.sort(key=lambda r: r["month"])
+    fh = [r["psf"] for r in nonlanded if r["lease"] == "FH"]
+    return {"asof": cur.strftime("%Y-%m"), "districts": list(TARGET_DISTRICTS),
+            "window_months": 24, "min_sqft_nonlanded": MIN_SQFT_LARGE,
+            "nonlanded": {"n": len(nonlanded), "n_freehold": len(fh),
+                          "fh_psf_p": (_pctiles(fh) if len(fh) >= 6 else None), "rows": nonlanded},
+            "landed": {"n": len(landed), "rows": landed},
+            "bedroom_note": "URA publishes no bedroom count; floor area is a proxy only",
+            "source": "URA PMI_Resi_Transaction resale, unit level, 24 months"}
+
 def ura_new_launches():
     """URA developer sales (current new launches). Structure probe first — emits keys + a sample so the
     real parse can be written; integrated into the projects table as new-launch pricing after inspection."""
@@ -498,8 +672,10 @@ def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     live = {"_meta": {"fetched": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "errors": {}}}
     feeds = {"ura_ppi": ura_ppi, "hdb_rpi": hdb_rpi, "locality": ura_locality,
-             "hdb_resale": hdb_resale, "gls": gls, "segments_official": ura_transactions,
-             "districts": ura_districts, "projects": ura_project_scorecard, "new_launches": ura_new_launches}
+             "hdb_resale": hdb_resale, "hdb_town": hdb_town, "gls": gls,
+             "segments_official": ura_transactions, "districts": ura_districts,
+             "projects": ura_project_scorecard, "new_launches": ura_new_launches,
+             "ec_resale": ec_resale, "target_homes": target_homes}
     for name, fn in feeds.items():
         try:
             val = fn()
