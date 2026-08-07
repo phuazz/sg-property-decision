@@ -111,8 +111,10 @@ th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hove
 .tbl-freeze td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
 .tbl-freeze th:first-child{left:0;z-index:3}
 .mob-hint{display:none;font-size:11.5px;color:var(--t3-text);margin:2px 0 8px}
+.a-short{display:none}   /* area names: full on desktop, first segment only on mobile — see _areaLbl */
 @media(max-width:640px){
   .mob-hint{display:block}
+  .a-full{display:none} .a-short{display:inline}
   .tbl-freeze td,.tbl-freeze th{padding:7px 8px}
   .shell{padding:16px max(14px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
   .field input,.field select{font-size:16px}
@@ -1038,7 +1040,7 @@ function renderProjects(){
     leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td>`+
       `<td class="num" style="background:rgba(26,135,84,${((r.score||0)/100*0.22).toFixed(3)})" title="Score ${r.score!=null?r.score:'—'} = mean of four percentile ranks vs all projects (0 = lowest, 100 = highest):&#10;Value — cheaper vs area: ${r._sc?r._sc[0]:'—'}&#10;Liquidity — resale turnover: ${r._sc?r._sc[1]:'—'}&#10;Remaining lease: ${r._sc?r._sc[2]:'—'}&#10;MRT proximity: ${r._sc?r._sc[3]:'—'}"><b>${r.score!=null?r.score:'—'}</b></td>`+
-      `<td><span class="mono">${r.district||'—'}</span>${_dar(r.district)?` <span style="color:var(--t3-text);font-size:12px">${_dar(r.district)}</span>`:''}</td>`+
+      `<td><span class="mono">${r.district||'—'}</span>${_dar(r.district)?` <span style="color:var(--t3-text);font-size:12px">${_areaLbl(_dar(r.district))}</span>`:''}</td>`+
       `<td class="num">${r.price?sgdk(r.price):'—'}</td>`+
       `<td class="num" title="${r.size_r?'typical '+fmt0(r.size_r[0])+'–'+fmt0(r.size_r[1])+' sqft':''}">${r.size?fmt0(r.size)+' sf':'—'}</td>`+
       `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
@@ -1077,6 +1079,13 @@ const DAREA={D1:'Raffles Place / Marina',D2:'Tanjong Pagar / Anson',D3:'Tiong Ba
   D22:'Jurong',D23:'Bukit Batok / Choa Chu Kang',D24:'Lim Chu Kang / Tengah',D25:'Woodlands / Kranji',
   D26:'Upper Thomson / Mandai',D27:'Sembawang / Yishun',D28:'Seletar / Yio Chu Kang'};
 const _dnum=d=>+String(d==null?'':d).replace(/\D/g,'')||0;   // "D18" → 18, so Dist sorts numerically
+/* Area label. Full name on desktop, first segment only on mobile ("Serangoon / Hougang / Punggol" →
+   "Serangoon", the same short form as the district filter chips) — a 31-char name wraps to three lines
+   in a narrow column and makes every row half again as tall. Both forms are emitted and swapped in CSS,
+   so a rotate or resize needs no re-render. One span where the short form is the whole name. */
+const _areaLbl=n=>{if(!n||n==='—') return '';
+  const s=n.split('/')[0].trim();
+  return s===n?`<span>${n}</span>`:`<span class="a-full">${n}</span><span class="a-short">${s}</span>`;};
 let _nsort='units', _nasc=false;
 function renderNewLaunches(){
   const N=D.market.new_launches, card=$('newlaunch-card'); if(!card) return;
@@ -1095,7 +1104,7 @@ function renderNewLaunches(){
     rows.map(r=>`<tr><td>${r.project||'—'}</td>`+
       `<td style="font-size:12px">${r.developer||'—'}</td>`+
       `<td class="mono">${r.district||'—'}</td>`+
-      `<td style="font-size:12px">${r.area||'—'}</td>`+
+      `<td style="font-size:12px">${_areaLbl(r.area)||'—'}</td>`+
       `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
       `<td class="num">$${fmt0(r.psf)}</td>`+
       `<td class="num">${r.takeup!=null?pct(r.takeup,0):'—'}</td>`+
@@ -1144,7 +1153,7 @@ function renderUnsold(){
   const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}usort" data-k="${k}">${l}${_usort===k?(_uasc?' ▴':' ▾'):''}</th>`).join('')+`<th>Explore</th>`;
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   const body=rows.map(r=>{const area=(r.name||'').split('/')[0].trim(), n=String(r.district).replace(/\D/g,'');
-    return `<tr><td class="mono">${r.district}</td><td>${r.name}</td>`+
+    return `<tr><td class="mono">${r.district}</td><td>${_areaLbl(r.name)||'—'}</td>`+
     `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
     `<td class="num">${fmt0(r.proj)}</td>`+
     `<td class="num">${fmt0(r.units)}</td>`+
