@@ -1,9 +1,9 @@
 {
  "_meta": {
-  "fetched": "2026-08-07T14:30:17Z",
+  "fetched": "2026-08-07T14:31:56Z",
   "errors": {},
   "carried_forward": {
-   "from": "2026-08-03T05:37:48Z",
+   "from": "2026-08-07T14:30:17Z",
    "feeds": [
     "districts",
     "new_launches",
@@ -32585,6 +32585,41 @@
   ],
   "mrt_ok": true,
   "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"
+ },
+ "ec_resale": {
+  "asof": "2026-08",
+  "n": 0,
+  "rows": [],
+  "target": {
+   "project": "HUNDRED PALMS RESIDENCES",
+   "district": null,
+   "n_all": 0,
+   "n_resale": 0,
+   "resale_psf_p": null,
+   "resale_by_month": {},
+   "caveats": []
+  },
+  "source": "URA PMI_Resi_Transaction, propertyType=Executive Condominium (sale_type: 1=new sale, 2=subsale, 3=resale)"
+ },
+ "target_homes": {
+  "asof": "2026-08",
+  "districts": [
+   "15"
+  ],
+  "window_months": 24,
+  "min_sqft_nonlanded": 1200,
+  "nonlanded": {
+   "n": 0,
+   "n_freehold": 0,
+   "fh_psf_p": null,
+   "rows": []
+  },
+  "landed": {
+   "n": 0,
+   "rows": []
+  },
+  "bedroom_note": "URA publishes no bedroom count; floor area is a proxy only",
+  "source": "URA PMI_Resi_Transaction resale, unit level, 24 months"
  },
  "new_launches": {
   "asof": "0626",
