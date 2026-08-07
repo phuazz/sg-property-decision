@@ -112,6 +112,7 @@ th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hove
 .tbl-freeze th:first-child{left:0;z-index:3}
 .mob-hint{display:none;font-size:11.5px;color:var(--t3-text);margin:2px 0 8px}
 .a-short{display:none}   /* area names: full on desktop, first segment only on mobile — see _areaLbl */
+.cell-sub{display:block;font-size:11px;font-weight:400;color:var(--t3-text)}   /* raw counts under a ratio */
 @media(max-width:640px){
   .mob-hint{display:block}
   .a-full{display:none} .a-short{display:inline}
@@ -431,14 +432,14 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
           <div class="pf-grid">
             <div class="field"><label>Max price (S$)</label><input id="pf-pmax" inputmode="numeric" placeholder="e.g. 1,500,000" oninput="renderProjects()"></div>
             <div class="field"><label>Min turnover (1y)</label><input id="pf-tmin" inputmode="numeric" placeholder="e.g. 6" oninput="renderProjects()"></div>
-            <div class="field"><label>Tenure</label><select id="pf-ten" onchange="renderProjects()"><option value="any">Any</option><option value="fh">Freehold / 999-yr</option><option value="lh">Leasehold (99-yr or less)</option></select></div>
+            <div class="field"><label>Tenure</label><select id="pf-ten" onchange="renderProjects()" title="Freehold / 999-yr groups true freehold with 999-year and 9,999-year leases — they price and finance as freehold. Leasehold is 99 years or shorter."><option value="any">Any</option><option value="fh">Freehold</option><option value="lh">Leasehold</option></select></div>
             <div class="field"><label>Min lease (years)</label><input id="pf-lmin" inputmode="numeric" placeholder="e.g. 60" oninput="renderProjects()"></div>
             <div class="field"><label>Min size (sqft)</label><input id="pf-szmin" inputmode="numeric" placeholder="e.g. 700" oninput="renderProjects()"></div>
             <div class="field"><label>Max size (sqft)</label><input id="pf-szmax" inputmode="numeric" placeholder="e.g. 1,700" oninput="renderProjects()"></div>
             <div class="field"><label>Max $psf</label><input id="pf-psfmax" inputmode="numeric" placeholder="e.g. 1,800" oninput="renderProjects()"></div>
             <div class="field"><label>Max MRT (m)</label><input id="pf-mrtmax" inputmode="numeric" placeholder="e.g. 500" oninput="renderProjects()"></div>
           </div>
-          <div style="margin-top:8px;font-size:12px"><a href="#" class="xlink" onclick="pfReset();return false;">clear these filters</a> <span style="color:var(--t3-text)">— blank = no limit; freehold / 999-yr pass any minimum lease. <b>Size</b> is the project's median unit size <i>transacted</i> in the last 12 months, not its unit mix — a project whose larger stack did not trade this year will not pass a size filter.</span></div>
+          <div style="margin-top:8px;font-size:12px"><a href="#" class="xlink" onclick="pfReset();return false;">clear these filters</a> <span style="color:var(--t3-text)">— blank = no limit; freehold / 999-yr pass any minimum lease. <b>Tenure</b> groups 999-yr and 9,999-yr leases with freehold (they price and finance as freehold); <i>leasehold</i> means 99 years or shorter. <b>Size</b> is the project's median unit size <i>transacted</i> in the last 12 months, not its unit mix — a project whose larger stack did not trade this year will not pass a size filter.</span></div>
         </div></details>
         <div class="mob-hint">&#8596; Scroll the table sideways (the project name stays pinned), or rotate to landscape for every column.</div>
         <div class="pcount" id="p-topcount"></div>
@@ -935,7 +936,15 @@ let _psort='score', _pasc=false, _pall=false, _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
 const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
 const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
-function pfReset(){['pf-pmax','pf-tmin','pf-lmin','pf-szmin','pf-psfmax','pf-mrtmax'].forEach(id=>{const el=$(id);if(el)el.value='';});renderProjects();}
+/* Tenure bucket for the filter. 999-yr and 9,999-yr leases sit with freehold: they are priced and
+   financed as freehold, and the min-lease filter already treats them that way. Threshold matches
+   _leaseTxt's '999-yr' cut (>200) so the filter can never contradict the label in the Lease column —
+   the data has a clean gap here (longest true leasehold 101 years, shortest quasi-freehold 800).
+   Unknown tenure (null) fails both fh and lh: it is not evidence either way. */
+const _fhLike=l=>l==='FH'||(typeof l==='number'&&l>200);
+const _lhOnly=l=>typeof l==='number'&&l<=200;
+function pfReset(){['pf-pmax','pf-tmin','pf-lmin','pf-szmin','pf-szmax','pf-psfmax','pf-mrtmax'].forEach(id=>{const el=$(id);if(el)el.value='';});
+  const t=$('pf-ten'); if(t)t.value='any'; renderProjects();}
 /* ---------- district attractiveness (shared by the chips, the choropleth and tooltips) ---------- */
 // diverging attractiveness colour: 0 = less attractive (muted clay), 0.5 = neutral, 1 = more attractive (green)
 function _attrRGB(u){
@@ -1018,13 +1027,17 @@ function renderProjects(){
   if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
   const gvf=id=>{const el=$(id);return el?(+(el.value.replace(/[^\d.]/g,''))||0):0;};
-  const pmax=gvf('pf-pmax'),tmin=gvf('pf-tmin'),lmin=gvf('pf-lmin'),szmin=gvf('pf-szmin'),psfmax=gvf('pf-psfmax'),mrtmax=gvf('pf-mrtmax');
-  const nf=pmax||tmin||lmin||szmin||psfmax||mrtmax;
+  const pmax=gvf('pf-pmax'),tmin=gvf('pf-tmin'),lmin=gvf('pf-lmin'),szmin=gvf('pf-szmin'),szmax=gvf('pf-szmax'),psfmax=gvf('pf-psfmax'),mrtmax=gvf('pf-mrtmax');
+  const ten=(($('pf-ten')||{}).value)||'any';
+  const nf=pmax||tmin||lmin||szmin||szmax||psfmax||mrtmax||ten!=='any';
   if(nf) rows=rows.filter(r=>{
     if(pmax && (r.price||1e12)>pmax) return false;
     if(tmin && (r.vol_12m||0)<tmin) return false;
+    if(ten==='fh' && !_fhLike(r.lease)) return false;
+    if(ten==='lh' && !_lhOnly(r.lease)) return false;
     if(lmin && _leaseNum(r.lease)<lmin) return false;
     if(szmin && (r.size||0)<szmin) return false;
+    if(szmax && (r.size||1e9)>szmax) return false;
     if(psfmax && (r.median_psf||1e9)>psfmax) return false;
     if(mrtmax && (r.mrt_m==null||r.mrt_m>mrtmax)) return false;
     return true;
@@ -1109,12 +1122,12 @@ function renderNewLaunches(){
       `<td style="font-size:12px">${_areaLbl(r.area)||'—'}</td>`+
       `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
       `<td class="num">$${fmt0(r.psf)}</td>`+
-      `<td class="num">${r.takeup!=null?pct(r.takeup,0):'—'}</td>`+
+      `<td class="num">${r.takeup!=null?pct(r.takeup,0):'—'}${(r.sold!=null&&r.units!=null)?`<span class="cell-sub">${fmt0(r.sold)}/${fmt0(r.units)}</span>`:''}</td>`+
       `<td class="num">${r.units!=null?fmt0(r.units):'—'}</td>`+
       `<td class="xlinks">${_xa(_gsearch((r.project||'')+' new launch'),'Listings')} &middot; ${_xa(_gmap(r.project||''),'Map')} &middot; ${_xa(_yt((r.project||'')+' review'),'Video')}</td></tr>`).join('')+`</tbody>`;
   $('newlaunch-table').querySelectorAll('.nsort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_nsort===k){_nasc=!_nasc;}else{_nsort=k;_nasc=txtk.includes(k)||k==='district';} renderNewLaunches();});
   const ym=N.asof?('20'+N.asof.slice(2)+'-'+N.asof.slice(0,2)):'—';
-  $('newlaunch-note').innerHTML=`URA developer-sales, latest published month (${ym}); new-sale prices sit above resale (a different product). <b>Take-up</b> = units sold &divide; launched. ${N.n} projects still selling, largest launch first &mdash; <b>tap any column header to re-sort</b> (again to reverse). Developer is shown here because URA's resale caveats omit it. <b>Take-up is cumulative since launch, not a rate</b>: a project launched last month and one launched three years ago are not comparable, and the file carries no launch date.`;
+  $('newlaunch-note').innerHTML=`URA developer-sales, latest published month (${ym}); new-sale prices sit above resale (a different product). <b>Take-up</b> = units sold &divide; launched, with the raw <b>sold/launched</b> counts beneath it. ${N.n} projects still selling, largest launch first &mdash; <b>tap any column header to re-sort</b> (again to reverse). Developer is shown here because URA's resale caveats omit it. <b>Take-up is cumulative since launch, not a rate</b>: a project launched last month and one launched three years ago are not comparable, and the file carries no launch date.`;
 }
 /* ---------- supply: unsold new-launch inventory by district ----------
    Aggregates URA developer-sales (the same feed as the table above) up to district level.
