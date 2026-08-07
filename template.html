@@ -106,7 +106,7 @@ h1,h2,h3{font-weight:400}
 .preset{font-size:11.5px;padding:5px 10px;border:1px solid var(--bd2);border-radius:999px;background:var(--bg2);cursor:pointer;color:var(--t2)}
 .preset:hover{border-color:var(--b);color:var(--b-text)}
 .preset.active{background:var(--t1);color:#fff;border-color:var(--t1)}
-th.dsort,th.psort{cursor:pointer} th.dsort:hover,th.psort:hover{color:var(--t1);text-decoration:underline}
+th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hover,th.nsort:hover,th.usort:hover{color:var(--t1);text-decoration:underline}
 .tbl-freeze th{z-index:2}
 .tbl-freeze td:first-child{position:sticky;left:0;background:var(--bg2);z-index:1}
 .tbl-freeze th:first-child{left:0;z-index:3}
@@ -1060,22 +1060,47 @@ function renderProjects(){
 }
 
 /* ---------- feature 4: is this asking price fair? ---------- */
-/* ---------- current new launches (URA developer sales) ---------- */
+/* ---------- current new launches (URA developer sales) ----------
+   District → area name. Mirrors DISTRICT_NAME in scripts/fetch_data.py: the developer-sales feed
+   carries a district code but no area name, and the resale districts file only covers districts with
+   resale activity in the period (D6 and D24 are absent from it today, both with a launch selling). */
+const DAREA={D1:'Raffles Place / Marina',D2:'Tanjong Pagar / Anson',D3:'Tiong Bahru / Queenstown',
+  D4:'Sentosa / Harbourfront',D5:'Buona Vista / Clementi / Dover',D6:'City Hall / Clarke Quay',
+  D7:'Bugis / Beach Road',D8:'Little India / Farrer Park',D9:'Orchard / River Valley',
+  D10:'Bukit Timah / Holland',D11:'Novena / Newton',D12:'Balestier / Toa Payoh',
+  D13:'Macpherson / Potong Pasir',D14:'Geylang / Eunos',D15:'East Coast / Marine Parade',
+  D16:'Bedok / Upper East Coast',D17:'Changi / Loyang',D18:'Tampines / Pasir Ris',
+  D19:'Serangoon / Hougang / Punggol',D20:'Bishan / Ang Mo Kio',D21:'Upper Bukit Timah / Clementi Pk',
+  D22:'Jurong',D23:'Bukit Batok / Choa Chu Kang',D24:'Lim Chu Kang / Tengah',D25:'Woodlands / Kranji',
+  D26:'Upper Thomson / Mandai',D27:'Sembawang / Yishun',D28:'Seletar / Yio Chu Kang'};
+const _dnum=d=>+String(d==null?'':d).replace(/\D/g,'')||0;   // "D18" → 18, so Dist sorts numerically
+let _nsort='units', _nasc=false;
 function renderNewLaunches(){
   const N=D.market.new_launches, card=$('newlaunch-card'); if(!card) return;
   if(!N||!N.rows||!N.rows.length){ card.style.display='none'; return; }
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
-  const rows=N.rows.filter(r=>r.psf);   // show all selling launches — small set (~50), no cap needed; the freeze panel bounds it
-  $('newlaunch-table').innerHTML=`<thead><tr><th>Project</th><th>Developer</th><th>Seg</th><th class="num">New $psf</th><th class="num">Take-up</th><th class="num">Units</th><th>Explore</th></tr></thead><tbody>`+
-    rows.map(r=>`<tr><td>${r.project||'—'} <span class="mono" style="color:var(--t3-text);font-size:11px">${r.district||''}</span></td>`+
+  // show all selling launches — small set (~50), no cap needed; the freeze panel bounds it
+  const rows=N.rows.filter(r=>r.psf).map(r=>Object.assign({},r,{area:DAREA[r.district]||null}));
+  const txtk=['project','developer','area','region'];
+  const val=r=>_nsort==='district'?_dnum(r.district):(txtk.includes(_nsort)?String(r[_nsort]==null?'':r[_nsort]).trim().toLowerCase():(r[_nsort]==null?-Infinity:r[_nsort]));
+  const dd=_nasc?1:-1;
+  rows.sort((a,b)=>{const va=val(a),vb=val(b);return dd*((typeof va==='string')?va.localeCompare(vb):(va-vb));});
+  const cols=[['project','Project'],['developer','Developer'],['district','Dist'],['area','Area'],['region','Seg'],['psf','New $psf'],['takeup','Take-up'],['units','Units']];
+  const numk=['psf','takeup','units'];
+  const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}nsort" data-k="${k}">${l}${_nsort===k?(_nasc?' ▴':' ▾'):''}</th>`).join('')+`<th>Explore</th>`;
+  $('newlaunch-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>`+
+    rows.map(r=>`<tr><td>${r.project||'—'}</td>`+
       `<td style="font-size:12px">${r.developer||'—'}</td>`+
+      `<td class="mono">${r.district||'—'}</td>`+
+      `<td style="font-size:12px">${r.area||'—'}</td>`+
       `<td><span class="chip ${seg2col[r.region]||'chip-n'}">${r.region||'—'}</span></td>`+
       `<td class="num">$${fmt0(r.psf)}</td>`+
       `<td class="num">${r.takeup!=null?pct(r.takeup,0):'—'}</td>`+
       `<td class="num">${r.units!=null?fmt0(r.units):'—'}</td>`+
       `<td class="xlinks">${_xa(_gsearch((r.project||'')+' new launch'),'Listings')} &middot; ${_xa(_gmap(r.project||''),'Map')} &middot; ${_xa(_yt((r.project||'')+' review'),'Video')}</td></tr>`).join('')+`</tbody>`;
+  $('newlaunch-table').querySelectorAll('.nsort').forEach(h=>h.onclick=()=>{const k=h.dataset.k; if(_nsort===k){_nasc=!_nasc;}else{_nsort=k;_nasc=txtk.includes(k)||k==='district';} renderNewLaunches();});
   const ym=N.asof?('20'+N.asof.slice(2)+'-'+N.asof.slice(0,2)):'—';
-  $('newlaunch-note').innerHTML=`URA developer-sales, latest published month (${ym}); new-sale prices sit above resale (a different product). <b>Take-up</b> = units sold &divide; launched, top-selling first. ${N.n} projects still selling. Developer is shown here because URA's resale caveats omit it.`;
+  $('newlaunch-note').innerHTML=`URA developer-sales, latest published month (${ym}); new-sale prices sit above resale (a different product). <b>Take-up</b> = units sold &divide; launched. ${N.n} projects still selling, largest launch first &mdash; <b>tap any column header to re-sort</b> (again to reverse). Developer is shown here because URA's resale caveats omit it. <b>Take-up is cumulative since launch, not a rate</b>: a project launched last month and one launched three years ago are not comparable, and the file carries no launch date.`;
 }
 /* ---------- supply: unsold new-launch inventory by district ----------
    Aggregates URA developer-sales (the same feed as the table above) up to district level.
@@ -1093,7 +1118,8 @@ function _unsoldRows(){
   });
   return Object.values(agg).map(a=>{const m=meta[a.district]||{};
     return Object.assign({},a,{unsold:a.units-a.sold, takeup:a.units?a.sold/a.units:null,
-      name:m.name||'—', region:m.region||a.region||null, momentum:(m.momentum==null?null:m.momentum)});});
+      // DAREA fallback: a district can carry a live launch but no resale row this period (D6, D24 today)
+      name:m.name||DAREA[a.district]||'—', region:m.region||a.region||null, momentum:(m.momentum==null?null:m.momentum)});});
 }
 function renderUnsold(){
   const card=$('unsold-card'); if(!card) return;
@@ -1107,7 +1133,7 @@ function renderUnsold(){
   $('unsold-intro').innerHTML=`New homes the developer has <b>not yet sold</b>, grouped by district — the supply that competes with you on the way in, and with you again on the way out. `+
     `Across all ${N.n} projects still selling: <b>${fmt0(tot.unsold)}</b> unsold of <b>${fmt0(tot.units)}</b> launched (<b>${pct(1-tot.unsold/tot.units,0)}</b> sold). `+
     `<span class="mono" style="color:var(--t3-text)">URA developer sales · ${ym}</span>`;
-  const val=r=>_usort==='name'?r.name:(_usort==='district'?+String(r.district).replace(/\D/g,''):(r[_usort]==null?-Infinity:r[_usort]));
+  const val=r=>_usort==='name'?r.name:(_usort==='district'?_dnum(r.district):(r[_usort]==null?-Infinity:r[_usort]));
   const dd=_uasc?1:-1;
   rows.sort((a,b)=>{const va=val(a),vb=val(b),c=(typeof va==='string'||typeof vb==='string')?String(va).localeCompare(String(vb)):(va-vb);return dd*c;});
   const cols=[['district','Dist'],['name','Area'],['region','Seg'],['proj','Projects'],['units','Launched'],['unsold','Unsold'],['takeup','% sold'],['momentum','Resale 1yr']];
