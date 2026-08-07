@@ -994,6 +994,9 @@ function renderProjects(){
   const allD=[...new Set(P.rows.map(r=>r.district).filter(Boolean))];
   // recognisable area name + Balanced attractiveness per district (shared with the choropleth map)
   const {dnm,dsc,dnfo,shortNm,t}=_districtMeta();
+  // area name for the District column — resale-file name, DAREA fallback for a district the resale file
+  // does not rank (D6 carries one CBD project but no districts row)
+  const _dar=d=>dnm[d]||DAREA[d]||'';
   allD.sort((a,b)=>(dsc[b]||0)-(dsc[a]||0)||(+a.slice(1))-(+b.slice(1)));  // most attractive first
   $('p-districts').innerHTML=allD.filter(d=>dnm[d]).map(d=>{const s=dsc[d], act=_pdists.has(d);  /* named/ranked districts only — drop thin orphans (e.g. D6, a single CBD project too small to rank) */
     const u=t(s), st=(!act&&u!=null)?` style="background:rgba(${_attrRGB(u)},0.42);border-color:rgba(${_attrRGB(u)},0.66)"`:'';
@@ -1027,7 +1030,7 @@ function renderProjects(){
   rows=rows.slice().sort((a,b)=>{const ka=_pkey(a),kb=_pkey(b);return _pd*((typeof ka==='string')?ka.localeCompare(kb):(ka-kb));});
   const cap=_pall?rows.length:40, total=rows.length, shown=rows.slice(0,cap);
   const hasMrt=(D.market.projects||{}).mrt_ok;
-  const cols=[['project','Project'],['score','Score'],['district','Dist'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover 1y']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
+  const cols=[['project','Project'],['score','Score'],['district','District'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover 1y']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
   const numk=['median_psf','momentum','vol_12m','lease','price','size','score'];
   const TIT={score:'Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across all projects',vol_12m:'Resale transactions in the last 12 months — the liquidity proxy used in the Score (log-scaled so large developments do not dominate)',momentum:'Change in the resale median $psf over the last 12 months — shown for context, not part of the Score'};
   const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}"${TIT[k]?` title="${TIT[k]}"`:''}>${l}${_psort===k?(_pasc?' ▴':' ▾'):''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
@@ -1035,7 +1038,7 @@ function renderProjects(){
     leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td>`+
       `<td class="num" style="background:rgba(26,135,84,${((r.score||0)/100*0.22).toFixed(3)})" title="Score ${r.score!=null?r.score:'—'} = mean of four percentile ranks vs all projects (0 = lowest, 100 = highest):&#10;Value — cheaper vs area: ${r._sc?r._sc[0]:'—'}&#10;Liquidity — resale turnover: ${r._sc?r._sc[1]:'—'}&#10;Remaining lease: ${r._sc?r._sc[2]:'—'}&#10;MRT proximity: ${r._sc?r._sc[3]:'—'}"><b>${r.score!=null?r.score:'—'}</b></td>`+
-      `<td class="mono">${r.district||'—'}</td>`+
+      `<td><span class="mono">${r.district||'—'}</span>${_dar(r.district)?` <span style="color:var(--t3-text);font-size:12px">${_dar(r.district)}</span>`:''}</td>`+
       `<td class="num">${r.price?sgdk(r.price):'—'}</td>`+
       `<td class="num" title="${r.size_r?'typical '+fmt0(r.size_r[0])+'–'+fmt0(r.size_r[1])+' sqft':''}">${r.size?fmt0(r.size)+' sf':'—'}</td>`+
       `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
