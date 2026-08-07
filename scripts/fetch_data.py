@@ -668,9 +668,38 @@ def ura_new_launches():
     except Exception as e:
         return {"error": repr(e)}
 
+def _has_data(v):
+    """True only if a feed actually carries content.
+
+    A key-gated feed whose upstream returned nothing does not raise — it produces a well-formed
+    but empty shell such as {"n": 0, "rows": []} or {"_source": ...}. Those must be treated as
+    failures, not as data, or they overwrite good history. This happened on 7 Aug 2026: every
+    URA feed came back empty, the no-auth feeds succeeded so the all-failed guard never fired,
+    and the empty result was committed and published.
+    """
+    if v is None:
+        return False
+    if isinstance(v, dict):
+        if not v or set(v) <= {"_source", "asof", "source"}:
+            return False
+        if v.get("n") == 0:
+            return False
+        if isinstance(v.get("rows"), list) and not v["rows"]:
+            return False
+        return True
+    if isinstance(v, (list, tuple)):
+        return bool(v)
+    return True
+
 def main():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     live = {"_meta": {"fetched": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "errors": {}}}
+    prev = {}
+    if OUT.exists():
+        try:
+            prev = json.loads(OUT.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"  note: could not read existing {OUT.name} ({e!r}) - no carry-forward available")
     feeds = {"ura_ppi": ura_ppi, "hdb_rpi": hdb_rpi, "locality": ura_locality,
              "hdb_resale": hdb_resale, "hdb_town": hdb_town, "gls": gls,
              "segments_official": ura_transactions, "districts": ura_districts,
@@ -687,12 +716,31 @@ def main():
         except Exception as e:
             live["_meta"]["errors"][name] = repr(e)
             print(f"  FAIL {name}: {e!r}")
-    fetched_any = any(name in live for name in feeds)
+    fetched_any = any(_has_data(live.get(name)) for name in feeds)
     if not fetched_any:
         # Every feed failed: keep the previous live.json rather than overwriting it
         # with an empty shell, and fail the run so CI surfaces it.
         print("::error::all live feeds failed - keeping the previous data/live.json")
         sys.exit(1)
+
+    # Carry forward any feed that held data before but is empty or absent now. Without this a
+    # single upstream outage (or an expired URA_ACCESS_KEY) silently destroys months of history,
+    # because an empty-but-well-formed response is not an exception.
+    carried = []
+    for name in feeds:
+        if _has_data(live.get(name)):
+            continue
+        if _has_data(prev.get(name)):
+            live[name] = prev[name]
+            carried.append(name)
+    if carried:
+        live["_meta"]["carried_forward"] = {
+            "from": prev.get("_meta", {}).get("fetched"), "feeds": sorted(carried),
+            "note": "these feeds returned no data this run; the previous values were preserved"}
+        for name in carried:
+            print(f"::error::live feed returned NO DATA: {name} - carried forward from "
+                  f"{prev.get('_meta', {}).get('fetched')} (data preserved, but it is now stale)")
+
     for name in live["_meta"]["errors"]:
         print(f"::warning::live feed failed: {name} - curated baseline values will stand for it")
     OUT.write_text(json.dumps(live, ensure_ascii=False, indent=1), encoding="utf-8")

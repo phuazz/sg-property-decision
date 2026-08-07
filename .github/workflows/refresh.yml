@@ -44,3 +44,19 @@ jobs:
             git commit -m "Refresh live data ($(date -u +%Y-%m-%d))"
             git push
           fi
+
+      # Runs AFTER the commit on purpose: carried-forward data is correct and worth keeping,
+      # but a feed going dark must still turn the run red so it is not missed. An empty-but-
+      # well-formed upstream response is not an exception, so nothing else here would catch it.
+      - name: Fail if any feed went stale
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          meta = json.loads(pathlib.Path("data/live.json").read_text(encoding="utf-8"))["_meta"]
+          cf = meta.get("carried_forward")
+          if cf:
+              print(f"::error::stale feeds carried forward from {cf['from']}: {', '.join(cf['feeds'])}")
+              print("Check whether URA_ACCESS_KEY has expired, or the URA data service changed.")
+              sys.exit(1)
+          print("All feeds fresh.")
+          PY
