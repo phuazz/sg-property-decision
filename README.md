@@ -94,11 +94,15 @@ sg-property-decision/
 │   ├── rules.json         # regulatory + loan-engine constants (sourced, dated)
 │   ├── market.json        # curated baseline: indices, segment $psf/yields, quantum, GLS, EC policy, example
 │   └── live.json          # BUILT by fetch_data.py — data.gov.sg + URA GLS overlay (gitignored? no: committed by CI)
+├── engine/engine.js       # loan engine, extracted; kept bit-identical to the copy in template.html
 ├── scripts/
 │   ├── fetch_data.py      # pull live public feeds → data/live.json
-│   └── pipeline.py        # merge live over baseline, inline into template.html → docs/index.html
+│   ├── pipeline.py        # merge live over baseline, inline into template.html → docs/index.html
+│   ├── test_engine_parity.js   # engine/engine.js == the engine inlined in template.html
+│   └── test_lease_labels.js    # lease labels, tenure buckets, sort order, and the live rows
 ├── .github/workflows/
-│   └── refresh.yml        # weekly: fetch_data + pipeline, commit the rebuilt page
+│   ├── ci.yml             # every push/PR: both tests + the build-drift check
+│   └── refresh.yml        # weekly: tests, fetch_data + pipeline, commit the rebuilt page
 ├── docs/index.html        # BUILT — deployable GitHub Pages output (data inlined)
 └── README.md
 ```
@@ -106,6 +110,27 @@ sg-property-decision/
 Refresh + build: `python scripts/fetch_data.py && python scripts/pipeline.py`.
 Build only (uses last `live.json`): `python scripts/pipeline.py`.
 Local dev: `npx serve .` (source, fetch-fallback to the curated baseline) or `npx serve docs` (built).
+
+### Tests
+
+Plain Node, no dependencies, both finish in seconds. Each slices its subject out of `template.html`
+at run time rather than duplicating it, so neither can drift away from what the page actually runs.
+
+```
+node scripts/test_engine_parity.js    # engine parity, ~1.04m cases across the full input grid
+node scripts/test_lease_labels.js     # lease labels + tenure buckets, and every live project row
+```
+
+`test_engine_parity.js` asserts `engine/engine.js` is bit-identical to the engine still inlined in
+`template.html`, so the extraction stays provably a no-op. `test_lease_labels.js` pins both sides of
+every label cut (a 999-year lease is not a 9,999-year one — ROXY SQUARE has 9,968 years left), asserts
+the tenure filter can never contradict the Lease column, and fails if a refresh brings in a lease the
+label rules cannot name.
+
+**Both run on every push and PR** (`ci.yml`), alongside a check that `docs/index.html` still matches a
+rebuild — so a `template.html` edit must carry its rebuild in the same commit. The weekly refresh runs
+them too: engine parity before the fetch, lease labels after it and *before* the commit, so wrong data
+never reaches the live page (stale-but-correct data still does, by design).
 
 ## IP firewall
 
@@ -160,4 +185,12 @@ with the table scrolling inside its own container, no page-level horizontal scro
 11px. The card was prompted by a live error caught in a related brief — a national supply figure had
 been applied to a single district without checking that district, which reversed the conclusion.
 
-_Last updated: 2026-08-06._
+**Test + CI guard layer (2026-08-08).** The weekly refresh commits and pushes to a live page with
+nobody watching, so it now runs the tests before it publishes rather than beside it. The same two
+tests plus a build-drift check run on every push and PR. Guards were verified by making them fail,
+not just by watching them pass: injecting a raw tenure string and a negative remaining term into two
+live rows fails the run with both projects named, and an unrebuilt `template.html` edit fails the
+drift check. Prompted by a real defect the tests now pin — ROXY SQUARE, a 9,999-year lease, was
+labelled `999-yr` because every span above 200 years collapsed to one label.
+
+_Last updated: 2026-08-08._
