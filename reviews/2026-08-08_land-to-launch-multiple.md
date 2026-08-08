@@ -9,6 +9,25 @@
   `data/market.json` → `gls.land_to_launch`
 - Prompted by a correction: the tool had been publishing a stale rule of thumb.
 
+## Correction, 2026-08-08 (same day, after publication)
+
+**The multiple was published with more precision than the data supports.** The launch side of
+every pair is URA's `medianPrice` for a *single reference month* (0626), and across all eight
+pairs that month carries **24 transactions in total** — six down to one apiece, and one pair with
+none. Recomputing the identical method on the previous month's snapshot (0526) gives a raw median
+of **2.46×**, not 2.31×, and a deflated median of **2.27×**, not 2.11×.
+
+What survives unchanged: **no pair falls inside the old 1.75–2.05 band on either month's basis**,
+raw. The correction to the stale rule is robust and the direction is not in doubt.
+
+What was overstated: the third significant figure, and the strength of the deflated claim. On the
+published June basis **four of the eight deflated pairs sit inside the old band** (three on the
+May basis), and the deflated median clears the band's top by only 3%. "The old rule was too low
+even before the market moved" holds on the median and should not be read as holding pair by pair.
+
+See *Stability of the launch side* below. The article that cites this record carries the same
+correction.
+
 ## Verdict
 
 **The published rule was materially too low, and it was wrong in the table as well as in the
@@ -85,12 +104,52 @@ Median 2.11×. A flat −6.5% haircut on the raw median (the two-year PPI move) 
 is the wrong number: the older awards saw far more drift than the recent ones, and 8@BT alone
 saw +16.3%.
 
+## Stability of the launch side
+
+The month-to-month movement, from the two feed snapshots either side of the run:
+
+| Project | Units sold in Jun | May $psf | Jun $psf | May × | Jun × | Swing |
+|---|---|---|---|---|---|---|
+| Upperhouse at Orchard Boulevard | 5 | 3,439 | 3,437 | 2.13× | 2.13× | −0.00 |
+| Nava Grove | 0 | 2,770 | 2,686 | 2.26× | 2.20× | −0.07 |
+| 8@BT | 1 | 2,813 | 3,017 | 2.09× | 2.25× | +0.15 |
+| Norwood Grand | 3 | 2,072 | 2,072 | 2.29× | 2.29× | +0.00 |
+| Promenade Peak | 4 | 3,438 | 3,037 | 2.64× | 2.33× | **−0.31** |
+| River Green | 1 | 3,482 | 3,111 | 2.63× | 2.35× | **−0.28** |
+| The Sen | 6 | 2,410 | 2,341 | 2.87× | 2.78× | −0.08 |
+| Zyon Grand | 4 | 3,361 | 3,400 | 2.80× | 2.83× | +0.03 |
+
+Raw median 2.46× → 2.31×; range 2.09×–2.87× → 2.13×–2.83×. Deflated median 2.27× → 2.11×.
+
+Two pairs move about 0.3× in a single month on one and four transactions. The endpoints and the
+median are therefore month-dependent at the second decimal, and the caveat "one project entering
+or leaving will move the endpoints" understates it: **one project selling four units** moves them.
+
+The right way to state the finding is as a range with a stated basis — "on 2026-06 data, roughly
+2.1× to 2.9×, median in the low-to-mid 2s" — not as 2.31×.
+
+### Open item: what `medianPrice` actually measures
+
+This record and the dashboard both label the launch side an **asking price**. That may be wrong.
+URA publishes `medianPrice` inside `PMI_Resi_Developer_Sales`, a transactions dataset, alongside
+`soldToDate` and `unitsAvail`, which suggests it is the median of units *sold* in the reference
+month rather than an asking price for available stock. Against that, Nava Grove's figure moved
+from 2,770 to 2,686 while its `soldToDate` did not change at all, which no reading explains
+cleanly and may indicate an upstream revision.
+
+Neither label is safe to rely on until it is checked against URA's own data dictionary. It does
+not change the multiple, but it changes what the multiple *means* — a transacted median is
+stronger evidence than an asking price, and the caveat below currently claims the weaker one
+without having established it.
+
 ## What the multiple is not
 
 All four of these are stated on the page, because each is a way to misread the figure.
 
-1. **Not a launch-day price.** It uses each project's *current* median asking price. Developers
-   raise prices as a project sells through, so the multiple drifts up with take-up.
+1. **Not a launch-day price, and not a settled one.** It uses each project's median for the most
+   recent reference month — a handful of units, sometimes one. Developers raise prices as a
+   project sells through, so the multiple drifts up with take-up, and it also moves with which
+   units happened to transact that month.
 2. **Not a developer margin.** It carries the market's own move over 24 to 44 months. The
    deflated column is the closer proxy for what construction, financing and margin cost.
 3. **State land only.** A collective sale prices differently, and 42 of the 50 selling projects
@@ -172,13 +231,16 @@ return — but it removes land cost from that study's untested list.
 
 ## Caveats
 
-- **n = 8.** Too small to trim, so the full observed range is published rather than an
-  interquartile band. One project entering or leaving will move the endpoints visibly.
+- **n = 8, and each pair is itself thin.** Too small to trim, so the full observed range is
+  published rather than an interquartile band. One project entering or leaving moves the endpoints
+  visibly — and so does one project selling four units, since the launch side is a single month's
+  median. See *Stability of the launch side*.
 - The SPV name match is a **derived inference**, not a published URA link. Strong, and auditable
   through the emitted pairs, but not authoritative.
 - Project-level $psf throughout; no unit identity, so this is never a realised per-buyer figure.
   Same limitation as the 2026-08-01 study.
-- Asking price, not transacted price, on the launch side.
+- Asking price, not transacted price, on the launch side — **unverified**, and possibly the
+  reverse. See the open item under *Stability of the launch side*.
 - One regime: awards spanning 2022–2024 sit across a single rate path and the 2023 ABSD step.
 - The deflation uses the all-residential PPI, not a segment index, so a CCR site is deflated by a
   national number.
