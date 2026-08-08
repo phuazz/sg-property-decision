@@ -11,11 +11,14 @@ No-auth feeds (refresh automatically, incl. in CI):
 Key-gated feeds (skip cleanly unless the secret is present):
   - URA private transactions -> official segment median condo $psf      env URA_ACCESS_KEY
 
+Derived (needs two feeds, so it runs after the fetch loop):
+  - land bid -> launch price multiple                                   GLS awards x developer sales
+
 Every feed is wrapped so one failure does not abort the others; failures are
 recorded in live.json._meta.errors so a partial refresh is transparent.
 Usage: python scripts/fetch_data.py
 """
-import io, os, re, sys, json, time, collections, statistics, datetime, pathlib, urllib.parse
+import io, os, re, sys, html, json, time, collections, statistics, datetime, pathlib, urllib.parse
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -73,8 +76,10 @@ def region_of(pa):
     if p in RCR: return "RCR"
     return "OCR"
 
+PPI_RID = "d_97f8a2e995022d311c6c68cfda6d034c"   # URA Private Residential PPI, quarterly
+
 def ura_ppi():
-    recs = dg_all("d_97f8a2e995022d311c6c68cfda6d034c")
+    recs = dg_all(PPI_RID)
     allr = sorted([r for r in recs if r["property_type"] == "All Residential"], key=lambda r: qkey(r["quarter"]))
     path = [(r["quarter"], float(r["index"])) for r in allr][-9:]
     return {"label": "URA Private Residential PPI (All Residential)", "base": "2009-Q1=100",
@@ -166,24 +171,37 @@ def hdb_town():
                 r["lease_commence_date"] for r in recs).items())),
             "source": f"data.gov.sg {HDB_RESALE_RID[:10]} (HDB resale register), town={HDB_TOWN}"}
 
+_GLS_FRAME = {}
+
+def _gls_frame():
+    """Residential awards from the URA Past-Sale-Sites workbook, downloaded once per run.
+
+    Two feeds need it (gls and land_to_launch) and the workbook is a ~1MB download off a
+    scraped href, so it is memoised rather than fetched twice.
+    """
+    if "df" not in _GLS_FRAME:
+        page = GET("https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites").text
+        href = re.findall(r'href="([^"]+Vacant Sites[^"]*\.xlsx[^"]*)"', page)
+        if not href:
+            raise RuntimeError("GLS xlsx href not found on Past-Sale-Sites page")
+        import pandas as pd
+        xb = GET(href[0].replace(" ", "%20"), timeout=90).content
+        df = pd.read_excel(io.BytesIO(xb), sheet_name=0, header=0)
+        df.columns = [str(c).split("\n")[0].strip() for c in df.columns]
+        df = df.rename(columns={"Successful Tender Price": "price",
+                                "$psm per GFA or $psm per GPR": "psm", "No. of Bids": "bids",
+                                "Date of Award": "award", "Name of Successful Tenderer": "tenderer",
+                                "Planning Area": "pa", "Type of Development Allowed": "use"})
+        df = df[df["use"].astype(str).str.contains("Residential", case=False, na=False)].copy()
+        df["award"] = pd.to_datetime(df["award"], errors="coerce")
+        df = df.dropna(subset=["award", "psm"])
+        df["year"] = df["award"].dt.year
+        df["psf_ppr"] = (df["psm"].astype(float) / 10.7639).round(0)
+        _GLS_FRAME["df"] = df
+    return _GLS_FRAME["df"]
+
 def gls():
-    page = GET("https://www.ura.gov.sg/Corporate/Land-Sales/Past-Sale-Sites").text
-    href = re.findall(r'href="([^"]+Vacant Sites[^"]*\.xlsx[^"]*)"', page)
-    if not href:
-        raise RuntimeError("GLS xlsx href not found on Past-Sale-Sites page")
-    import pandas as pd
-    xb = GET(href[0].replace(" ", "%20"), timeout=90).content
-    df = pd.read_excel(io.BytesIO(xb), sheet_name=0, header=0)
-    df.columns = [str(c).split("\n")[0].strip() for c in df.columns]
-    df = df.rename(columns={"Successful Tender Price": "price",
-                            "$psm per GFA or $psm per GPR": "psm", "No. of Bids": "bids",
-                            "Date of Award": "award", "Name of Successful Tenderer": "tenderer",
-                            "Planning Area": "pa", "Type of Development Allowed": "use"})
-    df = df[df["use"].astype(str).str.contains("Residential", case=False, na=False)].copy()
-    df["award"] = pd.to_datetime(df["award"], errors="coerce")
-    df = df.dropna(subset=["award", "psm"])
-    df["year"] = df["award"].dt.year
-    df["psf_ppr"] = (df["psm"].astype(float) / 10.7639).round(0)
+    df = _gls_frame()
     cur_yr = int(df["year"].max())
     avg_cur = df[df["year"] == cur_yr]["psf_ppr"].mean()
     avg_prev = df[df["year"] == cur_yr - 1]["psf_ppr"].mean()
@@ -694,6 +712,126 @@ def ura_new_launches():
     except Exception as e:
         return {"error": repr(e)}
 
+# ---- land bid -> launch price multiple ------------------------------------------------
+# Corporate-form tokens carry no identity, so they are stripped before entity names are compared.
+_ENTITY_NOISE = {"PTE", "LTD", "LIMITED", "PRIVATE", "AND", "GROUP", "HOLDINGS", "NO"}
+LTL_WINDOW_YEARS = 6      # a site awarded longer ago than this is not the plot today's launch sits on
+LTL_MIN_PAIRS = 5         # below this the median is one project's idiosyncrasy, not a market rate
+LTL_SANE_BAND = (1.5, 3.5)  # a median outside this says the match broke, not that the market moved
+
+def _entities(name):
+    """Entity token-tuples in a tenderer/developer field, which may name a JV of several companies."""
+    out = []
+    for part in re.split(r"\band\b|/|&", html.unescape(str(name or "")), flags=re.I):
+        toks = tuple(t for t in re.sub(r"[^A-Za-z0-9 ]", " ", part).upper().split()
+                     if t and t not in _ENTITY_NOISE)
+        if toks:
+            out.append(toks)
+    return out
+
+def land_to_launch(launches):
+    """Multiple of the winning land bid at which the resulting project actually sells.
+
+    Pairs each currently-selling project (URA developer sales) with the GLS site its developer
+    won, matching on the registered entity name. Singapore developers tender through a
+    single-purpose vehicle named for the plot, so an exact entity match is strong evidence the
+    project sits on that site - but URA does not publish the link, so this stays a derived
+    heuristic and every pair is emitted for audit.
+
+    Guards, because this runs unattended and publishes a number:
+      - only awards inside LTL_WINDOW_YEARS. Without the window a perennial corporate entity
+        (Tripartite Developers, not an SPV) matched a 2010 award at $321 psf ppr and produced a
+        spurious 6.4x pair.
+      - any entity that won more than one site in the window is dropped: it cannot tell us which
+        plot the project sits on.
+      - the result is withheld unless there are LTL_MIN_PAIRS pairs and the median lands inside
+        LTL_SANE_BAND, so a broken join degrades to the curated baseline rather than to a
+        confident wrong number on the page.
+    """
+    rows = (launches or {}).get("rows") or []
+    if not rows:
+        return None
+    df = _gls_frame()
+    cutoff = datetime.datetime.now() - datetime.timedelta(days=365 * LTL_WINDOW_YEARS)
+    win = df[df["award"] >= cutoff]
+
+    site_by_ent = collections.defaultdict(list)
+    for _, r in win.iterrows():
+        for e in _entities(r["tenderer"]):
+            site_by_ent[e].append(r)
+    # an entity holding several sites cannot identify a plot -> unusable, not a judgement call
+    ambiguous = {e for e, v in site_by_ent.items() if len({str(x["Location"]) for x in v}) > 1}
+
+    pairs = {}
+    for p in rows:
+        if not p.get("psf"):
+            continue
+        hits = {}
+        for e in _entities(p.get("developer")):
+            if e in ambiguous:
+                continue
+            for r in site_by_ent.get(e, []):
+                hits[str(r["Location"])] = r
+        if len(hits) != 1:      # no match, or a project we cannot pin to one plot
+            continue
+        site, r = next(iter(hits.items()))
+        pairs[p["project"]] = {
+            "project": p["project"], "site": site, "region": p.get("region"),
+            "award": r["award"].strftime("%Y-%m-%d"), "land_psf_ppr": int(r["psf_ppr"]),
+            "launch_psf": p["psf"], "takeup": p.get("takeup"),
+            "multiple": round(p["psf"] / float(r["psf_ppr"]), 2)}
+    allp = sorted(pairs.values(), key=lambda x: x["multiple"])
+    # A pair outside the sane band is a broken join, not a market observation, and it would widen
+    # the published range far more than it moves the median - so drop it, but say so rather than
+    # truncating silently. (A 40-year window readmits the 6.4x Tripartite/KASSIA pair this way.)
+    pairs = [x for x in allp if LTL_SANE_BAND[0] <= x["multiple"] <= LTL_SANE_BAND[1]]
+    dropped = [x for x in allp if x not in pairs]
+    mult = [x["multiple"] for x in pairs]
+    if len(mult) < LTL_MIN_PAIRS:
+        return {"ok": False, "reason": f"only {len(mult)} land/launch pairs matched (need {LTL_MIN_PAIRS})"}
+    med = round(statistics.median(mult), 2)
+    if not LTL_SANE_BAND[0] <= med <= LTL_SANE_BAND[1]:
+        return {"ok": False, "reason": f"median multiple {med} outside the sane band {LTL_SANE_BAND}"}
+
+    # Restate each launch price in the PPI level of its own award quarter. This strips out however
+    # much the whole market moved while the site was being built, which the raw multiple embeds.
+    defl = None
+    try:
+        ppi = {r["quarter"]: float(r["index"]) for r in dg_all(PPI_RID)
+               if r["property_type"] == "All Residential"}
+        cur_q = max(ppi, key=qkey)
+        d = []
+        for x in pairs:
+            y, mo = int(x["award"][:4]), int(x["award"][5:7])   # ISO date string: months are 1-indexed
+            base = ppi.get(f"{y}-Q{(mo - 1) // 3 + 1}")
+            if base:
+                d.append(round(x["multiple"] * base / ppi[cur_q], 2))
+        if len(d) == len(pairs):
+            d.sort()
+            defl = {"range": [d[0], d[-1]], "median": round(statistics.median(d), 2),
+                    "vs_q": cur_q, "index": "URA PPI (All Residential)"}
+    except Exception as e:      # the caveat is nice to have; it must not take the headline down
+        defl = {"error": repr(e)}
+
+    # How long the sites have had to accumulate market drift. Via relativedelta (ships with pandas)
+    # rather than day arithmetic, and note datetime months are 1-indexed.
+    from dateutil.relativedelta import relativedelta
+    today = datetime.date.today()
+    ages = sorted((lambda r: r.years * 12 + r.months)(
+        relativedelta(today, datetime.date.fromisoformat(x["award"]))) for x in pairs)
+
+    return {"ok": True, "factor_range": [mult[0], mult[-1]], "factor_median": med,
+            "n": len(pairs), "award_span": [min(x["award"] for x in pairs),
+                                            max(x["award"] for x in pairs)],
+            "award_age_months": [ages[0], ages[-1]],
+            "launch_asof": launches.get("asof"), "deflated": defl, "pairs": pairs,
+            "dropped_outliers": [{k: x[k] for k in ("project", "site", "award", "multiple")}
+                                 for x in dropped],
+            "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity",
+            "note": ("Current median asking $psf of a selling project over the $psf ppr its developer paid "
+                     "for the site. State land only. Not a developer margin - it also carries whatever the "
+                     "market did between award and today.")}
+
 def _has_data(v):
     """True only if a feed actually carries content.
 
@@ -742,6 +880,25 @@ def main():
         except Exception as e:
             live["_meta"]["errors"][name] = repr(e)
             print(f"  FAIL {name}: {e!r}")
+    # Derived feed: needs both the GLS workbook and developer sales, so it runs after the loop.
+    # It is deliberately not in `feeds` - it fetches nothing of its own, and an all-feeds-failed
+    # run must not be rescued by a value computed from the two failures.
+    nl = live.get("new_launches") if _has_data(live.get("new_launches")) else prev.get("new_launches")
+    try:
+        v = land_to_launch(nl)
+        if v is None:
+            print("  skip land_to_launch (no developer-sales data)")
+        elif v.get("ok"):
+            live["land_to_launch"] = v
+            print(f"  ok   land_to_launch (n={v['n']}, median {v['factor_median']}x)")
+        else:
+            # withheld by a guard: leave the key unset so carry-forward keeps the last good value
+            live["_meta"]["errors"]["land_to_launch"] = v["reason"]
+            print(f"::warning::land_to_launch withheld: {v['reason']}")
+    except Exception as e:
+        live["_meta"]["errors"]["land_to_launch"] = repr(e)
+        print(f"  FAIL land_to_launch: {e!r}")
+
     fetched_any = any(_has_data(live.get(name)) for name in feeds)
     if not fetched_any:
         # Every feed failed: keep the previous live.json rather than overwriting it
@@ -753,7 +910,7 @@ def main():
     # single upstream outage (or an expired URA_ACCESS_KEY) silently destroys months of history,
     # because an empty-but-well-formed response is not an exception.
     carried = []
-    for name in feeds:
+    for name in list(feeds) + ["land_to_launch"]:
         if _has_data(live.get(name)):
             continue
         if _has_data(prev.get(name)):

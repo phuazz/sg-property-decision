@@ -28,7 +28,7 @@ def merge_live(market, live):
     """Overlay live feeds onto the curated market baseline (canonical fields)."""
     if not live:
         return market
-    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official", "districts", "projects", "new_launches")
+    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official", "districts", "projects", "new_launches", "land_to_launch")
     ok = [f for f in feeds if live.get(f)]
     market["live"] = {"present": bool(ok), "fetched": live.get("_meta", {}).get("fetched"),
                       "ok": ok, "failed": sorted(live.get("_meta", {}).get("errors", {})),
@@ -66,6 +66,16 @@ def merge_live(market, live):
         market["gls"]["yoy"] = g["yoy"]
         market["gls"]["asof"] = g["asof"] + " (live)"
         market["gls"]["source"] = g["source"]
+    # land bid -> launch multiple (derived weekly; the curated baseline stands if it was withheld)
+    ltl = live.get("land_to_launch")
+    if ltl and ltl.get("ok"):
+        market["gls"]["land_to_launch"].update({
+            "factor_range": ltl["factor_range"], "factor_median": ltl["factor_median"],
+            "n": ltl["n"], "award_span": ltl["award_span"],
+            "award_age_months": ltl["award_age_months"], "deflated": ltl["deflated"],
+            "asof": live.get("_meta", {}).get("fetched", "")[:10] or None,
+            "flag": f"derived from n={ltl['n']} public pairs (live)", "source": ltl["source"],
+            "pairs": ltl["pairs"]})
     # HDB resale live medians
     if live.get("hdb_resale"):
         market["hdb_resale"] = live["hdb_resale"]

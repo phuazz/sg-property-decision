@@ -95,8 +95,26 @@
     "yoy": 0.127,
     "trend_note": "Land rates rising year on year on 3-6 disciplined bids per tender — participation steady, margins tight. Land cost is the sticky floor while resale prices plateau.",
     "land_to_launch": {
-      "note": "Rule-of-thumb forward launch price from a winning land bid, derived from 2025-26 public land-vs-launch pairs. Launch psf ~= land psf ppr x factor (covers construction, financing, margin). Flagged heuristic, not a valuation.",
-      "factor_range": [1.75, 2.05]
+      "note": "What a winning land bid has actually turned into. Each currently-selling project is paired with the state-land site its developer won, and the multiple is the project's CURRENT median new-sale $psf over the $psf ppr paid for the plot. It is not a developer margin: the sites were awarded 24-44 months ago, so the multiple also carries however much the whole market moved while the project was being built. Restating each launch price at the URA PPI level of its own award quarter pulls the band down to the 'deflated' figures. State land only - a collective sale prices differently. It says nothing about demand: the two highest multiples here are 90% and 38% sold. Derived heuristic, not a valuation.",
+      "factor_range": [2.13, 2.83],
+      "factor_median": 2.31,
+      "n": 8,
+      "award_span": ["2022-11-15", "2024-08-07"],
+      "award_age_months": [24, 44],
+      "deflated": { "range": [1.93, 2.66], "median": 2.11, "vs_q": "2026-Q2", "index": "URA PPI (All Residential)" },
+      "pairs": [
+        { "project": "UPPERHOUSE AT ORCHARD BOULEVARD", "site": "Orchard Boulevard", "region": "CCR", "award": "2024-02-21", "land_psf_ppr": 1617, "launch_psf": 3437, "takeup": 0.814, "multiple": 2.13 },
+        { "project": "NAVA GROVE", "site": "Pine Grove (Parcel B)", "region": "RCR", "award": "2023-11-15", "land_psf_ppr": 1223, "launch_psf": 2686, "takeup": 0.996, "multiple": 2.2 },
+        { "project": "8@BT", "site": "Bukit Timah Link", "region": "RCR", "award": "2022-11-15", "land_psf_ppr": 1343, "launch_psf": 3017, "takeup": 0.703, "multiple": 2.25 },
+        { "project": "NORWOOD GRAND", "site": "Champions Way", "region": "OCR", "award": "2023-09-18", "land_psf_ppr": 904, "launch_psf": 2072, "takeup": 0.905, "multiple": 2.29 },
+        { "project": "PROMENADE PEAK", "site": "Zion Road (Parcel B)", "region": "RCR", "award": "2024-08-07", "land_psf_ppr": 1304, "launch_psf": 3037, "takeup": 0.713, "multiple": 2.33 },
+        { "project": "RIVER GREEN", "site": "River Valley Green (Parcel A)", "region": "CCR", "award": "2024-06-27", "land_psf_ppr": 1325, "launch_psf": 3111, "takeup": 0.939, "multiple": 2.35 },
+        { "project": "THE SEN", "site": "De Souza Avenue", "region": "RCR", "award": "2024-08-07", "land_psf_ppr": 841, "launch_psf": 2341, "takeup": 0.383, "multiple": 2.78 },
+        { "project": "ZYON GRAND", "site": "Zion Road (Parcel A)", "region": "RCR", "award": "2024-04-16", "land_psf_ppr": 1202, "launch_psf": 3400, "takeup": 0.898, "multiple": 2.83 }
+      ],
+      "asof": "2026-08-08",
+      "flag": "derived from n=8 public pairs; refreshed weekly by fetch_data.land_to_launch",
+      "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity name"
     }
   },
 

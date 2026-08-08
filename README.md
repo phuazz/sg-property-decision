@@ -30,7 +30,7 @@ seller — but any age, income, budget, property type and buyer profile can be e
 4. **Where — segment & land bids** — CCR/RCR/OCR/landed/HDB on price ($psf), gross yield, 2026 momentum,
    and **recent GLS land bids** ($psf per plot ratio + bidder count). Land bids are the forward input the
    brief asked for: a competitive winning bid sets a floor under nearby future launch and resale prices
-   (`launch psf ≈ land psf ppr × ~1.8–2.0`). The $1.2–1.5m brief is mapped to the segments/districts it
+   (`launch psf ≈ land psf ppr × 2.1–2.8, median 2.3` — derived weekly, see below). The $1.2–1.5m brief is mapped to the segments/districts it
    actually fits. **Unsold new-launch inventory by district** (added 2026-08-06) aggregates the URA
    developer-sales feed up to district level — projects, units launched, units unsold, cumulative % sold
    and the district's resale momentum beside it. It exists because a national "supply glut" headline says
@@ -79,6 +79,7 @@ flips the pill to `LIVE · stale (Nd)`.
 | GLS tender awards (land $psf ppr + bids) | URA Past-Sale-Sites `.xlsx` | Scrape page for href → download | **live** |
 | URA private transactions → official segment $psf | URA Data Service `PMI_Resi_Transaction` | Free daily token | **gated** on `URA_ACCESS_KEY` (skips cleanly) |
 | 3M compounded SORA / package rates | MAS API portal / aggregators | Key / no feed | **curated** (SORA one line in `rules.json`) |
+| Land bid → launch price multiple | the two rows above, joined | Derived in `fetch_data.land_to_launch` | **live** where the URA key is set, else the last good value |
 
 To light up official segment $psf: register for a free URA Data Service AccessKey
 (`https://eservice.ura.gov.sg/maps/api/reg.html`) and set it as the `URA_ACCESS_KEY` env var / repo
@@ -192,5 +193,29 @@ not just by watching them pass: injecting a raw tenure string and a negative rem
 live rows fails the run with both projects named, and an unrebuilt `template.html` edit fails the
 drift check. Prompted by a real defect the tests now pin — ROXY SQUARE, a 9,999-year lease, was
 labelled `999-yr` because every span above 200 years collapsed to one label.
+
+**Land-bid multiple re-derived (2026-08-08).** The tool had been telling readers a winning land bid
+becomes a launch price at roughly `× 1.8–2.0`. Re-derived from public data, the real figure is
+materially higher. Pairing each currently-selling project (URA developer sales) with the state-land
+site its developer won — matched on the registered tenderer entity, which in Singapore is a
+single-purpose vehicle named for the plot — gives **eight pairs at 2.13× to 2.83×, median 2.31×**.
+Not one sits inside the old band. The stale rule was quoted in three places (the explainer, the
+"Est. launch $psf" column, and this README), so the column had been publishing low estimates for
+every site in the table, not just narrating a wrong rule.
+
+What the figure is not, all of which is now stated on the page: it uses each project's *current*
+median asking price, not its launch-day price; it is not a developer margin, because the sites were
+awarded 24–44 months ago and the multiple carries the market's own move over that period (restating
+each price at the URA PPI level of its award quarter pulls the band to 1.93×–2.66×, median 2.11×);
+all eight are state land, and a collective sale prices differently; and it predicts nothing about
+demand — the two highest multiples are 90% and 38% sold.
+
+It now recomputes weekly in `fetch_data.land_to_launch` rather than sitting in prose waiting to go
+stale again, which per the vault rule means it needs a guard layer: awards are windowed to six years,
+an entity that won more than one site in the window is dropped as unattributable, pairs outside a
+1.5–3.5× sanity band are dropped and *listed* rather than silently trimmed, and the whole result is
+withheld (leaving the last good value in place) below five pairs or on an implausible median. Each
+guard was verified by making it fail. The window is load-bearing: without it a perennial corporate
+entity rather than an SPV matched a 2010 award at $321 psf ppr and produced a spurious 6.4× pair.
 
 _Last updated: 2026-08-08._

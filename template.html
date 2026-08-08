@@ -208,6 +208,11 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .fp[open]>summary::before{transform:rotate(90deg)}
 .fp>summary::-webkit-details-marker{display:none}
 .fp-body{padding:0 16px 15px;font-size:13px;color:var(--t2);line-height:1.6}
+/* prose-only variant: caps the measure so a long explainer does not run 180 chars at desktop.
+   Not on .fp-body itself — two of these blocks hold field grids that need the full width.
+   58ch, not 80ch: ch is the "0" advance, and this font's average character is narrower, so
+   80ch measured 111 chars a line. 58ch measures ~80, which is the readable target. */
+.fp-body.prose{max-width:58ch}
 .fp.inline{border:none;background:none;margin:4px 0 0}
 .fp.inline>summary{padding:9px 0;color:var(--b-text)}
 .fp.inline .fp-body{padding:9px 0 2px}
@@ -472,7 +477,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-where">
     <h2 class="section">Where to buy — and what the land bids are telling you</h2>
     <p class="lead">Where your budget actually reaches, what each area yields, and a forward signal most buyers miss: <b>developers' winning land bids</b>. A high, competitive bid prices tomorrow's launches and sets a floor under nearby prices.</p>
-    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space — so the eventual launch price is roughly that bid × 1.8–2.0 (to cover construction, financing and margin). A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
+    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body prose">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space. <span id="ltl-explainer"></span> A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
       <div class="card" id="district-card">
         <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3-text)">live URA resale data</em></h3>
@@ -547,6 +552,12 @@ const fmt0=n=>n.toLocaleString('en-SG',{maximumFractionDigits:0});
 const sgd=n=>'S$'+fmt0(Math.round(n));
 const sgdk=n=>n>=1e6?('S$'+(n/1e6).toFixed(2)+'m'):('S$'+fmt0(Math.round(n/1000))+'k');
 const pct=(n,d=1)=>(n*100).toFixed(d)+'%';
+// "2022-11-15" -> "Nov 2022". Parsed off the ISO string rather than via Date: no timezone shift,
+// and no 0-indexed-month trap (the lookup is indexed by month-1, months being 1-based in ISO).
+const _MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monYr=iso=>{const m=/^(\d{4})-(\d{2})/.exec(iso||'');return m?_MON[+m[2]-1]+' '+m[1]:'';};
+// URA developer-sales refPeriod is "mmyy" -> "Jun 2026"
+const mmyy=s=>/^\d{4}$/.test(s||'')?_MON[+s.slice(0,2)-1]+' 20'+s.slice(2):'';
 // money inputs: display with thousands separators, read as plain numbers
 const numVal=id=>{const v=$(id).value.replace(/[^\d.]/g,'');return v?+v:0;};
 const commafy=s=>{const d=s.replace(/[^\d]/g,'');return d?(+d).toLocaleString('en-SG'):'';};
@@ -1270,11 +1281,24 @@ function renderWhere(){
   $('hdb-live').innerHTML = H ? `<div class="callout" style="margin:12px 0 4px"><b>HDB resale — ${H.asof_month} (live, ${H.n} deals so far):</b> median <span class="mono">${sgd(H.median_price)}</span> · <span class="mono">$${fmt0(H.median_psf)}</span> psf. `+
     Object.entries(H.by_type).filter(([t])=>/ROOM|EXEC/.test(t)).map(([t,v])=>`${t.replace(' ROOM','R').replace('EXECUTIVE','Exec')} ${sgdk(v.median_price)}`).join(' · ')+`</div>` : '';
 
+  // Land-bid -> launch multiple. Derived from public pairs (see fetch_data.land_to_launch), so the
+  // figures are read from the data rather than written into the copy, and refresh with the feed.
+  const L=G.land_to_launch, lx=L.factor_range[0].toFixed(1), hx=L.factor_range[1].toFixed(1),
+        mx=(L.factor_median||((L.factor_range[0]+L.factor_range[1])/2)).toFixed(1);
+  const dfl=L.deflated&&L.deflated.median?` Restating each price at the URA PPI level of its own award quarter — which strips out the market move — pulls the band to <b>${L.deflated.range[0].toFixed(1)}×–${L.deflated.range[1].toFixed(1)}×, median ${L.deflated.median.toFixed(1)}×</b>.`:'';
+  const age=L.award_age_months?`${L.award_age_months[0]}–${L.award_age_months[1]} months ago`:'years ago';
+  // the demand caveat is read off the two richest multiples, not asserted, so it cannot drift
+  const top=(L.pairs||[]).slice().sort((a,b)=>b.multiple-a.multiple).slice(0,2).filter(p=>p.takeup!=null);
+  const dmd=top.length===2?` And it says nothing about whether a project will sell: the two highest multiples in the set are ${pct(top[0].takeup,0)} and ${pct(top[1].takeup,0)} sold.`:'';
+  $('ltl-explainer').innerHTML=`Across the <b>${L.n}</b> state-land sites that can be paired with a project now selling on them, the asking price has landed at <b>${lx}×–${hx}× the land bid</b> (median <b>${mx}×</b>) — sites awarded ${monYr(L.award_span[0])}–${monYr(L.award_span[1])}, prices as at ${mmyy((D.market.new_launches||{}).asof)||monYr(L.asof)}. `+
+    `Treat that as a range, not a formula, and note what it is <i>not</i>. It uses each project's <b>current</b> median asking price, not its launch-day price — developers raise prices as a project sells through. It is <b>not a developer margin</b>: those sites were awarded ${age}, so the multiple carries however much the whole market moved while the project was being built.${dfl} All ${L.n} are state land — a collective sale prices differently.${dmd}`;
+
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
-    G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*G.land_to_launch.factor_range[0]),hi=Math.round(t.psf_ppr*G.land_to_launch.factor_range[1]);
-      return `<tr><td>${_xa(_gmap(t.site),t.site)}${t.note?`<div style="font-size:11px;color:var(--t3-text);margin-top:1px">${t.note}</div>`:''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num">$${fmt0(lo)}–${fmt0(hi)}</td></tr>`;}).join('')+`</tbody>`;
-  $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) — but the average is <b>mix-unadjusted</b>: a year with more prime sites lifts it without any like-for-like inflation, so read it with the segment column. The estimated launch price applies a ${G.land_to_launch.factor_range[0]}–${G.land_to_launch.factor_range[1]}× markup to the land bid (a flagged rule-of-thumb for construction, financing and margin), so a high, competitive bid near a location you like sets a forward floor under resale prices there. Supply cuts both ways, though: the same nearby pipeline that floors prices also competes with your unit when you sell. Segment tags are approximated from the planning area — Bukit Timah-area sites can be CCR by postal district. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
+    G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*L.factor_range[0]),hi=Math.round(t.psf_ppr*L.factor_range[1]),
+        mid=Math.round(t.psf_ppr*(L.factor_median||(L.factor_range[0]+L.factor_range[1])/2));
+      return `<tr><td>${_xa(_gmap(t.site),t.site)}${t.note?`<div style="font-size:11px;color:var(--t3-text);margin-top:1px">${t.note}</div>`:''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num"><b>~$${fmt0(mid)}</b><div style="font-size:11px;color:var(--t3-text);margin-top:1px">$${fmt0(lo)}–${fmt0(hi)}</div></td></tr>`;}).join('')+`</tbody>`;
+  $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) — but the average is <b>mix-unadjusted</b>: a year with more prime sites lifts it without any like-for-like inflation, so read it with the segment column. The estimated launch price scales the land bid by the <b>${lx}×–${hx}×</b> band (median ${mx}×) observed on ${L.n} state-land sites paired with the project now selling on them — a derived range, not a formula, and it embeds the market's move since award as well as construction cost; <b>How to read a land bid</b> above sets out what it does and does not tell you. A high, competitive bid near a location you like still sets a forward floor under resale prices there. Supply cuts both ways, though: the same nearby pipeline that floors prices also competes with your unit when you sell. Segment tags are approximated from the planning area — Bukit Timah-area sites can be CCR by postal district. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
 
   const b=D.market.brief, f=b.fit_summary;
   $('brief-map').innerHTML=`
