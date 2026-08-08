@@ -1,0 +1,34 @@
+name: CI
+
+# The refresh workflow already runs these before it publishes, but it only fires on Mondays —
+# and what these tests actually cover is template.html, which changes on commits, not on refreshes.
+# Without this, a broken loan engine or a mislabelled tenure sits on the live page for up to a week.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # No path filter on the trigger above: both tests slice their subject out of template.html at
+      # run time, so the set of files that can break them is wider than it looks and would drift out
+      # of any filter. They need no dependencies and finish in seconds — cheap enough to always run.
+      - name: Loan engine parity
+        run: node scripts/test_engine_parity.js
+
+      - name: Lease labels and tenure buckets
+        run: node scripts/test_lease_labels.js
