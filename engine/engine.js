@@ -118,7 +118,17 @@
     return lo;
   }
 
-  const API = { pmt, loanFromInstalment, bsd, computeLoan, maxPriceForCash };
+  // Outstanding principal after yearsPaid of a level-payment loan. Straight-line depreciation of
+  // the balance understates it badly in the early years, which flatters any equity projection.
+  function balanceAfter(principal, rateAnnual, years, yearsPaid) {
+    const r = rateAnnual / 12, n = Math.round(years * 12), m = Math.min(n, Math.round(yearsPaid * 12));
+    if (n <= 0) return 0;
+    if (r === 0) return Math.max(0, principal * (1 - m / n));
+    const g = Math.pow(1 + r, n), h = Math.pow(1 + r, m);
+    return Math.max(0, principal * (g - h) / (g - 1));
+  }
+
+  const API = { pmt, loanFromInstalment, bsd, computeLoan, maxPriceForCash, balanceAfter };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   root.ENGINE = API;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
