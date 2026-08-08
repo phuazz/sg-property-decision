@@ -243,7 +243,13 @@ def _sizeband(sqft):
     return 0 if sqft < 600 else 1 if sqft < 850 else 2 if sqft < 1150 else 3
 
 def _lease_left(tenure, cur_year):
-    """'Freehold' -> 'FH'; '99 yrs lease commencing from 1998' -> remaining years; else None."""
+    """'Freehold' -> 'FH'; '99 yrs lease commencing from 1998' -> remaining years; else None.
+
+    Terms far longer than 999 years are real, not parse failures: ROXY SQUARE is '9999 yrs lease
+    commencing from 1995' and so returns 9968, and one D19 record yields 999963. Both are correct
+    arithmetic on the source string. Do not clamp them here — template.html names the term from
+    the remaining span (_leaseTxt) and scripts/test_lease_labels.js pins that mapping.
+    """
     t = str(tenure or "")
     if "Freehold" in t:
         return "FH"

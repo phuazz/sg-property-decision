@@ -934,12 +934,22 @@ function renderDistricts(){
 /* ---------- feature 2: project scorecard (turnover / lease / value) ---------- */
 let _psort='score', _pasc=false, _pall=false, _pq='', _pdists=new Set();
 const _gsearch=q=>`https://www.google.com/search?q=${encodeURIComponent(q)}`;
-const _leaseNum=l=>l==='FH'?9999:(typeof l==='number'?l:-1);
-const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'?(l>200?'999-yr':l+'yr'):'—');
-/* Tenure bucket for the filter. 999-yr and 9,999-yr leases sit with freehold: they are priced and
-   financed as freehold, and the min-lease filter already treats them that way. Threshold matches
-   _leaseTxt's '999-yr' cut (>200) so the filter can never contradict the label in the Lease column —
-   the data has a clean gap here (longest true leasehold 101 years, shortest quasi-freehold 800).
+const _leaseNum=l=>l==='FH'?1e9:(typeof l==='number'?l:-1);   // FH sorts above every lease, incl. 999,999-yr
+/* Lease label. `lease` is years REMAINING, so a long lease has to be named by its original term.
+   That term is recoverable without ambiguity: no Singapore land grant predates 1819, so at most
+   ~210 years can have run, and the standard terms are far enough apart that each remaining span
+   can only have come from one of them — 200 < r ≤ 999 is a 999-year lease, 999 < r ≤ 9999 a
+   9,999-year one (ROXY SQUARE: 9,999 yrs from 1995, 9,968 left; verified against the public
+   record, not inferred). Beyond 9,999 the figure stops describing anything a buyer transacts, so
+   it stays generic rather than asserting a 999,999-year term off one odd record. Collapsing all
+   of these to '999-yr', as this did before, mislabelled the two longest leases in the file. */
+const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'
+  ?(l>9999?'999-yr+':l>999?'9999-yr':l>200?'999-yr':l+'yr'):'—');
+/* Tenure bucket for the filter. Every quasi-freehold label above sits with freehold: they are
+   priced and financed as freehold, and the min-lease filter already treats them that way. The
+   threshold matches _leaseTxt's own cut (>200), so the filter can never contradict the label in
+   the Lease column — an invariant scripts/test_lease_labels.js asserts across the whole range.
+   The data has a clean gap here (longest true leasehold 101 years, shortest quasi-freehold 800).
    Unknown tenure (null) fails both fh and lh: it is not evidence either way. */
 const _fhLike=l=>l==='FH'||(typeof l==='number'&&l>200);
 const _lhOnly=l=>typeof l==='number'&&l<=200;
@@ -1062,7 +1072,7 @@ function renderProjects(){
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
       `<td class="num"${r.vol_12m<6?' title="few resales — treat the median as indicative"':''}>${fmt0(r.vol_12m)}${r.vol_12m<6?' <span style="color:var(--a);font-size:10px">thin</span>':''}</td>`+
       (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3-text)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+
-      `<td class="num ${leaseCls}">${_leaseTxt(r.lease)}</td>`+
+      `<td class="num ${leaseCls}"${(typeof r.lease==='number'&&r.lease>200)?` title="${fmt0(r.lease)} years remaining"`:''}>${_leaseTxt(r.lease)}</td>`+
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
       `<td class="xlinks">${_xa(_gsearch(nm+' condo propertyguru'),'Listings')} &middot; ${_xa(_gmap(nm),'Map')} &middot; ${_xa(_yt(nm+' condo review'),'Video')}</td></tr>`;}).join('');
   $('projects-table').innerHTML=`<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
