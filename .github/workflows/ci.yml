@@ -18,11 +18,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
 
       # No path filter on the trigger above: both tests slice their subject out of template.html at
       # run time, so the set of files that can break them is wider than it looks and would drift out
