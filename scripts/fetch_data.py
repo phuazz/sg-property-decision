@@ -524,8 +524,11 @@ def ura_project_scorecard():
 EC_TARGET = "HUNDRED PALMS RESIDENCES"      # subject property for the estate/sequencing model
 TARGET_DISTRICTS = ("15",)                  # replacement-home search area (D15 East Coast / Marine Parade)
 MIN_SQFT_LARGE = 1200                       # floor-area proxy for a 4-bedroom unit: URA has no bedroom field
-LANDED_TYPES = ("Detached House", "Semi-Detached House", "Terrace House",
-                "Strata Detached House", "Strata Semi-Detached House", "Strata Terrace House")
+# Match landed by keyword, case-insensitively. An exact-string tuple returned ZERO D15 landed
+# transactions over 24 months, which is not plausible — URA's capitalisation of these labels
+# ("Semi-detached House" vs "Semi-Detached House") is not what was guessed. Keyword matching
+# survives that; the propertyType census in the output makes any future miss self-evident.
+LANDED_WORDS = ("detached", "terrace", "semi-d")
 
 def ec_resale():
     """EC resale pricing, per project, plus the full caveat history for EC_TARGET.
@@ -606,7 +609,7 @@ def target_homes():
     projs = _ura_projects(key)
     cur = datetime.date.today()
     now_i = cur.year * 12 + cur.month
-    nonlanded, landed = [], []
+    nonlanded, landed, census = [], [], {}
     for proj in projs:
         for t in proj.get("transaction", []):
             d = str(t.get("district") or "").zfill(2)
@@ -618,7 +621,9 @@ def target_homes():
             if mi is None or mi <= now_i - 24:
                 continue
             pt = t.get("propertyType")
-            is_landed = pt in LANDED_TYPES
+            census[pt] = census.get(pt, 0) + 1
+            ptl = (pt or "").lower()
+            is_landed = any(w in ptl for w in LANDED_WORDS)
             if not is_landed and pt not in ("Condominium", "Apartment"):
                 continue
             try:
@@ -645,6 +650,7 @@ def target_homes():
             "nonlanded": {"n": len(nonlanded), "n_freehold": len(fh),
                           "fh_psf_p": (_pctiles(fh) if len(fh) >= 6 else None), "rows": nonlanded},
             "landed": {"n": len(landed), "rows": landed},
+            "property_type_census": dict(sorted(census.items(), key=lambda kv: -kv[1])),
             "bedroom_note": "URA publishes no bedroom count; floor area is a proxy only",
             "source": "URA PMI_Resi_Transaction resale, unit level, 24 months"}
 
