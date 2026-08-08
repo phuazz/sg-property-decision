@@ -209,14 +209,30 @@ DISTRICT_NAME = {
     "25": "Woodlands / Kranji", "26": "Upper Thomson / Mandai", "27": "Sembawang / Yishun",
     "28": "Seletar / Yio Chu Kang"}
 
+def _ura_token(key):
+    """Day token for the URA Data Service, or raise.
+
+    A bad or expired access key does NOT return an HTTP error. It returns
+    {"Status":"Error","Message":"Invalid Access Key","Result":""} with HTTP 200, and an empty
+    token then yields well-formed but empty payloads from every downstream service. That is how
+    the 7 Aug 2026 refresh silently emptied districts/projects/segments_official. Validate here
+    so the feed raises and lands in _meta.errors with the cause named.
+    """
+    r = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
+            headers={**UA, "AccessKey": key}, timeout=30).json()
+    tok = r.get("Result")
+    if r.get("Status") != "Success" or not tok:
+        raise RuntimeError(f"URA token refused: {r.get('Message') or r}. "
+                           "Renew URA_ACCESS_KEY at https://eservice.ura.gov.sg/maps/api/reg.html")
+    return tok
+
 _URA_PROJECTS = None
 def _ura_projects(key):
     """Pull PMI_Resi_Transaction once (4 district batches), cache for reuse across aggregations."""
     global _URA_PROJECTS
     if _URA_PROJECTS is not None:
         return _URA_PROJECTS
-    tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
-              headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
+    tok = _ura_token(key)
     hdr = {**UA, "AccessKey": key, "Token": tok}
     projs = []
     for batch in (1, 2, 3, 4):
@@ -268,8 +284,7 @@ def _range_mid(s):
 def _district_rent_psf(key):
     """Median monthly rent $psf by district over the last 4 quarters. Best-effort; {} on any trouble."""
     try:
-        tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
-                  headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
+        tok = _ura_token(key)
         hdr = {**UA, "AccessKey": key, "Token": tok}
         today = datetime.date.today()
         yy, qq, periods = today.year % 100, (today.month - 1) // 3 + 1, []
@@ -640,8 +655,7 @@ def ura_new_launches():
     if not key:
         return None
     try:
-        tok = GET("https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1",
-                  headers={**UA, "AccessKey": key}, timeout=30).json().get("Result")
+        tok = _ura_token(key)
         hdr = {**UA, "AccessKey": key, "Token": tok}
         t = datetime.date.today(); yy, mm = t.year % 100, t.month
         res, working = [], None
