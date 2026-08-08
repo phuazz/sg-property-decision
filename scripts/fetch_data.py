@@ -717,6 +717,7 @@ def ura_new_launches():
 _ENTITY_NOISE = {"PTE", "LTD", "LIMITED", "PRIVATE", "AND", "GROUP", "HOLDINGS", "NO"}
 LTL_WINDOW_YEARS = 6      # a site awarded longer ago than this is not the plot today's launch sits on
 LTL_MIN_PAIRS = 5         # below this the median is one project's idiosyncrasy, not a market rate
+LTL_GFA_HARMONISED = datetime.datetime(2023, 6, 1)   # URA circular DC22-09
 LTL_SANE_BAND = (1.5, 3.5)  # a median outside this says the match broke, not that the market moved
 
 def _entities(name):
@@ -779,7 +780,16 @@ def land_to_launch(launches):
             "project": p["project"], "site": site, "region": p.get("region"),
             "award": r["award"].strftime("%Y-%m-%d"), "land_psf_ppr": int(r["psf_ppr"]),
             "launch_psf": p["psf"], "takeup": p.get("takeup"),
-            "multiple": round(p["psf"] / float(r["psf_ppr"]), 2)}
+            "multiple": round(p["psf"] / float(r["psf_ppr"]), 2),
+            # The two sides of this ratio are measured on different bases: the land rate is priced
+            # on GROSS FLOOR AREA, the launch price is charged on STRATA area. URA harmonised the
+            # floor-area definitions (circular DC22-09) for development applications submitted from
+            # 2023-06-01: strata areas including AC ledges now count towards GFA, so a given GFA
+            # entitlement yields less sellable strata, which lifts this multiple for reasons that
+            # have nothing to do with the market. Award date is a PROXY for which regime a project
+            # sits under - the rule keys off the DA submission date, which URA does not publish -
+            # so this flags rather than corrects, and consumers can restrict to one basis.
+            "gfa_basis": "harmonised" if r["award"] >= LTL_GFA_HARMONISED else "pre-harmonised"}
     allp = sorted(pairs.values(), key=lambda x: x["multiple"])
     # A pair outside the sane band is a broken join, not a market observation, and it would widen
     # the published range far more than it moves the median - so drop it, but say so rather than
@@ -790,6 +800,14 @@ def land_to_launch(launches):
     if len(mult) < LTL_MIN_PAIRS:
         return {"ok": False, "reason": f"only {len(mult)} land/launch pairs matched (need {LTL_MIN_PAIRS})"}
     med = round(statistics.median(mult), 2)
+    # Same median restricted to one GFA basis, so a consumer comparing a post-2023 site is not
+    # mixing regimes. Emitted rather than substituted: on the current sample it moves the median
+    # by about 1%, but on a set weighted the other way it would not.
+    harm = [x["multiple"] for x in pairs if x["gfa_basis"] == "harmonised"]
+    harmonised_only = ({"n": len(harm), "median": round(statistics.median(harm), 2),
+                        "range": [min(harm), max(harm)]} if len(harm) >= LTL_MIN_PAIRS else
+                       {"n": len(harm), "median": None,
+                        "range": None, "note": "too few to publish separately"})
     if not LTL_SANE_BAND[0] <= med <= LTL_SANE_BAND[1]:
         return {"ok": False, "reason": f"median multiple {med} outside the sane band {LTL_SANE_BAND}"}
 
@@ -820,7 +838,8 @@ def land_to_launch(launches):
     ages = sorted((lambda r: r.years * 12 + r.months)(
         relativedelta(today, datetime.date.fromisoformat(x["award"]))) for x in pairs)
 
-    return {"ok": True, "factor_range": [mult[0], mult[-1]], "factor_median": med,
+    return {"ok": True, "factor_range": [mult[0], mult[-1]], "harmonised_only": harmonised_only,
+            "factor_median": med,
             "n": len(pairs), "award_span": [min(x["award"] for x in pairs),
                                             max(x["award"] for x in pairs)],
             "award_age_months": [ages[0], ages[-1]],

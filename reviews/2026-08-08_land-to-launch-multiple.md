@@ -128,6 +128,40 @@ or leaving will move the endpoints" understates it: **one project selling four u
 The right way to state the finding is as a range with a stated basis — "on 2026-06 data, roughly
 2.1× to 2.9×, median in the low-to-mid 2s" — not as 2.31×.
 
+### Gross floor area is not strata area, and the definition moved mid-sample
+
+The two sides of this ratio are measured on different bases and always have been: the land rate is
+priced on **gross floor area**, the launch price is charged on **strata area**. That is tolerable
+only while the mapping between them is stable, and it stopped being stable.
+
+URA's [circular DC22-09](https://www.ura.gov.sg/Corporate/Guidelines/Circulars/dc22-09) harmonised
+the floor-area definitions across URA, SLA, BCA and SCDF for **development applications submitted
+on or after 2023-06-01**. All strata areas now count towards GFA, including air-conditioner ledges,
+and voids are excluded from strata area. A given GFA entitlement therefore yields less sellable
+strata than it did, which pushes this multiple **up** for reasons that have nothing to do with the
+market.
+
+Classifying by award date — a proxy, see below — the sample is 1 pre and 7 post:
+
+| Basis | n | Median | Range |
+|---|---:|---:|---|
+| Post-harmonisation awards | 7 | **2.33×** | 2.13×–2.83× |
+| All pairs (as published) | 8 | 2.31× | 2.13×–2.83× |
+
+The effect on this sample is about **1% on the median**, because it is nearly all on one side and
+so is the site the article applies it to (Thomson View, awarded 2024-11-25). It would not be small
+on a set weighted the other way, and the dashboard applies this multiple to *every* GLS site in its
+table, including older awards — which is where it matters.
+
+**Award date is a proxy, and an imperfect one.** The rule keys off the development-application
+submission date, which URA does not publish. A site awarded before the cutover could have submitted
+its application after it and fall under the new rules. So `fetch_data.py` now emits a `gfa_basis`
+tag per pair and a separate `harmonised_only` summary rather than correcting anything — the
+classification is a flag for the consumer, not a claim about which regime a project is in.
+
+The size of the strata-to-GFA shift itself is **not quantified here**. It cannot be measured from
+free public data: it needs the plans.
+
 ### Open item: what `medianPrice` actually measures
 
 This record and the dashboard both label the launch side an **asking price**. That may be wrong.
@@ -244,3 +278,5 @@ return — but it removes land cost from that study's untested list.
 - One regime: awards spanning 2022–2024 sit across a single rate path and the 2023 ABSD step.
 - The deflation uses the all-residential PPI, not a segment index, so a CCR site is deflated by a
   national number.
+- **GFA basis is flagged, not corrected**, and classified by award date rather than by the
+  development-application date the rule actually keys off. See the section above.
