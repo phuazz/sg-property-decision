@@ -22,13 +22,29 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install deps
         run: pip install requests pandas openpyxl pyproj
+
+      # Template-only, so it needs no data and costs nothing to run first: if the loan engine and
+      # its extracted copy have diverged, stop before spending a fetch on a page we cannot ship.
+      - name: Test the loan engine
+        run: node scripts/test_engine_parity.js
 
       - name: Fetch live data
         env:
           URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}   # optional — official segment $psf lights up if set
         run: python scripts/fetch_data.py
+
+      # Runs BEFORE the commit, unlike the staleness check below: this one reads the rows just
+      # fetched, and a lease the label rules cannot name means the page would state a tenure
+      # wrongly. Stale-but-correct data is worth publishing; wrong data is not. Failing here
+      # leaves the previous build live and the new data uncommitted.
+      - name: Test lease labels against the fetched data
+        run: node scripts/test_lease_labels.js
 
       - name: Build page
         run: python scripts/pipeline.py
