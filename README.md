@@ -105,6 +105,7 @@ sg-property-decision/
 │   ├── ci.yml             # every push/PR: both tests + the build-drift check
 │   └── refresh.yml        # weekly: tests, fetch_data + pipeline, commit the rebuilt page
 ├── docs/index.html        # BUILT — deployable GitHub Pages output (data inlined)
+├── reviews/               # filed study records; indexed in C:\dev\STUDIES_LEDGER.md
 └── README.md
 ```
 
@@ -217,5 +218,19 @@ an entity that won more than one site in the window is dropped as unattributable
 withheld (leaving the last good value in place) below five pairs or on an implausible median. Each
 guard was verified by making it fail. The window is load-bearing: without it a perennial corporate
 entity rather than an SPV matched a 2010 award at $321 psf ppr and produced a spurious 6.4× pair.
+
+Verified live the same day (`workflow_dispatch`, 04:15 UTC): `ok land_to_launch (n=8, median 2.31x)`,
+all twelve upstream feeds fresh, nothing carried forward, no outliers dropped, and the page took the
+live overlay rather than the curated fallback.
+
+Filed as [`reviews/2026-08-08_land-to-launch-multiple.md`](reviews/2026-08-08_land-to-launch-multiple.md)
+and indexed in the vault studies ledger. The record carries the method and the coverage funnel (50
+currently-selling projects → 42 unmatched, mostly collective-sale land or older awards → 8 pairs), all
+eight pairs in full, the per-quarter deflation, and which guards are actually load-bearing — the
+six-year window is, the ambiguity guard is currently dormant and costs no coverage. It also names the
+one failure mode that does not announce itself: on a withheld *first* run there is no previous value
+to carry forward, so the figure would be absent rather than flagged, and the page would quietly serve
+the baseline. Adjacent to [`reviews/2026-08-01_launch-vs-resale.md`](reviews/2026-08-01_launch-vs-resale.md),
+which closed by naming land cost as a plausible driver it had not checked.
 
 _Last updated: 2026-08-08._
