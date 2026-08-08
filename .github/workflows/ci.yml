@@ -32,3 +32,29 @@ jobs:
 
       - name: Lease labels and tenure buckets
         run: node scripts/test_lease_labels.js
+
+  # docs/index.html is what the world actually loads, and it is generated — so an edit to
+  # template.html that was never rebuilt leaves the live page silently lagging its source, with
+  # nothing in the diff to show it. pipeline.py reads only the repo and stamps no clock, so a
+  # rebuild of a given commit is byte-reproducible: any difference here means a missing rebuild.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Rebuild the page
+        run: python scripts/pipeline.py   # stdlib only — nothing to install
+
+      - name: Fail if the build is stale
+        run: |
+          if git diff --quiet; then
+            echo "docs/index.html matches template.html and data/."
+          else
+            echo "::error::Build is stale. Run 'python scripts/pipeline.py' and commit the result."
+            git diff --stat
+            exit 1
+          fi
