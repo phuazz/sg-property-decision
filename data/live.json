@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-08-09T10:34:54Z",
+  "fetched": "2026-08-09T10:56:37Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -32902,6 +32902,7 @@
     "psf": 2263,
     "units": 1193,
     "sold": 1164,
+    "sold_in_month": 1,
     "takeup": 0.976
    },
    {
@@ -32912,6 +32913,7 @@
     "psf": 2251,
     "units": 941,
     "sold": 917,
+    "sold_in_month": 2,
     "takeup": 0.974
    },
    {
@@ -32922,6 +32924,7 @@
     "psf": 2473,
     "units": 1008,
     "sold": 912,
+    "sold_in_month": 3,
     "takeup": 0.905
    },
    {
@@ -32932,6 +32935,7 @@
     "psf": 2631,
     "units": 916,
     "sold": 883,
+    "sold_in_month": 11,
     "takeup": 0.964
    },
    {
@@ -32942,6 +32946,7 @@
     "psf": 2178,
     "units": 863,
     "sold": 861,
+    "sold_in_month": 1,
     "takeup": 0.998
    },
    {
@@ -32952,6 +32957,7 @@
     "psf": 2789,
     "units": 816,
     "sold": 781,
+    "sold_in_month": 11,
     "takeup": 0.957
    },
    {
@@ -32962,6 +32968,7 @@
     "psf": 2725,
     "units": 777,
     "sold": 741,
+    "sold_in_month": 1,
     "takeup": 0.954
    },
    {
@@ -32972,6 +32979,7 @@
     "psf": 3133,
     "units": 696,
     "sold": 689,
+    "sold_in_month": 3,
     "takeup": 0.99
    },
    {
@@ -32982,6 +32990,7 @@
     "psf": 3002,
     "units": 937,
     "sold": 642,
+    "sold_in_month": 5,
     "takeup": 0.685
    },
    {
@@ -32992,6 +33001,7 @@
     "psf": 3400,
     "units": 706,
     "sold": 634,
+    "sold_in_month": 5,
     "takeup": 0.898
    },
    {
@@ -33002,6 +33012,7 @@
     "psf": 1836,
     "units": 748,
     "sold": 617,
+    "sold_in_month": 21,
     "takeup": 0.825
    },
    {
@@ -33012,6 +33023,7 @@
     "psf": 1947,
     "units": 572,
     "sold": 560,
+    "sold_in_month": 6,
     "takeup": 0.979
    },
    {
@@ -33022,6 +33034,7 @@
     "psf": 2585,
     "units": 588,
     "sold": 551,
+    "sold_in_month": 3,
     "takeup": 0.937
    },
    {
@@ -33032,6 +33045,7 @@
     "psf": 2686,
     "units": 552,
     "sold": 550,
+    "sold_in_month": 1,
     "takeup": 0.996
    },
    {
@@ -33042,6 +33056,7 @@
     "psf": 1732,
     "units": 512,
     "sold": 512,
+    "sold_in_month": 1,
     "takeup": 1.0
    },
    {
@@ -33052,6 +33067,7 @@
     "psf": 3111,
     "units": 524,
     "sold": 492,
+    "sold_in_month": 1,
     "takeup": 0.939
    },
    {
@@ -33062,6 +33078,7 @@
     "psf": 2098,
     "units": 474,
     "sold": 471,
+    "sold_in_month": 3,
     "takeup": 0.994
    },
    {
@@ -33072,6 +33089,7 @@
     "psf": 3037,
     "units": 596,
     "sold": 425,
+    "sold_in_month": 4,
     "takeup": 0.713
    },
    {
@@ -33082,6 +33100,7 @@
     "psf": 3377,
     "units": 455,
     "sold": 424,
+    "sold_in_month": 1,
     "takeup": 0.932
    },
    {
@@ -33092,6 +33111,7 @@
     "psf": 2825,
     "units": 501,
     "sold": 412,
+    "sold_in_month": 6,
     "takeup": 0.822
    },
    {
@@ -33102,6 +33122,7 @@
     "psf": 2101,
     "units": 408,
     "sold": 389,
+    "sold_in_month": 1,
     "takeup": 0.953
    },
    {
@@ -33112,6 +33133,7 @@
     "psf": 2301,
     "units": 399,
     "sold": 383,
+    "sold_in_month": 3,
     "takeup": 0.96
    },
    {
@@ -33122,6 +33144,7 @@
     "psf": 2847,
     "units": 515,
     "sold": 371,
+    "sold_in_month": 1,
     "takeup": 0.72
    },
    {
@@ -33132,6 +33155,7 @@
     "psf": 2515,
     "units": 368,
     "sold": 359,
+    "sold_in_month": 2,
     "takeup": 0.976
    },
    {
@@ -33142,6 +33166,7 @@
     "psf": 2015,
     "units": 376,
     "sold": 339,
+    "sold_in_month": 1,
     "takeup": 0.902
    },
    {
@@ -33152,6 +33177,7 @@
     "psf": 2072,
     "units": 348,
     "sold": 315,
+    "sold_in_month": 3,
     "takeup": 0.905
    },
    {
@@ -33162,6 +33188,7 @@
     "psf": 2551,
     "units": 358,
     "sold": 311,
+    "sold_in_month": 6,
     "takeup": 0.869
    },
    {
@@ -33172,6 +33199,7 @@
     "psf": 2327,
     "units": 306,
     "sold": 303,
+    "sold_in_month": 2,
     "takeup": 0.99
    },
    {
@@ -33182,6 +33210,7 @@
     "psf": 2605,
     "units": 267,
     "sold": 245,
+    "sold_in_month": 1,
     "takeup": 0.918
    },
    {
@@ -33192,6 +33221,7 @@
     "psf": 3437,
     "units": 301,
     "sold": 245,
+    "sold_in_month": 3,
     "takeup": 0.814
    },
    {
@@ -33202,6 +33232,7 @@
     "psf": 2045,
     "units": 276,
     "sold": 228,
+    "sold_in_month": 1,
     "takeup": 0.826
    },
    {
@@ -33212,6 +33243,7 @@
     "psf": 2338,
     "units": 440,
     "sold": 226,
+    "sold_in_month": 3,
     "takeup": 0.514
    },
    {
@@ -33222,6 +33254,7 @@
     "psf": 2577,
     "units": 327,
     "sold": 221,
+    "sold_in_month": 12,
     "takeup": 0.676
    },
    {
@@ -33232,6 +33265,7 @@
     "psf": 3231,
     "units": 348,
     "sold": 207,
+    "sold_in_month": 1,
     "takeup": 0.595
    },
    {
@@ -33242,6 +33276,7 @@
     "psf": 2654,
     "units": 270,
     "sold": 204,
+    "sold_in_month": 9,
     "takeup": 0.756
    },
    {
@@ -33252,6 +33287,7 @@
     "psf": 3056,
     "units": 246,
     "sold": 198,
+    "sold_in_month": 4,
     "takeup": 0.805
    },
    {
@@ -33262,6 +33298,7 @@
     "psf": 2219,
     "units": 540,
     "sold": 185,
+    "sold_in_month": 6,
     "takeup": 0.343
    },
    {
@@ -33272,6 +33309,7 @@
     "psf": 3274,
     "units": 180,
     "sold": 180,
+    "sold_in_month": 1,
     "takeup": 1.0
    },
    {
@@ -33282,6 +33320,7 @@
     "psf": 2762,
     "units": 366,
     "sold": 178,
+    "sold_in_month": 11,
     "takeup": 0.486
    },
    {
@@ -33292,6 +33331,7 @@
     "psf": 3409,
     "units": 226,
     "sold": 177,
+    "sold_in_month": 2,
     "takeup": 0.783
    },
    {
@@ -33302,6 +33342,7 @@
     "psf": 2341,
     "units": 347,
     "sold": 133,
+    "sold_in_month": 6,
     "takeup": 0.383
    },
    {
@@ -33312,6 +33353,7 @@
     "psf": 3017,
     "units": 158,
     "sold": 111,
+    "sold_in_month": 1,
     "takeup": 0.703
    },
    {
@@ -33322,6 +33364,7 @@
     "psf": 2761,
     "units": 367,
     "sold": 99,
+    "sold_in_month": 1,
     "takeup": 0.27
    },
    {
@@ -33332,6 +33375,7 @@
     "psf": 2586,
     "units": 172,
     "sold": 99,
+    "sold_in_month": 2,
     "takeup": 0.576
    },
    {
@@ -33342,6 +33386,7 @@
     "psf": 3081,
     "units": 105,
     "sold": 82,
+    "sold_in_month": 1,
     "takeup": 0.781
    },
    {
@@ -33352,6 +33397,7 @@
     "psf": 2886,
     "units": 188,
     "sold": 68,
+    "sold_in_month": 1,
     "takeup": 0.362
    },
    {
@@ -33362,6 +33408,7 @@
     "psf": 2270,
     "units": 186,
     "sold": 37,
+    "sold_in_month": 4,
     "takeup": 0.199
    },
    {
@@ -33372,6 +33419,7 @@
     "psf": 2519,
     "units": 35,
     "sold": 32,
+    "sold_in_month": 1,
     "takeup": 0.914
    },
    {
@@ -33382,6 +33430,7 @@
     "psf": 1992,
     "units": 23,
     "sold": 15,
+    "sold_in_month": 2,
     "takeup": 0.652
    },
    {
@@ -33392,6 +33441,7 @@
     "psf": 3615,
     "units": 8,
     "sold": 6,
+    "sold_in_month": 2,
     "takeup": 0.75
    }
   ],
@@ -55287,6 +55337,7 @@
     "land_psf_ppr": 1617,
     "launch_psf": 3437,
     "takeup": 0.814,
+    "sold_in_month": 3,
     "multiple": 2.13,
     "gfa_basis": "harmonised"
    },
@@ -55298,6 +55349,7 @@
     "land_psf_ppr": 1223,
     "launch_psf": 2686,
     "takeup": 0.996,
+    "sold_in_month": 1,
     "multiple": 2.2,
     "gfa_basis": "harmonised"
    },
@@ -55309,6 +55361,7 @@
     "land_psf_ppr": 1343,
     "launch_psf": 3017,
     "takeup": 0.703,
+    "sold_in_month": 1,
     "multiple": 2.25,
     "gfa_basis": "pre-harmonised"
    },
@@ -55320,6 +55373,7 @@
     "land_psf_ppr": 904,
     "launch_psf": 2072,
     "takeup": 0.905,
+    "sold_in_month": 3,
     "multiple": 2.29,
     "gfa_basis": "harmonised"
    },
@@ -55331,6 +55385,7 @@
     "land_psf_ppr": 1304,
     "launch_psf": 3037,
     "takeup": 0.713,
+    "sold_in_month": 4,
     "multiple": 2.33,
     "gfa_basis": "harmonised"
    },
@@ -55342,6 +55397,7 @@
     "land_psf_ppr": 1325,
     "launch_psf": 3111,
     "takeup": 0.939,
+    "sold_in_month": 1,
     "multiple": 2.35,
     "gfa_basis": "harmonised"
    },
@@ -55353,6 +55409,7 @@
     "land_psf_ppr": 841,
     "launch_psf": 2341,
     "takeup": 0.383,
+    "sold_in_month": 6,
     "multiple": 2.78,
     "gfa_basis": "harmonised"
    },
@@ -55364,12 +55421,13 @@
     "land_psf_ppr": 1202,
     "launch_psf": 3400,
     "takeup": 0.898,
+    "sold_in_month": 5,
     "multiple": 2.83,
     "gfa_basis": "harmonised"
    }
   ],
   "dropped_outliers": [],
   "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity",
-  "note": "A selling project's median $psf for ONE reference month, over the $psf ppr its developer paid for the site. Read the range, not the third digit: across the pairs that month carries only a couple of dozen transactions in total, and recomputing on the previous month moves the median by about 0.15x. State land only. Not a developer margin - it also carries whatever the market did between award and today. The two sides are measured differently: land is priced on gross floor area and the launch price on strata area, and URA harmonised those definitions for applications from 2023-06-01 - see gfa_basis on each pair."
+  "note": "A selling project's median $psf of units SOLD in ONE reference month (URA records a sale on the Option to Purchase), over the $psf ppr its developer paid for the site. Read the range, not the third digit: across the pairs that month carries only a couple of dozen transactions in total, and recomputing on the previous month moves the median by about 0.15x. State land only. Not a developer margin - it also carries whatever the market did between award and today. The two sides are measured differently: land is priced on gross floor area and the launch price on strata area, and URA harmonised those definitions for applications from 2023-06-01 - see gfa_basis on each pair."
  }
 }
