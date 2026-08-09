@@ -75,6 +75,11 @@ def merge_live(market, live):
             "award_age_months": ltl["award_age_months"], "deflated": ltl["deflated"],
             "asof": live.get("_meta", {}).get("fetched", "")[:10] or None,
             "flag": f"derived from n={ltl['n']} public pairs (live)", "source": ltl["source"],
+            # The post-harmonisation subset the page now leads with. This overlay copies named
+            # fields rather than the whole object, so a new field in the feed is invisible to the
+            # template until it is named here — which is exactly what happened: the feed carried
+            # harmonised_only, the page fell back to the all-pairs median, and nothing errored.
+            "harmonised_only": ltl.get("harmonised_only"),
             "pairs": ltl["pairs"]})
     # HDB resale live medians
     if live.get("hdb_resale"):

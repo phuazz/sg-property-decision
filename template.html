@@ -1283,20 +1283,38 @@ function renderWhere(){
 
   // Land-bid -> launch multiple. Derived from public pairs (see fetch_data.land_to_launch), so the
   // figures are read from the data rather than written into the copy, and refresh with the feed.
-  const L=G.land_to_launch, lx=L.factor_range[0].toFixed(1), hx=L.factor_range[1].toFixed(1),
-        mx=(L.factor_median||((L.factor_range[0]+L.factor_range[1])/2)).toFixed(1);
+  const L=G.land_to_launch;
+  // Lead with the post-harmonisation pairs. The land side of this ratio is priced on gross floor
+  // area and the launch side on strata area, and URA harmonised those definitions for development
+  // applications from 2023-06-01 (circular DC22-09), so pairs either side of that date are not
+  // measuring the same thing. Almost every site on the GLS list below is post-harmonisation, which
+  // makes it the like-for-like basis for the estimate column. The all-pairs figure stays in the
+  // feed and is named in the copy rather than discarded. Falls back if the subset is withheld for
+  // being too thin - fetch_data applies the same minimum-pairs guard to it.
+  const ltlH=(L.harmonised_only&&L.harmonised_only.median)?L.harmonised_only:null,
+        ltlRange=ltlH?ltlH.range:L.factor_range,
+        ltlMed=ltlH?ltlH.median:L.factor_median,
+        ltlN=ltlH?ltlH.n:L.n;
+  // The award span must describe the pairs actually being shown. Leading with the post-2023-06-01
+  // subset while quoting the all-pairs span said "the 7 sites, awarded Nov 2022-Aug 2024" - and
+  // the Nov 2022 site is precisely the one excluded.
+  const ltlPairs=(L.pairs||[]).filter(p=>!ltlH||p.gfa_basis==='harmonised'),
+        ltlAw=ltlPairs.length?ltlPairs.map(p=>p.award).sort():L.award_span,
+        ltlSpan=[ltlAw[0],ltlAw[ltlAw.length-1]];
+  const lx=ltlRange[0].toFixed(1), hx=ltlRange[1].toFixed(1),
+        mx=(ltlMed||((ltlRange[0]+ltlRange[1])/2)).toFixed(1);
   const dfl=L.deflated&&L.deflated.median?` Restating each price at the URA PPI level of its own award quarter — which strips out the market move — pulls the band to <b>${L.deflated.range[0].toFixed(1)}×–${L.deflated.range[1].toFixed(1)}×, median ${L.deflated.median.toFixed(1)}×</b>.`:'';
   const age=L.award_age_months?`${L.award_age_months[0]}–${L.award_age_months[1]} months ago`:'years ago';
   // the demand caveat is read off the two richest multiples, not asserted, so it cannot drift
   const top=(L.pairs||[]).slice().sort((a,b)=>b.multiple-a.multiple).slice(0,2).filter(p=>p.takeup!=null);
   const dmd=top.length===2?` And it says nothing about whether a project will sell: the two highest multiples in the set are ${pct(top[0].takeup,0)} and ${pct(top[1].takeup,0)} sold.`:'';
-  $('ltl-explainer').innerHTML=`Across the <b>${L.n}</b> state-land sites that can be paired with a project now selling on them, the asking price has landed at <b>${lx}×–${hx}× the land bid</b> (median <b>${mx}×</b>) — sites awarded ${monYr(L.award_span[0])}–${monYr(L.award_span[1])}, prices as at ${mmyy((D.market.new_launches||{}).asof)||monYr(L.asof)}. `+
-    `Treat that as a range, not a formula, and note what it is <i>not</i>. It uses each project's <b>current</b> median asking price, not its launch-day price — developers raise prices as a project sells through. It is <b>not a developer margin</b>: those sites were awarded ${age}, so the multiple carries however much the whole market moved while the project was being built.${dfl} All ${L.n} are state land — a collective sale prices differently.${dmd}`;
+  $('ltl-explainer').innerHTML=`Across the <b>${ltlN}</b> state-land sites that can be paired with a project now selling on them, the price has landed at <b>${lx}×–${hx}× the land bid</b> (median <b>${mx}×</b>) — sites awarded ${monYr(ltlSpan[0])}–${monYr(ltlSpan[1])}, prices as at ${mmyy((D.market.new_launches||{}).asof)||monYr(L.asof)}. `+
+    `Treat that as a range, not a formula, and note what it is <i>not</i>. It uses each project's median for a <b>single recent month</b>, not its launch-day price, and on a project selling its last few units that can rest on a handful of transactions — developers raise prices as a project sells through. It is <b>not a developer margin</b>: those sites were awarded ${age}, so the multiple carries however much the whole market moved while the project was being built.${dfl} All are state land — a collective sale prices differently. The multiple above is the <b>${ltlN}</b> sites awarded after URA harmonised the floor-area definitions on 1 June 2023, which is the like-for-like basis for a land rate priced on gross floor area against a price charged on strata area; across all <b>${L.n}</b> pairs the median is <b>${(L.factor_median||0).toFixed(2)}×</b>.${dmd}`;
 
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
-    G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*L.factor_range[0]),hi=Math.round(t.psf_ppr*L.factor_range[1]),
-        mid=Math.round(t.psf_ppr*(L.factor_median||(L.factor_range[0]+L.factor_range[1])/2));
+    G.tenders.map(t=>{const lo=Math.round(t.psf_ppr*ltlRange[0]),hi=Math.round(t.psf_ppr*ltlRange[1]),
+        mid=Math.round(t.psf_ppr*(ltlMed||(ltlRange[0]+ltlRange[1])/2));
       return `<tr><td>${_xa(_gmap(t.site),t.site)}${t.note?`<div style="font-size:11px;color:var(--t3-text);margin-top:1px">${t.note}</div>`:''}</td><td><span class="chip ${seg2col[t.region]||'chip-n'}">${t.region}</span></td><td class="num">${t.close}</td><td class="num"><b>$${fmt0(t.psf_ppr)}</b></td><td class="num">${t.bids!=null?t.bids:'—'}</td><td class="num"><b>~$${fmt0(mid)}</b><div style="font-size:11px;color:var(--t3-text);margin-top:1px">$${fmt0(lo)}–${fmt0(hi)}</div></td></tr>`;}).join('')+`</tbody>`;
   $('gls-note').innerHTML=`Land rates are ${G.yoy>=0?'up':'down'} <b>~${pct(Math.abs(G.yoy),0)}</b> year on year (avg $${fmt0(G.avg_now)} vs $${fmt0(G.avg_prev)} psf ppr the prior year) — but the average is <b>mix-unadjusted</b>: a year with more prime sites lifts it without any like-for-like inflation, so read it with the segment column. The estimated launch price scales the land bid by the <b>${lx}×–${hx}×</b> band (median ${mx}×) observed on ${L.n} state-land sites paired with the project now selling on them — a derived range, not a formula, and it embeds the market's move since award as well as construction cost; <b>How to read a land bid</b> above sets out what it does and does not tell you. A high, competitive bid near a location you like still sets a forward floor under resale prices there. Supply cuts both ways, though: the same nearby pipeline that floors prices also competes with your unit when you sell. Segment tags are approximated from the planning area — Bukit Timah-area sites can be CCR by postal district. ${G.asof.includes('live')?'Land bids are live from the URA GLS workbook.':''}`;
 
