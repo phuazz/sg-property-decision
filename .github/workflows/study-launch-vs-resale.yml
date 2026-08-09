@@ -38,28 +38,7 @@ jobs:
         run: cat reviews/launch_vs_resale_result.json
 
       - name: Test A2 summary
-        run: |
-          python - <<'PY'
-          import json
-          r = json.load(open('reviews/launch_vs_resale_result.json'))['test_a2_lease_matched']
-          print('
-UNMATCHED (test A, all resale):')
-          for seg, d in (r.get('unmatched_test_a_for_reference') or {}).items():
-              print(f"  {seg}: {d['median']:+.1f}%  n={d['n']}")
-          print('
-LEASE GRADIENT (new sale vs resale with N years left):')
-          for lab, block in (r.get('gradient') or {}).items():
-              for seg, d in (block or {}).items():
-                  flag = '' if d.get('feasible') else '   INFEASIBLE (below the pre-registered floor)'
-                  print(f"  {lab:>6} | {seg}: {d['median']:+.1f}%  n={d['n']}  districts={d['districts']}"
-                        f"  mrt={d.get('comparator_median_mrt_m')}m{flag}")
-          print('
-FREEHOLD CONTROL:')
-          for seg, d in ((r.get('freehold_control') or {}).get('FH') or {}).items():
-              print(f"  {seg}: {d['median']:+.1f}%  n={d['n']}")
-          print('
-coverage:', json.dumps(r.get('coverage'), indent=2))
-          PY
+        run: python scripts/study_a2_summary.py
 
       - uses: actions/upload-artifact@v4
         if: always()
