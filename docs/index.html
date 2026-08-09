@@ -238,7 +238,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .buy-seg{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;color:var(--t3-text);margin:9px 0 3px}
 .buy-what{font-size:16px;font-weight:700;color:var(--t1);line-height:1.25}
 .buy-size{font-family:var(--mono);font-size:12.5px;color:var(--t2);margin-top:4px}
-.buy-tag{position:absolute;top:13px;right:13px;font-size:10px;font-weight:700;color:var(--g-text);background:var(--g-bg2);border-radius:999px;padding:2px 8px}
+.buy-tag{position:absolute;top:13px;right:13px;font-size:11px;font-weight:700;color:var(--g-text);background:var(--g-bg2);border-radius:999px;padding:2px 8px}
 .hooks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 24px}
 @media(max-width:640px){.hooks{grid-template-columns:1fr}}
 .hookcard{text-align:left;background:var(--bg2);border:1px solid var(--bd);border-left:3px solid var(--b);border-radius:var(--radius-lg);padding:15px 16px;cursor:pointer;font-family:var(--sans);transition:box-shadow .15s,transform .15s}
@@ -247,6 +247,24 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .hook-txt{font-size:12.5px;color:var(--t2);line-height:1.45;margin-top:5px}
 .hook-go{font-size:11.5px;font-weight:600;color:var(--b-text);margin-top:9px}
 .goalq{font-size:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t3-text);margin:8px 0 12px}
+
+/* ---- phone tap targets (C:/dev/MOBILE_CHECK.md: controls comfortably >= 44px) ------------
+   Measured on a 390px viewport across all six tabs: 33 preset pills at 32px, 19 range inputs
+   at 39, six selects at 41, five nextbtns at 37, and one range track at 6. Every one is a
+   control a thumb has to land on. Heights only - nothing here changes type, colour or layout,
+   and it is the template's first media query, so desktop is untouched by construction.
+   Range inputs get the height on the input itself, which widens the draggable band while the
+   track keeps rendering thin and centred. */
+@media (max-width: 640px){
+  /* `button` and bare `input`, not a list of classes and [type=...] selectors. The first pass
+     used both and missed two groups: .pill-btn was not in the class list, and eleven text inputs
+     are written without a type attribute, which [type=text] does not match even though the DOM
+     reports type "text". Checkboxes and radios are left alone - forcing height on those distorts
+     the control rather than enlarging its target. */
+  button,select,input:not([type=checkbox]):not([type=radio]){min-height:44px}
+  .preset,.nextbtn,.pill-btn{display:inline-flex;align-items:center}
+  .slider-row input[type=range],.hook-buys-head input[type=range]{height:44px}
+}
 </style>
 </head>
 <body>
@@ -896,15 +914,15 @@ function _valueMap(rows){
   const xlo=Math.min(...xs)*0.97,xhi=Math.max(...xs)*1.03,ylo=Math.min(...ys)*0.94,yhi=Math.max(...ys)*1.06;
   const X=v=>m.l+(v-xlo)/(xhi-xlo)*(W-m.l-m.r), Y=v=>H-m.b-(v-ylo)/(yhi-ylo)*(H-m.t-m.b);
   let g=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" font-family="var(--sans)">`;
-  for(let i=0;i<=4;i++){const xv=xlo+(xhi-xlo)*i/4,x=X(xv);g+=`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H-m.b}" stroke="var(--bg4)"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="10" fill="var(--t3-text)" font-family="var(--mono)">$${fmt0(Math.round(xv/10)*10)}</text>`;}
-  for(let i=0;i<=4;i++){const yv=ylo+(yhi-ylo)*i/4,y=Y(yv);g+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="var(--bg4)"/><text x="${m.l-8}" y="${y+3}" text-anchor="end" font-size="10" fill="var(--t3-text)" font-family="var(--mono)">${yv.toFixed(1)}%</text>`;}
+  for(let i=0;i<=4;i++){const xv=xlo+(xhi-xlo)*i/4,x=X(xv);g+=`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H-m.b}" stroke="var(--bg4)"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="11" fill="var(--t3-text)" font-family="var(--mono)">$${fmt0(Math.round(xv/10)*10)}</text>`;}
+  for(let i=0;i<=4;i++){const yv=ylo+(yhi-ylo)*i/4,y=Y(yv);g+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="var(--bg4)"/><text x="${m.l-8}" y="${y+3}" text-anchor="end" font-size="11" fill="var(--t3-text)" font-family="var(--mono)">${yv.toFixed(1)}%</text>`;}
   g+=`<text x="${(m.l+W-m.r)/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--t2)">Resale median $psf (cheaper &larr;)</text>`;
   g+=`<text x="16" y="${(m.t+H-m.b)/2}" text-anchor="middle" font-size="11" fill="var(--t2)" transform="rotate(-90 16 ${(m.t+H-m.b)/2})">Gross yield &rarr;</text>`;
-  g+=`<text x="${m.l+6}" y="${m.t+2}" font-size="10.5" fill="var(--g)" font-weight="700">&#8598; more attractive: cheaper + higher yield</text>`;
+  g+=`<text x="${m.l+6}" y="${m.t+2}" font-size="11" fill="var(--g)" font-weight="700">&#8598; more attractive: cheaper + higher yield</text>`;
   rows.forEach(r=>{const x=X(r.median_psf),y=Y((r.yield||0)*100), rad=4+(r.score||0)/100*7, isTop=top3.has(r.district);
     const tip=`<b>${r.district} · ${r.name}</b><br>${r.region||'—'} · $${fmt0(r.median_psf)} psf<br>Yield ${r.yield?pct(r.yield,1):'—'} · 1yr ${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}<br>Vol ${fmt0(r.vol_12m)} · Score ${r.score}`.replace(/'/g,'');
     g+=`<circle cx="${x}" cy="${y}" r="${rad.toFixed(1)}" fill="${col[r.region]||'var(--t3)'}" fill-opacity="0.82"${isTop?' stroke="var(--t1)" stroke-width="1.5"':''} style="cursor:pointer" data-tip='${tip}'></circle>`+
-       `<text x="${x+rad+3}" y="${y+3}" font-size="10.5" fill="${isTop?'var(--t1)':'var(--t2)'}" font-weight="${isTop?'700':'400'}" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
+       `<text x="${x+rad+3}" y="${y+3}" font-size="11" fill="${isTop?'var(--t1)':'var(--t2)'}" font-weight="${isTop?'700':'400'}" font-family="var(--mono)" pointer-events="none">${r.district}</text>`;});
   return g+`</svg>`;
 }
 function renderDistricts(){
@@ -1081,7 +1099,7 @@ function renderProjects(){
       `<td class="num" title="${r.size_r?'typical '+fmt0(r.size_r[0])+'–'+fmt0(r.size_r[1])+' sqft':''}">${r.size?fmt0(r.size)+' sf':'—'}</td>`+
       `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
-      `<td class="num"${r.vol_12m<6?' title="few resales — treat the median as indicative"':''}>${fmt0(r.vol_12m)}${r.vol_12m<6?' <span style="color:var(--a);font-size:10px">thin</span>':''}</td>`+
+      `<td class="num"${r.vol_12m<6?' title="few resales — treat the median as indicative"':''}>${fmt0(r.vol_12m)}${r.vol_12m<6?' <span style="color:var(--a);font-size:11px">thin</span>':''}</td>`+
       (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3-text)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+
       `<td class="num ${leaseCls}"${(typeof r.lease==='number'&&r.lease>200)?` title="${fmt0(r.lease)} years remaining"`:''}>${_leaseTxt(r.lease)}</td>`+
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+
@@ -1340,13 +1358,13 @@ function renderRatesChart(){
   let g=`<svg viewBox="0 0 ${W} ${Ht}" width="100%" style="max-width:720px;height:auto">`;
   for(let kk=0;kk<=4;kk++){const v=ymin+(ymax-ymin)*kk/4,y=Y(v);
     g+=`<line x1="${pL}" y1="${y.toFixed(1)}" x2="${W-pR}" y2="${y.toFixed(1)}" stroke="var(--bd)" stroke-width="1"/>`
-      +`<text x="${pL-7}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--t3-text)">${v.toFixed(2)}%</text>`;}
+      +`<text x="${pL-7}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="11" fill="var(--t3-text)">${v.toFixed(2)}%</text>`;}
   const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
   g+=`<path d="M${X(0).toFixed(1)},${Y(ymin).toFixed(1)} L${pts.join(' L')} L${X(n-1).toFixed(1)},${Y(ymin).toFixed(1)} Z" fill="var(--b-bg)"/>`
     +`<polyline points="${pts.join(' ')}" fill="none" stroke="var(--b)" stroke-width="2.2" stroke-linejoin="round"/>`;
   vals.forEach((v,i)=>{const last=i===n-1;g+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${last?4:2.2}" fill="var(--b)"/>`;
     if(last)g+=`<text x="${(X(i)-7).toFixed(1)}" y="${(Y(v)-9).toFixed(1)}" text-anchor="end" font-size="12" font-weight="700" fill="var(--b)">${v.toFixed(2)}%</text>`;});
-  s.forEach((p,i)=>{if(i%3===0||i===n-1){const pr=p[0].split('-');g+=`<text x="${X(i).toFixed(1)}" y="${Ht-9}" text-anchor="middle" font-size="10" fill="var(--t3-text)">${MON[+pr[1]]} '${pr[0].slice(2)}</text>`;}});
+  s.forEach((p,i)=>{if(i%3===0||i===n-1){const pr=p[0].split('-');g+=`<text x="${X(i).toFixed(1)}" y="${Ht-9}" text-anchor="middle" font-size="11" fill="var(--t3-text)">${MON[+pr[1]]} '${pr[0].slice(2)}</text>`;}});
   g+=`</svg>`; el.innerHTML=g;
   const cur=vals[n-1], first=vals[0];
   const now=$('sora-now'); if(now) now.innerHTML=`It is about <b>${cur.toFixed(2)}%</b> now, down from ${first.toFixed(2)}% ${n-1} months earlier.`;
