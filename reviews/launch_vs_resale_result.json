@@ -603,6 +603,109 @@
         "share_positive_pct": 100.0
       }
     },
+    "district_coverage": {
+      "CCR": {
+        "districts_with_new_sales": 6,
+        "surviving_85plus": 3,
+        "share": 0.5,
+        "all_districts": [
+          "01",
+          "02",
+          "07",
+          "09",
+          "10",
+          "11"
+        ]
+      },
+      "OCR": {
+        "districts_with_new_sales": 15,
+        "surviving_85plus": 9,
+        "share": 0.6,
+        "all_districts": [
+          "05",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27"
+        ]
+      },
+      "RCR": {
+        "districts_with_new_sales": 14,
+        "surviving_85plus": 9,
+        "share": 0.64,
+        "all_districts": [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "08",
+          "12",
+          "13",
+          "14",
+          "15",
+          "19",
+          "20",
+          "21"
+        ]
+      }
+    },
+    "paired_lease_effect_pp": {
+      "CCR": {
+        "n": 69,
+        "median": 2.98,
+        "mean": 5.94,
+        "p10": -2.04,
+        "p25": 0.0,
+        "p75": 11.34,
+        "p90": 17.55,
+        "share_positive_pct": 68.1,
+        "districts": 3,
+        "feasible": true,
+        "baseline_on_shared": 38.48,
+        "lease_matched_on_shared": 31.78
+      },
+      "OCR": {
+        "n": 277,
+        "median": 11.8,
+        "mean": 17.25,
+        "p10": 0.97,
+        "p25": 4.43,
+        "p75": 25.29,
+        "p90": 44.89,
+        "share_positive_pct": 96.4,
+        "districts": 9,
+        "feasible": true,
+        "baseline_on_shared": 46.19,
+        "lease_matched_on_shared": 30.3
+      },
+      "RCR": {
+        "n": 245,
+        "median": 4.27,
+        "mean": 10.32,
+        "p10": 0.0,
+        "p25": 0.52,
+        "p75": 14.52,
+        "p90": 27.66,
+        "share_positive_pct": 84.9,
+        "districts": 9,
+        "feasible": true,
+        "baseline_on_shared": 37.5,
+        "lease_matched_on_shared": 30.16
+      }
+    },
+    "_paired_note": "Median of (baseline gap - 85+ gap) over the new-sale observations that clear the cell floor in BOTH pools. District, quarter, size band and project are identical on each side, so this isolates the comparator's lease from the district-mix change that the segment-level figures confound.",
     "_ceiling": "Bounds the blend, does not decompose it: lease and newness are collinear by construction, so the true newness premium is no larger than the lease-matched gap, not equal to it."
   },
   "test_b_premium_recovery": {

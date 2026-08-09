@@ -56,7 +56,9 @@ Same new sales throughout. Only the comparator changes.
 confirming a lease effect; a flat gradient would have falsified the premise.
 
 Share of the gap attributable to lease, measured against the leasehold-only baseline in the last
-row: **OCR 39%, RCR 32%, CCR 21%.**
+row: OCR 39%, RCR 32%, CCR 21%. **These are superseded** — see *The paired test* below, which
+holds district and project fixed and puts the lease effect at 26% / 11% / 8%. The difference is
+composition, not lease.
 
 Note that baseline carefully. It is leasehold on **both** sides, because every lease bucket is
 leasehold-only, and anchoring the gradient to a pool that also contained freehold would divide by
@@ -84,6 +86,48 @@ as a control should rather than replicating the primary.
 Every guard was verified **by making it fail**, not by watching it pass. The mutation sweep is
 the reason the tenure match has a fixture at all, and two mutations that first read as dead
 guards were bad mutations — the runner now asserts an anchor is unique before applying it.
+
+## The paired test — and a correction to this record's own attribution
+
+Added 2026-08-09 after the CCR district caveat was run down properly. **It changes the headline
+attribution, and not in our favour.**
+
+Going from the unrestricted baseline to the 85+ bucket moves two things at once: the comparator's
+lease, and *which observations survive the cell floor*. CCR keeps 3 of its 6 districts, RCR 9 of
+14, OCR 9 of 15. So the segment-level fall cannot be read as the lease effect — part of it is
+composition. Nothing at segment level can separate them.
+
+The paired test can. It keeps only the new-sale observations that clear the floor in **both**
+pools and differences them, so district, quarter, size band and project are identical on each
+side and cancel exactly.
+
+| Segment | Segment-level fall | **Paired (lease alone)** | Lease as share of the gap | n |
+|---|---:|---:|---:|---:|
+| CCR | 8.3pp | **3.0pp** | 8% | 69 |
+| RCR | 13.9pp | **4.3pp** | 11% | 245 |
+| OCR | 19.7pp | **11.8pp** | 26% | 277 |
+
+**Roughly half to two-thirds of what this record attributed to lease was composition.** The
+earlier figures — OCR 39%, RCR 32%, CCR 21% — are superseded by 26% / 11% / 8%. The mechanism is
+visible in the baselines: restricted to the shared observations, the RCR baseline falls from
++44.1% to +37.5%, so 6.6pp of its apparent lease effect was simply which homes survived.
+
+What survives unchanged:
+
+- **The lease-matched level.** +31.8 / +30.3 / +30.2% is the gap against 85+ leasehold resale and
+  is unaffected — it is a direct comparison, not a difference of two.
+- **The convergence finding**, which is the publishable result and is if anything strengthened:
+  the three segments sit within 1.6pp of each other on the lease-matched basis.
+- **The monotone gradient**, which is a within-comparison shape.
+
+What does not survive is the sentence "roughly a third of the headline gap is vintage". On the
+only estimator that controls for composition it is about a tenth in RCR and a quarter in OCR.
+
+### Risk 1 is now closed by design rather than caveated
+
+The CCR three-district caveat was the reason for this test. It no longer needs a caveat about
+district mix, because the paired estimator holds district fixed by construction. What remains is
+plain sample size — n=69 across 3 districts — which is a precision statement, not a bias one.
 
 ## Risk 1 of the pre-registration — thin cells wearing the clothes of a finding
 
