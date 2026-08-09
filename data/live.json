@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "fetched": "2026-08-08T12:13:55Z",
+  "fetched": "2026-08-09T10:34:54Z",
   "errors": {}
  },
  "ura_ppi": {
@@ -55250,6 +55250,14 @@
    2.13,
    2.83
   ],
+  "harmonised_only": {
+   "n": 7,
+   "median": 2.33,
+   "range": [
+    2.13,
+    2.83
+   ]
+  },
   "factor_median": 2.31,
   "n": 8,
   "award_span": [
@@ -55279,7 +55287,8 @@
     "land_psf_ppr": 1617,
     "launch_psf": 3437,
     "takeup": 0.814,
-    "multiple": 2.13
+    "multiple": 2.13,
+    "gfa_basis": "harmonised"
    },
    {
     "project": "NAVA GROVE",
@@ -55289,7 +55298,8 @@
     "land_psf_ppr": 1223,
     "launch_psf": 2686,
     "takeup": 0.996,
-    "multiple": 2.2
+    "multiple": 2.2,
+    "gfa_basis": "harmonised"
    },
    {
     "project": "8@BT",
@@ -55299,7 +55309,8 @@
     "land_psf_ppr": 1343,
     "launch_psf": 3017,
     "takeup": 0.703,
-    "multiple": 2.25
+    "multiple": 2.25,
+    "gfa_basis": "pre-harmonised"
    },
    {
     "project": "NORWOOD GRAND",
@@ -55309,7 +55320,8 @@
     "land_psf_ppr": 904,
     "launch_psf": 2072,
     "takeup": 0.905,
-    "multiple": 2.29
+    "multiple": 2.29,
+    "gfa_basis": "harmonised"
    },
    {
     "project": "PROMENADE PEAK",
@@ -55319,7 +55331,8 @@
     "land_psf_ppr": 1304,
     "launch_psf": 3037,
     "takeup": 0.713,
-    "multiple": 2.33
+    "multiple": 2.33,
+    "gfa_basis": "harmonised"
    },
    {
     "project": "RIVER GREEN",
@@ -55329,7 +55342,8 @@
     "land_psf_ppr": 1325,
     "launch_psf": 3111,
     "takeup": 0.939,
-    "multiple": 2.35
+    "multiple": 2.35,
+    "gfa_basis": "harmonised"
    },
    {
     "project": "THE SEN",
@@ -55339,7 +55353,8 @@
     "land_psf_ppr": 841,
     "launch_psf": 2341,
     "takeup": 0.383,
-    "multiple": 2.78
+    "multiple": 2.78,
+    "gfa_basis": "harmonised"
    },
    {
     "project": "ZYON GRAND",
@@ -55349,11 +55364,12 @@
     "land_psf_ppr": 1202,
     "launch_psf": 3400,
     "takeup": 0.898,
-    "multiple": 2.83
+    "multiple": 2.83,
+    "gfa_basis": "harmonised"
    }
   ],
   "dropped_outliers": [],
   "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity",
-  "note": "Current median asking $psf of a selling project over the $psf ppr its developer paid for the site. State land only. Not a developer margin - it also carries whatever the market did between award and today."
+  "note": "A selling project's median $psf for ONE reference month, over the $psf ppr its developer paid for the site. Read the range, not the third digit: across the pairs that month carries only a couple of dozen transactions in total, and recomputing on the previous month moves the median by about 0.15x. State land only. Not a developer margin - it also carries whatever the market did between award and today. The two sides are measured differently: land is priced on gross floor area and the launch price on strata area, and URA harmonised those definitions for applications from 2023-06-01 - see gfa_basis on each pair."
  }
 }
