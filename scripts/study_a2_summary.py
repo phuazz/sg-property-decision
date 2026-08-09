@@ -43,6 +43,26 @@ def main(path="reviews/launch_vs_resale_result.json") -> int:
             if lost:
                 print(f"          districts lost vs test A ({len(lost)}): {', '.join(map(str, lost))}")
 
+    dc = r.get("district_coverage") or {}
+    if dc:
+        print("
+DISTRICT COVERAGE — how much of each segment survives the 85+ restriction:")
+        for seg, d in dc.items():
+            print(f"  {seg}: {d['surviving_85plus']} of {d['districts_with_new_sales']} districts"
+                  f"  ({d['share']})   all: {','.join(d['all_districts'])}")
+
+    pe = r.get("paired_lease_effect_pp") or {}
+    if pe:
+        print("
+PAIRED LEASE EFFECT — same observation, two comparator pools.")
+        print("         District, quarter, band and project are identical on each side,")
+        print("         so this isolates lease from the district-mix change above.")
+        for seg, d in pe.items():
+            flag = "" if d.get("feasible") else "   INFEASIBLE"
+            print(f"  {seg}: baseline {d['baseline_on_shared']:+.1f}% - lease-matched "
+                  f"{d['lease_matched_on_shared']:+.1f}% = {d['median']:+.1f}pp"
+                  f"   n={d['n']} districts={d['districts']}{flag}")
+
     fh = (r.get("freehold_control") or {}).get("FH") or {}
     print("\nFREEHOLD CONTROL — freehold new sales against freehold resale:")
     for seg, d in fh.items():

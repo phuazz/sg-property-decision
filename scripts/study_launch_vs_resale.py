@@ -322,8 +322,9 @@ def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
             continue
         pools[lab][key].append((r["project"], r["psf"]))
 
-    def gap_against(pool, want_tenure):
-        """Returns {segment: [gap%]}, plus the districts and projects that survived."""
+    def gap_against(pool, want_tenure, keyed=None):
+        """Returns {segment: [gap%]}, the districts and projects that survived, and, if `keyed`
+        is passed, a {key: gap%} map so two pools can be compared observation by observation."""
         prem, districts, comparators = defaultdict(list), defaultdict(set), []
         for (proj, q, band, ten, district, seg), (npsf, _n) in new.items():
             if ten != want_tenure:
@@ -331,9 +332,12 @@ def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
             vals = [p for pj, p in pool.get((district, q, band), []) if pj != proj]
             if len(vals) < MIN_CELL_N:
                 continue
-            prem[seg].append((npsf / statistics.median(vals) - 1) * 100.0)
+            g = (npsf / statistics.median(vals) - 1) * 100.0
+            prem[seg].append(g)
             districts[seg].add(district)
             comparators += [pj for pj, _p in pool.get((district, q, band), []) if pj != proj]
+            if keyed is not None:
+                keyed[(proj, q, band, district, seg)] = g
         return prem, districts, comparators
 
     # ---- the baseline the gradient is read against -------------------------------------------
@@ -342,17 +346,19 @@ def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
     # the buckets it is meant to anchor, and the "share of the gap that is lease" would be measured
     # against the wrong denominator. This is NOT test A - test A matches tenure on both sides and
     # includes freehold new sales, and is reported separately as test_a_launch_premium_pct.
+    keyed_base, keyed_85 = {}, {}
     lh_pool = defaultdict(list)
     for r in rows:
         if r["sale"] == SALE_RESALE and r["lease"] != "FH" and isinstance(r["lease"], int):
             lh_pool[(r["district"], r["quarter"], r["band"])].append((r["project"], r["psf"]))
-    base_prem, base_districts, _ = gap_against(lh_pool, "LH")
+    base_prem, base_districts, _ = gap_against(lh_pool, "LH", keyed=keyed_base)
 
     out = {"primary": {}, "gradient": {}, "freehold_control": {}, "coverage": {}}
 
     for lab in labels:
         want = "FH" if lab == "FH" else "LH"
-        prem, districts, comparators = gap_against(pools[lab], want)
+        prem, districts, comparators = gap_against(pools[lab], want,
+                                                   keyed=(keyed_85 if lab == "85+" else None))
         block = {}
         for seg, vals in sorted(prem.items()):
             d = _describe(vals)
@@ -368,12 +374,54 @@ def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
 
     out["primary"] = out["gradient"].get("85+", {})
     out["unrestricted_leasehold_baseline"] = {seg: _describe(v) for seg, v in sorted(base_prem.items()) if v}
+    seg_districts = defaultdict(set)
+    for (_proj, _q, _band, _ten, district, seg) in new:
+        seg_districts[seg].add(district)
+    # "CCR keeps 3 districts" is only readable against how many CCR has. State both.
+    out["district_coverage"] = {}
+    for seg in sorted(seg_districts):
+        surv = (out["gradient"].get("85+", {}).get(seg) or {}).get("districts")
+        out["district_coverage"][seg] = {
+            "districts_with_new_sales": len(seg_districts[seg]),
+            "surviving_85plus": surv,
+            "share": (round(surv / len(seg_districts[seg]), 2) if surv else None),
+            "all_districts": sorted(seg_districts[seg]),
+        }
     out["coverage"] = {
         "min_comparators_per_cell": MIN_CELL_N,
         "min_comparisons_per_segment": MIN_SEGMENT_N,
         "lease_unparseable_resale_rows": unparseable,
         "lease_measured_from": "current year, as fetch_data.py::_lease_left does",
     }
+    # ---- the paired test ---------------------------------------------------------------------
+    # The headline comparison (baseline vs 85+) moves two things at once: the lease restriction,
+    # and WHICH districts survive it — CCR loses two of five. So part of the fall from +40.1% to
+    # +31.8% could be district mix rather than lease, and the segment-level numbers cannot tell
+    # them apart. This can: it keeps only the new-sale observations that clear the cell floor in
+    # BOTH pools and differences them. Same project, same quarter, same size band, same district —
+    # so district, vintage-of-district and project mix all cancel, and what is left is the lease
+    # of the comparator. It is the right way to close the pre-registration's risk 1.
+    shared = sorted(set(keyed_base) & set(keyed_85))
+    paired = defaultdict(list)
+    paired_dist = defaultdict(set)
+    for k in shared:
+        seg = k[4]
+        paired[seg].append(keyed_base[k] - keyed_85[k])
+        paired_dist[seg].add(k[3])
+    out["paired_lease_effect_pp"] = {}
+    for seg, vals in sorted(paired.items()):
+        d = _describe(vals)
+        d["districts"] = len(paired_dist[seg])
+        d["feasible"] = len(vals) >= MIN_SEGMENT_N
+        # what the same observations read on each side, so the difference can be checked by eye
+        d["baseline_on_shared"] = round(statistics.median([keyed_base[k] for k in shared if k[4] == seg]), 2)
+        d["lease_matched_on_shared"] = round(statistics.median([keyed_85[k] for k in shared if k[4] == seg]), 2)
+        out["paired_lease_effect_pp"][seg] = d
+    out["_paired_note"] = ("Median of (baseline gap - 85+ gap) over the new-sale observations that clear "
+                           "the cell floor in BOTH pools. District, quarter, size band and project are "
+                           "identical on each side, so this isolates the comparator's lease from the "
+                           "district-mix change that the segment-level figures confound.")
+
     out["_ceiling"] = ("Bounds the blend, does not decompose it: lease and newness are collinear "
                        "by construction, so the true newness premium is no larger than the "
                        "lease-matched gap, not equal to it.")
@@ -659,6 +707,36 @@ def self_test() -> int:
     solo = flatten([proj("SOLO", units(1200, MIN_CELL_N, "0324", SALE_NEW),
                                  units(1000, MIN_CELL_N, "0324", SALE_RESALE))])
     check("A2 self-contamination guard", test_a2_lease_matched(solo)["primary"], {})
+
+    # The paired test: same observation, two comparator pools, difference is the lease effect.
+    # D9 new sale at 1200. An 85+ pool at 1000 (gap +20%) and a <55 pool at 800 in the SAME cell,
+    # so the unrestricted baseline is the median of all ten resales = 900 (gap +33.33%).
+    # Paired difference must be 33.33 - 20 = 13.33pp, and must not depend on district mix.
+    def d9(psf, sale, tenure, sqm=100):
+        out = []
+        for _ in range(MIN_CELL_N):
+            t = _tx("0324", psf * sqm * SQM_TO_SQFT, sqm, sale, tenure)
+            t["district"] = "09"
+            out.append(t)
+        return out
+    pr = flatten([
+        {"project": "PNEW", "marketSegment": "CCR", "transaction": d9(1200, SALE_NEW, LONG)},
+        {"project": "PLONG", "marketSegment": "CCR", "transaction": d9(1000, SALE_RESALE, LONG)},
+        {"project": "PSHORT", "marketSegment": "CCR", "transaction": d9(800, SALE_RESALE, SHORT)},
+    ])
+    pres = test_a2_lease_matched(pr)
+    pe = pres["paired_lease_effect_pp"].get("CCR", {})
+    check("paired: 85+ gap on the shared set", pe.get("lease_matched_on_shared"), 20.0)
+    check("paired: baseline gap on the shared set", pe.get("baseline_on_shared"), 33.33)
+    check("paired: lease effect is the difference", round(pe.get("median", 0), 2), 13.33)
+    check("paired: thin segment flagged", pe.get("feasible"), False)
+    # A bucket with no overlap must produce no paired result rather than a spurious one.
+    noover = flatten([
+        {"project": "QNEW", "marketSegment": "CCR", "transaction": d9(1200, SALE_NEW, LONG)},
+        {"project": "QSHORT", "marketSegment": "CCR", "transaction": d9(800, SALE_RESALE, SHORT)},
+    ])
+    check("paired: no overlap gives no result",
+          test_a2_lease_matched(noover)["paired_lease_effect_pp"], {})
 
     # District must be read off the transaction, and two districts must never pool together.
     # This is the bug that made the first live A2 run report districts=1 in every cell: the
