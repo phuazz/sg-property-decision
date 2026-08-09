@@ -1,5 +1,18 @@
 # New launch versus resale — can it be tested on public data?
 
+> **VOID — the entry gap only, corrected 2026-08-09.** This study's comparator pool was keyed on a
+> district field read off the project object, where `PMI_Resi_Transaction` does not carry it — the
+> field sits on each transaction. Every row therefore had `district=None`, and all 28 districts
+> merged into a single national pool. The entry-gap figures below (**+34.4 OCR / +62.1 RCR /
+> +82.7 CCR**) are not district-matched and are **void**. Corrected, they are **+48.5 OCR /
+> +43.2 RCR / +34.0 CCR** — which reverses the order of the three segments.
+>
+> The flagship finding — that test B is **infeasible** on free URA data — is **unaffected**. It
+> rests on coverage counting (98 genuine launches, 0 qualifying), not on the comparator pool.
+>
+> See `reviews/2026-08-09_lease-matched-entry-gap.md` for the diagnosis, the corrected figures and
+> the regression test that now fails if the pools ever merge again.
+
 - Run: 2026-08-01 (Sat) · `scripts/study_launch_vs_resale.py` via the `study-launch-vs-resale`
   workflow (runs in CI so `URA_ACCESS_KEY` never leaves GitHub)
 - Data: URA `PMI_Resi_Transaction`, condo/apartment, observed window **2021Q3 – 2026Q3**
