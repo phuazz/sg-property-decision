@@ -702,9 +702,14 @@ def ura_new_launches():
             if not rec or not rec.get("medianPrice"):
                 continue
             units, sold = rec.get("unitsAvail") or rec.get("launchedToDate"), rec.get("soldToDate")
+            # The number of units actually behind medianPrice this month. Previously inferred by
+            # differencing soldToDate across weekly snapshots; URA publishes it directly, so the
+            # thinness of a monthly median is now exact rather than estimated.
+            in_month = rec.get("soldInMonth")
             rows.append({"project": p.get("project"), "developer": p.get("developer"),
                          "region": p.get("marketSegment"), "district": "D" + str(p.get("district") or "").lstrip("0"),
                          "psf": rec.get("medianPrice"), "units": units, "sold": sold,
+                         "sold_in_month": in_month,
                          "takeup": (round(sold / units, 3) if units and sold else None)})
         rows.sort(key=lambda r: -(r.get("sold") or 0))
         return {"asof": working, "n": len(rows), "rows": rows,
@@ -780,6 +785,9 @@ def land_to_launch(launches):
             "project": p["project"], "site": site, "region": p.get("region"),
             "award": r["award"].strftime("%Y-%m-%d"), "land_psf_ppr": int(r["psf_ppr"]),
             "launch_psf": p["psf"], "takeup": p.get("takeup"),
+            # How many units that month's median actually rests on. The review record had to
+            # estimate this by differencing soldToDate across weekly snapshots; URA publishes it.
+            "sold_in_month": p.get("sold_in_month"),
             "multiple": round(p["psf"] / float(r["psf_ppr"]), 2),
             # The two sides of this ratio are measured on different bases: the land rate is priced
             # on GROSS FLOOR AREA, the launch price is charged on STRATA area. URA harmonised the
@@ -847,13 +855,15 @@ def land_to_launch(launches):
             "dropped_outliers": [{k: x[k] for k in ("project", "site", "award", "multiple")}
                                  for x in dropped],
             "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity",
-            # "asking" was an unverified label: URA publishes medianPrice inside a TRANSACTIONS
-            # dataset, alongside soldToDate. Neither reading is established against URA's data
-            # dictionary, so the note now states only what is checkable - it is a median for one
-            # reference month - and the open question is recorded in
-            # reviews/2026-08-08_land-to-launch-multiple.md.
-            "note": ("A selling project's median $psf for ONE reference month, over the $psf ppr its "
-                     "developer paid for the site. Read the range, not the third digit: across the "
+            # RESOLVED 2026-08-09 against URA's own e-Service description: "The prices and number
+            # of units sold in the month are based on Options to Purchase issued by developers to
+            # purchasers", and a unit counts as sold once the OTP is given against a booking fee.
+            # So medianPrice is TRANSACTED, not asking - the label this project used for months was
+            # wrong, and wrong in the direction that understated the evidence. It remains a single
+            # month, and soldInMonth now says on how many units.
+            "note": ("A selling project's median $psf of units SOLD in ONE reference month (URA records a "
+                     "sale on the Option to Purchase), over the $psf ppr its developer paid for the "
+                     "site. Read the range, not the third digit: across the "
                      "pairs that month carries only a couple of dozen transactions in total, and "
                      "recomputing on the previous month moves the median by about 0.15x. State land "
                      "only. Not a developer margin - it also carries whatever the market did between "
