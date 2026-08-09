@@ -8,33 +8,33 @@
   ],
   "test_a_launch_premium_pct": {
     "CCR": {
-      "n": 333,
-      "median": 82.69,
-      "mean": 85.14,
-      "p10": 59.76,
-      "p25": 70.71,
-      "p75": 97.22,
-      "p90": 112.74,
-      "share_positive_pct": 100.0
+      "n": 293,
+      "median": 42.19,
+      "mean": 45.32,
+      "p10": 23.24,
+      "p25": 31.69,
+      "p75": 56.68,
+      "p90": 70.42,
+      "share_positive_pct": 99.3
     },
     "OCR": {
-      "n": 493,
-      "median": 34.36,
-      "mean": 33.98,
-      "p10": 14.91,
-      "p25": 24.35,
-      "p75": 42.57,
-      "p90": 51.07,
-      "share_positive_pct": 99.4
+      "n": 405,
+      "median": 51.99,
+      "mean": 52.73,
+      "p10": 26.15,
+      "p25": 37.15,
+      "p75": 68.66,
+      "p90": 79.6,
+      "share_positive_pct": 99.8
     },
     "RCR": {
-      "n": 547,
-      "median": 62.11,
-      "mean": 63.6,
-      "p10": 36.17,
-      "p25": 48.22,
-      "p75": 76.35,
-      "p90": 93.28,
+      "n": 483,
+      "median": 46.85,
+      "mean": 49.35,
+      "p10": 24.15,
+      "p25": 32.84,
+      "p75": 61.0,
+      "p90": 78.18,
       "share_positive_pct": 100.0
     }
   },
@@ -42,161 +42,161 @@
     "by_year": {
       "2021": {
         "CCR": {
-          "n": 53,
-          "median": 91.83,
-          "mean": 98.3,
-          "p10": 68.23,
-          "p25": 78.23,
-          "p75": 109.14,
-          "p90": 139.34,
+          "n": 43,
+          "median": 43.23,
+          "mean": 49.39,
+          "p10": 29.62,
+          "p25": 38.68,
+          "p75": 56.82,
+          "p90": 74.85,
           "share_positive_pct": 100.0
         },
         "RCR": {
-          "n": 89,
-          "median": 60.43,
-          "mean": 64.27,
-          "p10": 32.73,
-          "p25": 42.64,
-          "p75": 78.16,
-          "p90": 103.36,
+          "n": 65,
+          "median": 41.94,
+          "mean": 45.05,
+          "p10": 23.41,
+          "p25": 32.32,
+          "p75": 55.53,
+          "p90": 79.04,
           "share_positive_pct": 100.0
         },
         "OCR": {
-          "n": 85,
-          "median": 28.51,
-          "mean": 27.85,
-          "p10": 8.97,
-          "p25": 19.98,
-          "p75": 36.26,
-          "p90": 44.86,
-          "share_positive_pct": 98.8
+          "n": 74,
+          "median": 39.06,
+          "mean": 42.94,
+          "p10": 24.61,
+          "p25": 32.55,
+          "p75": 47.33,
+          "p90": 68.05,
+          "share_positive_pct": 100.0
         }
       },
       "2022": {
         "CCR": {
-          "n": 123,
-          "median": 84.25,
-          "mean": 85.98,
-          "p10": 65.88,
-          "p25": 73.34,
-          "p75": 95.88,
-          "p90": 108.36,
-          "share_positive_pct": 100.0
+          "n": 102,
+          "median": 41.82,
+          "mean": 43.67,
+          "p10": 26.78,
+          "p25": 33.17,
+          "p75": 51.88,
+          "p90": 63.94,
+          "share_positive_pct": 98.0
         },
         "RCR": {
-          "n": 128,
-          "median": 66.44,
-          "mean": 68.04,
-          "p10": 31.87,
-          "p25": 44.55,
-          "p75": 89.64,
-          "p90": 109.18,
+          "n": 109,
+          "median": 44.13,
+          "mean": 44.66,
+          "p10": 22.71,
+          "p25": 31.28,
+          "p75": 54.12,
+          "p90": 69.0,
           "share_positive_pct": 100.0
         },
         "OCR": {
-          "n": 96,
-          "median": 33.94,
-          "mean": 32.26,
-          "p10": 12.43,
-          "p25": 21.32,
-          "p75": 40.84,
-          "p90": 53.95,
-          "share_positive_pct": 99.0
+          "n": 92,
+          "median": 48.19,
+          "mean": 47.27,
+          "p10": 22.25,
+          "p25": 33.41,
+          "p75": 60.71,
+          "p90": 69.92,
+          "share_positive_pct": 98.9
         }
       },
       "2023": {
         "CCR": {
-          "n": 75,
-          "median": 81.86,
-          "mean": 82.38,
-          "p10": 58.26,
-          "p25": 66.59,
-          "p75": 97.22,
-          "p90": 109.32,
+          "n": 72,
+          "median": 43.06,
+          "mean": 43.9,
+          "p10": 17.87,
+          "p25": 29.61,
+          "p75": 60.04,
+          "p90": 73.91,
           "share_positive_pct": 100.0
         },
         "RCR": {
-          "n": 77,
-          "median": 67.89,
-          "mean": 67.73,
-          "p10": 43.35,
-          "p25": 53.57,
-          "p75": 79.11,
-          "p90": 96.82,
+          "n": 68,
+          "median": 56.3,
+          "mean": 53.79,
+          "p10": 24.73,
+          "p25": 33.51,
+          "p75": 69.96,
+          "p90": 81.16,
           "share_positive_pct": 100.0
         },
         "OCR": {
-          "n": 62,
-          "median": 37.91,
-          "mean": 35.82,
-          "p10": 15.85,
-          "p25": 25.88,
-          "p75": 46.94,
-          "p90": 51.07,
-          "share_positive_pct": 98.4
+          "n": 51,
+          "median": 49.43,
+          "mean": 54.63,
+          "p10": 23.91,
+          "p25": 36.37,
+          "p75": 74.02,
+          "p90": 92.72,
+          "share_positive_pct": 100.0
         }
       },
       "2024": {
         "CCR": {
           "n": 22,
-          "median": 83.53,
-          "mean": 85.95,
-          "p10": 52.46,
-          "p25": 58.22,
-          "p75": 103.91,
-          "p90": 124.89,
+          "median": 38.91,
+          "mean": 44.15,
+          "p10": 12.01,
+          "p25": 26.22,
+          "p75": 62.33,
+          "p90": 72.22,
           "share_positive_pct": 100.0
         },
         "RCR": {
-          "n": 76,
-          "median": 64.26,
-          "mean": 63.97,
-          "p10": 43.2,
-          "p25": 55.44,
-          "p75": 73.69,
-          "p90": 80.94,
+          "n": 74,
+          "median": 56.86,
+          "mean": 58.13,
+          "p10": 24.35,
+          "p25": 37.49,
+          "p75": 71.73,
+          "p90": 91.04,
           "share_positive_pct": 100.0
         },
         "OCR": {
-          "n": 101,
-          "median": 35.42,
-          "mean": 34.95,
-          "p10": 21.31,
-          "p25": 27.99,
-          "p75": 40.92,
-          "p90": 49.22,
+          "n": 68,
+          "median": 64.48,
+          "mean": 62.64,
+          "p10": 30.55,
+          "p25": 47.4,
+          "p75": 79.26,
+          "p90": 90.31,
           "share_positive_pct": 100.0
         }
       },
       "2025": {
         "CCR": {
-          "n": 43,
-          "median": 71.78,
-          "mean": 75.62,
-          "p10": 50.14,
-          "p25": 57.77,
-          "p75": 87.57,
-          "p90": 110.65,
+          "n": 41,
+          "median": 43.0,
+          "mean": 49.38,
+          "p10": 29.0,
+          "p25": 32.56,
+          "p75": 59.25,
+          "p90": 68.87,
           "share_positive_pct": 100.0
         },
         "RCR": {
-          "n": 114,
-          "median": 59.14,
-          "mean": 59.67,
-          "p10": 36.17,
-          "p25": 50.11,
-          "p75": 68.14,
-          "p90": 79.55,
+          "n": 110,
+          "median": 46.52,
+          "mean": 49.07,
+          "p10": 25.9,
+          "p25": 32.23,
+          "p75": 58.5,
+          "p90": 74.15,
           "share_positive_pct": 100.0
         },
         "OCR": {
-          "n": 100,
-          "median": 37.52,
-          "mean": 36.46,
-          "p10": 17.53,
-          "p25": 27.66,
-          "p75": 44.78,
-          "p90": 55.63,
+          "n": 76,
+          "median": 55.94,
+          "mean": 55.98,
+          "p10": 34.74,
+          "p25": 47.19,
+          "p75": 72.57,
+          "p90": 78.52,
           "share_positive_pct": 100.0
         }
       }
@@ -205,13 +205,405 @@
       {
         "year": 2026,
         "n": {
-          "CCR": 17,
-          "RCR": 63,
-          "OCR": 49
+          "CCR": 13,
+          "RCR": 57,
+          "OCR": 44
         }
       }
     ],
     "min_cells_per_segment_year": 20
+  },
+  "test_a2_lease_matched": {
+    "primary": {
+      "CCR": {
+        "n": 69,
+        "median": 31.78,
+        "mean": 33.1,
+        "p10": 17.2,
+        "p25": 25.79,
+        "p75": 41.16,
+        "p90": 48.02,
+        "share_positive_pct": 100.0,
+        "districts": 3,
+        "districts_lost_vs_test_a": [
+          "01",
+          "02"
+        ],
+        "feasible": true,
+        "comparator_median_mrt_m": 550
+      },
+      "OCR": {
+        "n": 277,
+        "median": 30.3,
+        "mean": 30.63,
+        "p10": 13.95,
+        "p25": 21.93,
+        "p75": 38.42,
+        "p90": 48.11,
+        "share_positive_pct": 98.9,
+        "districts": 9,
+        "districts_lost_vs_test_a": [
+          "25",
+          "26"
+        ],
+        "feasible": true,
+        "comparator_median_mrt_m": 550
+      },
+      "RCR": {
+        "n": 245,
+        "median": 30.16,
+        "mean": 31.44,
+        "p10": 15.08,
+        "p25": 20.56,
+        "p75": 41.43,
+        "p90": 48.12,
+        "share_positive_pct": 100.0,
+        "districts": 9,
+        "districts_lost_vs_test_a": [
+          "01",
+          "02",
+          "04",
+          "20"
+        ],
+        "feasible": true,
+        "comparator_median_mrt_m": 550
+      }
+    },
+    "gradient": {
+      "85+": {
+        "CCR": {
+          "n": 69,
+          "median": 31.78,
+          "mean": 33.1,
+          "p10": 17.2,
+          "p25": 25.79,
+          "p75": 41.16,
+          "p90": 48.02,
+          "share_positive_pct": 100.0,
+          "districts": 3,
+          "districts_lost_vs_test_a": [
+            "01",
+            "02"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 550
+        },
+        "OCR": {
+          "n": 277,
+          "median": 30.3,
+          "mean": 30.63,
+          "p10": 13.95,
+          "p25": 21.93,
+          "p75": 38.42,
+          "p90": 48.11,
+          "share_positive_pct": 98.9,
+          "districts": 9,
+          "districts_lost_vs_test_a": [
+            "25",
+            "26"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 550
+        },
+        "RCR": {
+          "n": 245,
+          "median": 30.16,
+          "mean": 31.44,
+          "p10": 15.08,
+          "p25": 20.56,
+          "p75": 41.43,
+          "p90": 48.12,
+          "share_positive_pct": 100.0,
+          "districts": 9,
+          "districts_lost_vs_test_a": [
+            "01",
+            "02",
+            "04",
+            "20"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 550
+        }
+      },
+      "70-84": {
+        "CCR": {
+          "n": 46,
+          "median": 43.8,
+          "mean": 48.24,
+          "p10": 28.09,
+          "p25": 36.48,
+          "p75": 61.94,
+          "p90": 76.41,
+          "share_positive_pct": 100.0,
+          "districts": 5,
+          "districts_lost_vs_test_a": [],
+          "feasible": true,
+          "comparator_median_mrt_m": 314
+        },
+        "OCR": {
+          "n": 275,
+          "median": 52.52,
+          "mean": 53.27,
+          "p10": 31.41,
+          "p25": 40.4,
+          "p75": 67.74,
+          "p90": 74.02,
+          "share_positive_pct": 100.0,
+          "districts": 10,
+          "districts_lost_vs_test_a": [
+            "26"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 314
+        },
+        "RCR": {
+          "n": 198,
+          "median": 50.38,
+          "mean": 52.12,
+          "p10": 30.95,
+          "p25": 39.86,
+          "p75": 62.92,
+          "p90": 76.21,
+          "share_positive_pct": 100.0,
+          "districts": 13,
+          "districts_lost_vs_test_a": [],
+          "feasible": true,
+          "comparator_median_mrt_m": 314
+        }
+      },
+      "55-69": {
+        "CCR": {
+          "n": 16,
+          "median": 78.78,
+          "mean": 77.01,
+          "p10": 53.34,
+          "p25": 58.67,
+          "p75": 91.66,
+          "p90": 99.5,
+          "share_positive_pct": 100.0,
+          "districts": 3,
+          "districts_lost_vs_test_a": [
+            "01",
+            "02"
+          ],
+          "feasible": false,
+          "comparator_median_mrt_m": 440
+        },
+        "OCR": {
+          "n": 218,
+          "median": 85.08,
+          "mean": 84.77,
+          "p10": 57.53,
+          "p25": 69.19,
+          "p75": 99.01,
+          "p90": 111.4,
+          "share_positive_pct": 100.0,
+          "districts": 9,
+          "districts_lost_vs_test_a": [
+            "17",
+            "25"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 440
+        },
+        "RCR": {
+          "n": 122,
+          "median": 72.67,
+          "mean": 77.43,
+          "p10": 50.56,
+          "p25": 58.64,
+          "p75": 88.15,
+          "p90": 120.93,
+          "share_positive_pct": 100.0,
+          "districts": 7,
+          "districts_lost_vs_test_a": [
+            "01",
+            "02",
+            "04",
+            "08",
+            "13",
+            "20"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 440
+        }
+      },
+      "<55": {
+        "CCR": {
+          "n": 2,
+          "median": 138.71,
+          "mean": 138.71,
+          "p10": 115.25,
+          "p25": 115.25,
+          "p75": 162.17,
+          "p90": 162.17,
+          "share_positive_pct": 100.0,
+          "districts": 2,
+          "districts_lost_vs_test_a": [
+            "01",
+            "09",
+            "10"
+          ],
+          "feasible": false,
+          "comparator_median_mrt_m": 348
+        },
+        "OCR": {
+          "n": 2,
+          "median": 113.86,
+          "mean": 113.86,
+          "p10": 112.47,
+          "p25": 112.47,
+          "p75": 115.25,
+          "p90": 115.25,
+          "share_positive_pct": 100.0,
+          "districts": 1,
+          "districts_lost_vs_test_a": [
+            "05",
+            "16",
+            "17",
+            "18",
+            "19",
+            "22",
+            "23",
+            "25",
+            "26",
+            "27"
+          ],
+          "feasible": false,
+          "comparator_median_mrt_m": 348
+        },
+        "RCR": {
+          "n": 44,
+          "median": 125.58,
+          "mean": 122.2,
+          "p10": 87.48,
+          "p25": 115.84,
+          "p75": 134.72,
+          "p90": 143.4,
+          "share_positive_pct": 100.0,
+          "districts": 3,
+          "districts_lost_vs_test_a": [
+            "01",
+            "02",
+            "03",
+            "04",
+            "05",
+            "08",
+            "12",
+            "13",
+            "14",
+            "19"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 348
+        }
+      }
+    },
+    "freehold_control": {
+      "FH": {
+        "CCR": {
+          "n": 189,
+          "median": 41.43,
+          "mean": 43.19,
+          "p10": 22.17,
+          "p25": 32.25,
+          "p75": 52.87,
+          "p90": 63.94,
+          "share_positive_pct": 98.9,
+          "districts": 4,
+          "districts_lost_vs_test_a": [
+            "01",
+            "07"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 445
+        },
+        "OCR": {
+          "n": 58,
+          "median": 52.08,
+          "mean": 48.27,
+          "p10": 18.0,
+          "p25": 33.5,
+          "p75": 62.56,
+          "p90": 69.22,
+          "share_positive_pct": 98.3,
+          "districts": 6,
+          "districts_lost_vs_test_a": [
+            "05",
+            "18",
+            "20",
+            "22",
+            "23",
+            "25",
+            "26",
+            "27"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 445
+        },
+        "RCR": {
+          "n": 129,
+          "median": 55.92,
+          "mean": 55.51,
+          "p10": 34.78,
+          "p25": 44.16,
+          "p75": 67.51,
+          "p90": 78.18,
+          "share_positive_pct": 100.0,
+          "districts": 6,
+          "districts_lost_vs_test_a": [
+            "01",
+            "02",
+            "03",
+            "04",
+            "08",
+            "19",
+            "20"
+          ],
+          "feasible": true,
+          "comparator_median_mrt_m": 445
+        }
+      }
+    },
+    "coverage": {
+      "min_comparators_per_cell": 5,
+      "min_comparisons_per_segment": 20,
+      "lease_unparseable_resale_rows": 4,
+      "lease_measured_from": "current year, as fetch_data.py::_lease_left does"
+    },
+    "unmatched_test_a_for_reference": {
+      "CCR": {
+        "n": 125,
+        "median": 34.0,
+        "mean": 38.1,
+        "p10": 17.47,
+        "p25": 25.02,
+        "p75": 44.46,
+        "p90": 60.08,
+        "share_positive_pct": 100.0
+      },
+      "OCR": {
+        "n": 368,
+        "median": 48.49,
+        "mean": 49.38,
+        "p10": 26.93,
+        "p25": 36.29,
+        "p75": 59.73,
+        "p90": 73.51,
+        "share_positive_pct": 100.0
+      },
+      "RCR": {
+        "n": 371,
+        "median": 43.25,
+        "mean": 42.99,
+        "p10": 24.28,
+        "p25": 31.94,
+        "p75": 52.24,
+        "p90": 61.99,
+        "share_positive_pct": 100.0
+      }
+    },
+    "_ceiling": "Bounds the blend, does not decompose it: lease and newness are collinear by construction, so the true newness premium is no larger than the lease-matched gap, not equal to it."
   },
   "test_b_premium_recovery": {
     "by_segment": {},
