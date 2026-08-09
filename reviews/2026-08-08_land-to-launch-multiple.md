@@ -162,19 +162,48 @@ classification is a flag for the consumer, not a claim about which regime a proj
 The size of the strata-to-GFA shift itself is **not quantified here**. It cannot be measured from
 free public data: it needs the plans.
 
-### Open item: what `medianPrice` actually measures
+### RESOLVED 2026-08-09: `medianPrice` is transacted, not asking
 
-This record and the dashboard both label the launch side an **asking price**. That may be wrong.
-URA publishes `medianPrice` inside `PMI_Resi_Developer_Sales`, a transactions dataset, alongside
-`soldToDate` and `unitsAvail`, which suggests it is the median of units *sold* in the reference
-month rather than an asking price for available stock. Against that, Nava Grove's figure moved
-from 2,770 to 2,686 while its `soldToDate` did not change at all, which no reading explains
-cleanly and may indicate an upstream revision.
+Settled at URA's own source, and against the label this record used.
 
-Neither label is safe to rely on until it is checked against URA's own data dictionary. It does
-not change the multiple, but it changes what the multiple *means* — a transacted median is
-stronger evidence than an asking price, and the caveat below currently claims the weaker one
-without having established it.
+URA's [Developers' Sales e-Service](https://eservice.ura.gov.sg/property-market-information/pmiResidentialDeveloperSalesPrice)
+states that **"the prices and number of units sold in the month are based on Options to Purchase
+issued by developers to purchasers"**, and the
+[glossary](https://www.ura.gov.sg/Corporate/Property/Property-Data/definition-of-data-terms)
+defines the threshold: a unit is sold once the developer gives the purchaser the option to
+purchase against a booking fee.
+
+So `medianPrice` is the median of units **sold** in the reference month. Calling it an asking
+price was wrong — and wrong in the direction that *understated* the evidence, because a
+transacted median is stronger than a quote. The feed note, the dashboard copy and the article
+caveat are corrected.
+
+The same documentation shows the payload carries **`soldInMonth`**, which this feed was not
+reading. The thinness of each monthly median no longer has to be inferred by differencing
+`soldToDate` across weekly snapshots:
+
+| Pair | Multiple | Units behind the median |
+|---|---:|---:|
+| Upperhouse at Orchard Boulevard | 2.13× | 3 |
+| Nava Grove | 2.20× | 1 |
+| 8@BT | 2.25× | 1 |
+| Norwood Grand | 2.29× | 3 |
+| Promenade Peak | 2.33× | 4 |
+| River Green | 2.35× | 1 |
+| The Sen | 2.78× | 6 |
+| Zyon Grand | 2.83× | 5 |
+| **All eight** | | **24** |
+
+The aggregate published on 2026-08-09 — 24 transactions across the eight, from six down to one
+apiece — is **exactly right**. Three individual counts were not: Upperhouse was 5 not 3, Zyon
+Grand 4 not 5, and Nava Grove 0 not 1.
+
+**That last one closes the other open question.** This record flagged as unexplained that Nava
+Grove's median moved from 2,770 to 2,686 while its `soldToDate` did not change. It did change —
+by one unit — and the weekly snapshot comparison missed it. There is no upstream revision to
+explain: a one-unit month simply moves a one-unit median. Inferring a count by differencing a
+cumulative field across snapshots is the weaker method, and it is now retired in favour of the
+published one.
 
 ## What the multiple is not
 
@@ -273,8 +302,9 @@ return — but it removes land cost from that study's untested list.
   through the emitted pairs, but not authoritative.
 - Project-level $psf throughout; no unit identity, so this is never a realised per-buyer figure.
   Same limitation as the 2026-08-01 study.
-- Asking price, not transacted price, on the launch side — **unverified**, and possibly the
-  reverse. See the open item under *Stability of the launch side*.
+- **Transacted price on the launch side**, not an asking price — resolved 2026-08-09 against URA's
+  own documentation; see the section above. It remains a single month, on one to six units per
+  pair.
 - One regime: awards spanning 2022–2024 sit across a single rate path and the 2023 ABSD step.
 - The deflation uses the all-residential PPI, not a segment index, so a CCR site is deflated by a
   national number.
