@@ -45,16 +45,14 @@ def main(path="reviews/launch_vs_resale_result.json") -> int:
 
     dc = r.get("district_coverage") or {}
     if dc:
-        print("
-DISTRICT COVERAGE — how much of each segment survives the 85+ restriction:")
+        print("\nDISTRICT COVERAGE — how much of each segment survives the 85+ restriction:")
         for seg, d in dc.items():
             print(f"  {seg}: {d['surviving_85plus']} of {d['districts_with_new_sales']} districts"
                   f"  ({d['share']})   all: {','.join(d['all_districts'])}")
 
     pe = r.get("paired_lease_effect_pp") or {}
     if pe:
-        print("
-PAIRED LEASE EFFECT — same observation, two comparator pools.")
+        print("\nPAIRED LEASE EFFECT — same observation, two comparator pools.")
         print("         District, quarter, band and project are identical on each side,")
         print("         so this isolates lease from the district-mix change above.")
         for seg, d in pe.items():
