@@ -1,7 +1,8 @@
 # Lease-matched entry gap — how much of the new-launch premium is newness, and how much is lease?
 
 - Run: 2026-08-09 (Sun) · `scripts/study_launch_vs_resale.py::test_a2_lease_matched`, live in CI
-  (workflow_dispatch run 31293427363, `Study — new launch vs resale`)
+  (workflow_dispatch run 31301406133, `Study — new launch vs resale`; the district fix and the
+  baseline fix were each re-run, and the figures here are from the final run)
 - Design: **pre-registered 2026-08-08 before any data was pulled** —
   `reviews/2026-08-08_lease-matched-entry-gap_PREREG.md`. Followed without amendment.
 - Data: URA `PMI_Resi_Transaction`, condo/apartment, 105,599 transactions, 28 districts.
@@ -13,9 +14,9 @@
 
 **1. The new-build premium is roughly the same everywhere once lease is matched.** Restrict the
 resale comparator to leasehold with 85+ years remaining and all three segments converge on about
-**+30%**: CCR +31.8%, OCR +30.3%, RCR +30.2%. The apparent segment spread in the unmatched gap
-(+34.0 / +48.5 / +43.2) is substantially **which vintage of stock each segment happens to hold**,
-not a segment-specific premium. That is the publishable result.
+**+30%**: CCR +31.8%, OCR +30.3%, RCR +30.2%. The apparent segment spread without that
+restriction (+40.1 / +50.0 / +44.1) is substantially **which vintage of stock each segment happens
+to hold**, not a segment-specific premium. That is the publishable result.
 
 **2. Every comparator pool in the prior study was national, not district.** In
 `PMI_Resi_Transaction` the district field sits on the transaction; the harness read it off the
