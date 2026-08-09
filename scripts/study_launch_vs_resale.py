@@ -336,12 +336,17 @@ def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
             comparators += [pj for pj, _p in pool.get((district, q, band), []) if pj != proj]
         return prem, districts, comparators
 
-    # ---- the full test-A comparison, recomputed here so the loss is measured, not assumed -----
-    all_pool = defaultdict(list)
+    # ---- the baseline the gradient is read against -------------------------------------------
+    # LEASEHOLD-ONLY, deliberately. The lease buckets contain no freehold (it is routed to its own
+    # pool), so a baseline that mixed freehold into the comparator would not be like-for-like with
+    # the buckets it is meant to anchor, and the "share of the gap that is lease" would be measured
+    # against the wrong denominator. This is NOT test A - test A matches tenure on both sides and
+    # includes freehold new sales, and is reported separately as test_a_launch_premium_pct.
+    lh_pool = defaultdict(list)
     for r in rows:
-        if r["sale"] == SALE_RESALE:
-            all_pool[(r["district"], r["quarter"], r["band"])].append((r["project"], r["psf"]))
-    base_prem, base_districts, _ = gap_against(all_pool, "LH")
+        if r["sale"] == SALE_RESALE and r["lease"] != "FH" and isinstance(r["lease"], int):
+            lh_pool[(r["district"], r["quarter"], r["band"])].append((r["project"], r["psf"]))
+    base_prem, base_districts, _ = gap_against(lh_pool, "LH")
 
     out = {"primary": {}, "gradient": {}, "freehold_control": {}, "coverage": {}}
 
@@ -362,7 +367,7 @@ def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
         (out["freehold_control"] if lab == "FH" else out["gradient"])[lab] = block
 
     out["primary"] = out["gradient"].get("85+", {})
-    out["unmatched_test_a_for_reference"] = {seg: _describe(v) for seg, v in sorted(base_prem.items()) if v}
+    out["unrestricted_leasehold_baseline"] = {seg: _describe(v) for seg, v in sorted(base_prem.items()) if v}
     out["coverage"] = {
         "min_comparators_per_cell": MIN_CELL_N,
         "min_comparisons_per_segment": MIN_SEGMENT_N,
