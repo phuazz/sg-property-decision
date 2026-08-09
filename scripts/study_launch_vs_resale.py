@@ -70,6 +70,7 @@ month arithmetic (Python months are 1-indexed) and covered by boundary tests in 
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import os
 import re
@@ -82,6 +83,14 @@ MIN_CELL_N = 5           # minimum transactions before a project-quarter median 
 MIN_HOLD_QUARTERS = 16   # 4 years — below the SSD lock, resales are non-random
 CENSOR_BUFFER_QUARTERS = 2  # a "launch" this close to the window start is probably not one
 MIN_YEAR_CELLS = 20      # per segment per year, before a year is reported as a trend point
+
+# --- Test A2, pre-registered 2026-08-08 in reviews/2026-08-08_lease-matched-entry-gap_PREREG.md
+# Test A compares a new sale against ALL resale in its district, most of which has decades less
+# lease to run, so the gap blends the new-build premium with a plain lease difference. A2 is the
+# same estimand with the comparator additionally restricted by lease remaining.
+LEASE_PRIMARY_MIN = 85            # the like-for-like read a buyer of a fresh 99 actually faces
+LEASE_BUCKETS = ((85, 9999, "85+"), (70, 84, "70-84"), (55, 69, "55-69"), (0, 54, "<55"))
+MIN_SEGMENT_N = 20                # pre-registered stop condition: below this, report infeasible
 CONDO_TYPES = ("Condominium", "Apartment")
 SALE_NEW, SALE_SUB, SALE_RESALE = "1", "2", "3"
 
@@ -135,13 +144,44 @@ def tenure_class(tenure: str) -> str:
     return "UNK"
 
 
+def lease_left(tenure: str, cur_year: int):
+    """'Freehold' -> 'FH'; '99 yrs lease commencing from 1998' -> remaining years; else None.
+
+    Deliberately identical to fetch_data.py::_lease_left, including measuring the remaining term
+    from the CURRENT year rather than the transaction date. Two reasons. The dashboard's published
+    lease figures use that convention, so a divergence here would put the study and the site on
+    different definitions of the same word. And it is the conservative direction: measuring from
+    today understates remaining lease on older transactions, which can only pull comparators OUT
+    of the 85+ bucket, never into it.
+    """
+    t = str(tenure or "")
+    if "Freehold" in t:
+        return "FH"
+    m = re.search(r"(\d+)\s*yr?s?\s*lease\s*commencing\s*from\s*(\d{4})", t, re.I)
+    if m:
+        return max(0, int(m.group(1)) - (cur_year - int(m.group(2))))
+    return None
+
+
+def lease_bucket(ll):
+    """Remaining-years int -> bucket label, or None for FH/unparseable."""
+    if not isinstance(ll, int):
+        return None
+    for lo, hi, lab in LEASE_BUCKETS:
+        if lo <= ll <= hi:
+            return lab
+    return None
+
+
 def flatten(projects: list) -> list:
     """URA payload -> flat transaction rows. Drops anything unusable rather than guessing."""
     rows = []
+    cur_year = datetime.date.today().year
     for proj in projects or []:
         name = proj.get("project")
         district = proj.get("district")
         segment = proj.get("marketSegment")
+        px, py = proj.get("x"), proj.get("y")
         for t in proj.get("transaction", []) or []:
             if t.get("propertyType") not in CONDO_TYPES:
                 continue
@@ -164,6 +204,8 @@ def flatten(projects: list) -> list:
                 "band": size_band(sqft),
                 "tenure": tenure_class(t.get("tenure")),
                 "sale": str(t.get("typeOfSale", "")).strip(),
+                "lease": lease_left(t.get("tenure"), cur_year),
+                "x": px, "y": py,
             })
     return rows
 
@@ -233,6 +275,99 @@ def test_a_by_year(rows) -> dict:
         out[str(y)] = {seg: _describe(v) for seg, v in cells.items()}
     return {"by_year": out, "dropped_thin_years": dropped,
             "min_cells_per_segment_year": MIN_YEAR_CELLS}
+
+
+def test_a2_lease_matched(rows, mrt_by_project=None) -> dict:
+    """Test A with the resale comparator additionally restricted by lease remaining.
+
+    Pre-registered 2026-08-08. Identical to test A in every respect - same estimand, same size
+    band, same tenure class, same self-contamination guard, same MIN_CELL_N floor - except that
+    the comparator pool is split by how much lease it has left.
+
+    Primary: comparator restricted to leasehold with LEASE_PRIMARY_MIN+ years remaining.
+    Secondary: the same gap against each lease bucket, because the SHAPE across buckets is the
+    finding. A monotone gradient is the signature of a lease effect; a flat one falsifies the
+    premise the study was built on.
+
+    What this can and cannot say, stated here because the write-up must not overreach: stock with
+    85+ years remaining is also newer, better specified and more likely near a station, since
+    recent land release is transit-oriented by policy. Matching on lease therefore partly matches
+    on the newness being priced. **This bounds the blend; it does not decompose it.** The true
+    newness premium is no LARGER than the lease-matched gap. It is not equal to it.
+    """
+    mrt_by_project = mrt_by_project or {}
+    new = _medians([r for r in rows if r["sale"] == SALE_NEW],
+                   lambda r: (r["project"], r["quarter"], r["band"], r["tenure"], r["district"], r["segment"]))
+
+    # One comparator pool per lease bucket, plus freehold kept apart (pre-registered: excluded
+    # from the primary, reported separately).
+    labels = [lab for _lo, _hi, lab in LEASE_BUCKETS] + ["FH"]
+    pools = {lab: defaultdict(list) for lab in labels}
+    unparseable = 0
+    for r in rows:
+        if r["sale"] != SALE_RESALE:
+            continue
+        key = (r["district"], r["quarter"], r["band"])
+        if r["lease"] == "FH":
+            pools["FH"][key].append((r["project"], r["psf"]))
+            continue
+        lab = lease_bucket(r["lease"])
+        if lab is None:
+            unparseable += 1
+            continue
+        pools[lab][key].append((r["project"], r["psf"]))
+
+    def gap_against(pool, want_tenure):
+        """Returns {segment: [gap%]}, plus the districts and projects that survived."""
+        prem, districts, comparators = defaultdict(list), defaultdict(set), []
+        for (proj, q, band, ten, district, seg), (npsf, _n) in new.items():
+            if ten != want_tenure:
+                continue
+            vals = [p for pj, p in pool.get((district, q, band), []) if pj != proj]
+            if len(vals) < MIN_CELL_N:
+                continue
+            prem[seg].append((npsf / statistics.median(vals) - 1) * 100.0)
+            districts[seg].add(district)
+            comparators += [pj for pj, _p in pool.get((district, q, band), []) if pj != proj]
+        return prem, districts, comparators
+
+    # ---- the full test-A comparison, recomputed here so the loss is measured, not assumed -----
+    all_pool = defaultdict(list)
+    for r in rows:
+        if r["sale"] == SALE_RESALE:
+            all_pool[(r["district"], r["quarter"], r["band"])].append((r["project"], r["psf"]))
+    base_prem, base_districts, _ = gap_against(all_pool, "LH")
+
+    out = {"primary": {}, "gradient": {}, "freehold_control": {}, "coverage": {}}
+
+    for lab in labels:
+        want = "FH" if lab == "FH" else "LH"
+        prem, districts, comparators = gap_against(pools[lab], want)
+        block = {}
+        for seg, vals in sorted(prem.items()):
+            d = _describe(vals)
+            d["districts"] = len(districts[seg])
+            # Guard 1: a segment carried by a handful of districts is not a segment.
+            d["districts_lost_vs_test_a"] = sorted(base_districts.get(seg, set()) - districts[seg])
+            d["feasible"] = len(vals) >= MIN_SEGMENT_N
+            # Guard 3: location drift made visible rather than assumed absent.
+            dists = [mrt_by_project[p] for p in comparators if p in mrt_by_project]
+            d["comparator_median_mrt_m"] = round(statistics.median(dists)) if dists else None
+            block[seg] = d
+        (out["freehold_control"] if lab == "FH" else out["gradient"])[lab] = block
+
+    out["primary"] = out["gradient"].get("85+", {})
+    out["unmatched_test_a_for_reference"] = {seg: _describe(v) for seg, v in sorted(base_prem.items()) if v}
+    out["coverage"] = {
+        "min_comparators_per_cell": MIN_CELL_N,
+        "min_comparisons_per_segment": MIN_SEGMENT_N,
+        "lease_unparseable_resale_rows": unparseable,
+        "lease_measured_from": "current year, as fetch_data.py::_lease_left does",
+    }
+    out["_ceiling"] = ("Bounds the blend, does not decompose it: lease and newness are collinear "
+                       "by construction, so the true newness premium is no larger than the "
+                       "lease-matched gap, not equal to it.")
+    return out
 
 
 def test_b_premium_recovery(rows) -> dict:
@@ -476,6 +611,67 @@ def self_test() -> int:
     a = test_a_launch_premium(rows)
     check("Test A premium median", a.get("OCR", {}).get("median"), 20.0)
 
+    # --- Test A2: lease parsing, bucket edges, and the restricted comparator ---------------
+    Y = datetime.date.today().year
+    check("lease FH", lease_left("Freehold", Y), "FH")
+    check("999-year term classes as FH", tenure_class("999 yrs lease commencing from 1875"), "FH")
+    check("lease remaining arithmetic", lease_left(f"99 yrs lease commencing from {Y - 10}", Y), 89)
+    check("lease never negative", lease_left("99 yrs lease commencing from 1900", Y), max(0, 99 - (Y - 1900)))
+    check("lease unparseable", lease_left("Leasehold", Y), None)
+    check("bucket 85 is 85+", lease_bucket(85), "85+")
+    check("bucket 84 is 70-84", lease_bucket(84), "70-84")
+    check("bucket 70 is 70-84", lease_bucket(70), "70-84")
+    check("bucket 69 is 55-69", lease_bucket(69), "55-69")
+    check("bucket 55 is 55-69", lease_bucket(55), "55-69")
+    check("bucket 54 is <55", lease_bucket(54), "<55")
+    check("bucket FH is None", lease_bucket("FH"), None)
+
+    # A new sale at 1200 psf against two resale pools in the SAME cell differing only by lease:
+    # long-lease at 1000 (gap +20%) and short-lease at 800 (gap +50%). If A2 works, the primary
+    # reads the long-lease pool and the gradient widens as lease shortens.
+    LONG = f"99 yrs lease commencing from {Y - 5}"
+    SHORT = f"99 yrs lease commencing from {Y - 50}"
+    def resale_at(psf, tenure, sqm=100):
+        return [_tx("0324", int(psf * sqm * SQM_TO_SQFT), sqm, SALE_RESALE, tenure)
+                for _ in range(MIN_CELL_N)]
+    a2rows = flatten([
+        proj("A2NEW", units(1200, MIN_CELL_N, "0324", SALE_NEW)),
+        proj("A2LONG", resale_at(1000, LONG)),
+        proj("A2SHORT", resale_at(800, SHORT)),
+    ])
+    a2 = test_a2_lease_matched(a2rows)
+    check("A2 primary uses the long-lease pool", a2["primary"].get("OCR", {}).get("median"), 20.0)
+    check("A2 gradient widens on short lease", a2["gradient"]["<55"].get("OCR", {}).get("median"), 50.0)
+    check("A2 empty middle bucket stays empty", a2["gradient"]["70-84"], {})
+    check("A2 marks a thin segment infeasible", a2["primary"].get("OCR", {}).get("feasible"), False)
+
+    # A project must not benchmark against itself in A2 either.
+    solo = flatten([proj("SOLO", units(1200, MIN_CELL_N, "0324", SALE_NEW),
+                                 units(1000, MIN_CELL_N, "0324", SALE_RESALE))])
+    check("A2 self-contamination guard", test_a2_lease_matched(solo)["primary"], {})
+
+    # Freehold comparators must not leak into the primary.
+    fh = flatten([proj("FHNEW", units(1200, MIN_CELL_N, "0324", SALE_NEW)),
+                  proj("FHCOMP", resale_at(1000, "Freehold"))])
+    check("A2 primary ignores freehold comparators", test_a2_lease_matched(fh)["primary"], {})
+
+    # Tenure must match on BOTH sides. A freehold new sale may not be priced off a leasehold
+    # pool, however long that pool's lease. Without this the mutation "drop the tenure match"
+    # goes unnoticed, which is how it was found.
+    def new_at(psf, tenure, sqm=100, mmyy="0324"):
+        return [_tx(mmyy, psf * sqm * SQM_TO_SQFT, sqm, SALE_NEW, tenure) for _ in range(MIN_CELL_N)]
+    xten = flatten([proj("XFHNEW", new_at(1200, "Freehold")),
+                    proj("XLHCOMP", resale_at(1000, LONG))])
+    x = test_a2_lease_matched(xten)
+    check("A2 will not price a freehold new sale off a leasehold pool", x["primary"], {})
+    check("A2 freehold control also empty without a freehold comparator", x["freehold_control"]["FH"], {})
+
+    # ...and the freehold control does fire when both sides are freehold.
+    fhpair = flatten([proj("FHNEW2", new_at(1200, "Freehold")),
+                      proj("FHCOMP2", resale_at(1000, "Freehold"))])
+    check("A2 freehold control reports a freehold-vs-freehold gap",
+          test_a2_lease_matched(fhpair)["freehold_control"]["FH"].get("OCR", {}).get("median"), 20.0)
+
     if fails:
         print("SELF-TEST FAILED")
         for f in fails:
@@ -547,8 +743,23 @@ def main() -> int:
     if self_test() != 0:
         return 1
 
-    rows = flatten(load_live(key))
+    payload = load_live(key)
+    rows = flatten(payload)
     print(f"\n{len(rows):,} condo/apartment transactions in window.")
+
+    # Guard 3 of the A2 pre-registration: report the comparator's distance to MRT, so a drift in
+    # WHERE the surviving stock sits is visible rather than assumed absent. Best-effort — the
+    # study still runs, and says so, if the station feed or pyproj is unavailable.
+    mrt = {}
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from fetch_data import _add_mrt
+        pts = [{"project": p.get("project"), "x": p.get("x"), "y": p.get("y")} for p in payload or []]
+        _add_mrt(pts)
+        mrt = {p["project"]: p["mrt_m"] for p in pts if p.get("mrt_m") is not None}
+        print(f"MRT distances resolved for {len(mrt):,} projects.")
+    except Exception as e:
+        print(f"  note: A2 location guard unavailable ({e!r}); gap still reported, drift not measured")
     result = {
         "_design": "pre-registered; see module docstring",
         "_caveats": ["no unit identity - project-level psf, NOT repeat sales",
@@ -557,6 +768,7 @@ def main() -> int:
                      "~5-year window = one rate/cooling regime"],
         "test_a_launch_premium_pct": test_a_launch_premium(rows),
         "test_a_by_year": test_a_by_year(rows),
+        "test_a2_lease_matched": test_a2_lease_matched(rows, mrt_by_project=mrt),
         "test_b_premium_recovery": test_b_premium_recovery(rows),
     }
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
