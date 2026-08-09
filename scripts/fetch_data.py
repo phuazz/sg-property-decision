@@ -847,9 +847,19 @@ def land_to_launch(launches):
             "dropped_outliers": [{k: x[k] for k in ("project", "site", "award", "multiple")}
                                  for x in dropped],
             "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity",
-            "note": ("Current median asking $psf of a selling project over the $psf ppr its developer paid "
-                     "for the site. State land only. Not a developer margin - it also carries whatever the "
-                     "market did between award and today.")}
+            # "asking" was an unverified label: URA publishes medianPrice inside a TRANSACTIONS
+            # dataset, alongside soldToDate. Neither reading is established against URA's data
+            # dictionary, so the note now states only what is checkable - it is a median for one
+            # reference month - and the open question is recorded in
+            # reviews/2026-08-08_land-to-launch-multiple.md.
+            "note": ("A selling project's median $psf for ONE reference month, over the $psf ppr its "
+                     "developer paid for the site. Read the range, not the third digit: across the "
+                     "pairs that month carries only a couple of dozen transactions in total, and "
+                     "recomputing on the previous month moves the median by about 0.15x. State land "
+                     "only. Not a developer margin - it also carries whatever the market did between "
+                     "award and today. The two sides are measured differently: land is priced on gross "
+                     "floor area and the launch price on strata area, and URA harmonised those "
+                     "definitions for applications from 2023-06-01 - see gfa_basis on each pair.")}
 
 def _has_data(v):
     """True only if a feed actually carries content.
