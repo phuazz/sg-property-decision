@@ -571,35 +571,35 @@
       "lease_unparseable_resale_rows": 4,
       "lease_measured_from": "current year, as fetch_data.py::_lease_left does"
     },
-    "unmatched_test_a_for_reference": {
+    "unrestricted_leasehold_baseline": {
       "CCR": {
-        "n": 125,
-        "median": 34.0,
-        "mean": 38.1,
-        "p10": 17.47,
-        "p25": 25.02,
-        "p75": 44.46,
-        "p90": 60.08,
+        "n": 115,
+        "median": 40.1,
+        "mean": 44.97,
+        "p10": 23.18,
+        "p25": 30.05,
+        "p75": 51.78,
+        "p90": 74.92,
         "share_positive_pct": 100.0
       },
       "OCR": {
-        "n": 368,
-        "median": 48.49,
-        "mean": 49.38,
-        "p10": 26.93,
-        "p25": 36.29,
-        "p75": 59.73,
-        "p90": 73.51,
+        "n": 347,
+        "median": 50.0,
+        "mean": 51.86,
+        "p10": 26.13,
+        "p25": 37.32,
+        "p75": 67.18,
+        "p90": 79.26,
         "share_positive_pct": 100.0
       },
       "RCR": {
-        "n": 371,
-        "median": 43.25,
-        "mean": 42.99,
-        "p10": 24.28,
-        "p25": 31.94,
-        "p75": 52.24,
-        "p90": 61.99,
+        "n": 355,
+        "median": 44.11,
+        "mean": 45.85,
+        "p10": 23.31,
+        "p25": 30.62,
+        "p75": 56.8,
+        "p90": 74.02,
         "share_positive_pct": 100.0
       }
     },

@@ -28,9 +28,11 @@ The 2026-08-01 entry-gap figures are void, and so is the `+62.1%` quoted on two 
 
 | Segment | Filed 2026-08-01 (VOID) | Corrected, same test | Change |
 |---|---:|---:|---:|
-| CCR | +82.7% | **+34.0%** (n=125) | −48.7pp |
-| RCR | +62.1% | **+43.2%** (n=371) | −18.9pp |
-| OCR | +34.4% | **+48.5%** (n=368) | +14.1pp |
+| CCR | +82.7% | **+42.2%** (n=293) | −40.5pp |
+| RCR | +62.1% | **+46.9%** (n=483) | −15.2pp |
+| OCR | +34.4% | **+52.0%** (n=405) | +17.6pp |
+
+The order of the three segments **fully reverses**: CCR was dearest and is now cheapest.
 
 The direction of each error is what the mechanism predicts, which is the strongest evidence the
 diagnosis is right. Pooling nationally priced a CCR new sale against a pool containing cheap OCR
@@ -47,13 +49,19 @@ Same new sales throughout. Only the comparator changes.
 | 70–84 | +43.8% (n=46, 5) | +52.5% (n=275, 10) | +50.4% (n=198, 13) |
 | 55–69 | +78.8% (n=16) *infeasible* | +85.1% (n=218, 9) | +72.7% (n=122, 7) |
 | <55 | +138.7% (n=2) *infeasible* | +113.9% (n=2) *infeasible* | +125.6% (n=44, 3) |
-| *unmatched (test A)* | *+34.0% (n=125)* | *+48.5% (n=368)* | *+43.2% (n=371)* |
+| *no lease restriction (leasehold both sides)* | *+40.1% (n=115)* | *+50.0% (n=347)* | *+44.1% (n=355)* |
 
 **Monotone in all three segments.** That is the signature the pre-registration named as
 confirming a lease effect; a flat gradient would have falsified the premise.
 
-Share of the unmatched gap attributable to lease, on these numbers: **OCR 38%, RCR 30%, CCR 6%.**
-CCR barely moves because its resale stock is already long-lease or freehold.
+Share of the gap attributable to lease, measured against the leasehold-only baseline in the last
+row: **OCR 39%, RCR 32%, CCR 21%.**
+
+Note that baseline carefully. It is leasehold on **both** sides, because every lease bucket is
+leasehold-only, and anchoring the gradient to a pool that also contained freehold would divide by
+the wrong denominator. It is therefore **not** test A, which matches tenure on both sides and
+includes freehold new sales. The two differ by 2–3pp here, and conflating them is a mistake I made
+in the first draft of this record.
 
 ### Freehold control
 
@@ -111,12 +119,15 @@ premium is **no larger than** ~30%. It is not equal to it.
    finding (test B infeasible on free URA data) is unaffected: that conclusion rests on coverage
    counting, not on the comparator pool.
 2. **`theenoughpoint.com/new-launch-or-resale-who-picked-the-dates/`** — "34% to 83% more per
-   square foot" is void. Corrected range is +34.0% to +48.5%, and the segment ORDER reverses.
+   square foot" is void. Corrected range is **+42% to +52%**, and the segment order reverses. That
+   article's convergence claim is void too and reverses direction: it says the spread between
+   cheapest and dearest segment ran ~63pp in 2021 and ~34pp by 2025, i.e. narrowing. Corrected, the
+   spread is **4.2pp in 2021 widening to 12.9pp in 2025**.
 3. **`theenoughpoint.com/price-a-new-launch-before-the-price-list/`** — "median +62.1%" is void;
-   corrected +43.2%. The article already qualifies it as not lease-matched and points at this
+   corrected **+46.9%** on n=483 (the article also cites n=547, itself from the broken run). The article already qualifies it as not lease-matched and points at this
    study, so the qualification stands and the number changes.
-4. The venture's benchmark sentence becomes two numbers, as pre-registered: unmatched +43.2% RCR,
-   lease-matched +30.2% RCR, with the difference named as **vintage, not premium**.
+4. The venture's benchmark sentence becomes two numbers, as pre-registered: unrestricted +44.1%
+   RCR, lease-matched +30.2% RCR, with the difference named as **vintage, not premium**.
 
 ## Relation to prior work
 
