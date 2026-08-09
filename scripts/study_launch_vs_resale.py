@@ -197,7 +197,12 @@ def flatten(projects: list) -> list:
                 continue
             rows.append({
                 "project": name,
-                "district": district,
+                # District lives on the TRANSACTION in PMI_Resi_Transaction, not on the project.
+                # fetch_data.py reads t["district"] in three places; this script read
+                # proj["district"], which is absent, so every row carried district=None and every
+                # "district" comparator pool was silently a NATIONAL one. The project-level
+                # fallback is kept only because the synthetic fixtures set it there.
+                "district": t.get("district") or district,
                 "segment": segment,
                 "quarter": qi,
                 "psf": price / sqft,
@@ -650,6 +655,27 @@ def self_test() -> int:
                                  units(1000, MIN_CELL_N, "0324", SALE_RESALE))])
     check("A2 self-contamination guard", test_a2_lease_matched(solo)["primary"], {})
 
+    # District must be read off the transaction, and two districts must never pool together.
+    # This is the bug that made the first live A2 run report districts=1 in every cell: the
+    # comparator pool was keyed on district=None, so all 26 districts formed one pool and the
+    # "district resale median" every published figure rests on was a national median.
+    def tx_in(dist, psf, sale, mmyy="0324", sqm=100, tenure=LONG):
+        out = []
+        for _ in range(MIN_CELL_N):
+            t = _tx(mmyy, psf * sqm * SQM_TO_SQFT, sqm, sale, tenure)
+            t["district"] = dist
+            out.append(t)
+        return out
+    twod = flatten([
+        {"project": "D9NEW", "marketSegment": "CCR", "transaction": tx_in("09", 2000, SALE_NEW)},
+        {"project": "D9COMP", "marketSegment": "CCR", "transaction": tx_in("09", 1000, SALE_RESALE)},
+        {"project": "D27COMP", "marketSegment": "CCR", "transaction": tx_in("27", 500, SALE_RESALE)},
+    ])
+    check("district is read from the transaction", {r["district"] for r in twod}, {"09", "27"})
+    # D9NEW must price off D9 alone (2000/1000 = +100%), never blended with the cheap D27 pool.
+    check("districts do not pool together",
+          test_a2_lease_matched(twod)["primary"].get("CCR", {}).get("median"), 100.0)
+
     # Freehold comparators must not leak into the primary.
     fh = flatten([proj("FHNEW", units(1200, MIN_CELL_N, "0324", SALE_NEW)),
                   proj("FHCOMP", resale_at(1000, "Freehold"))])
@@ -746,6 +772,15 @@ def main() -> int:
     payload = load_live(key)
     rows = flatten(payload)
     print(f"\n{len(rows):,} condo/apartment transactions in window.")
+    # Census the key the comparator pools are built on. The first A2 run reported districts=1
+    # in every cell because district was read off the project rather than the transaction and
+    # came back None, silently merging all 26 into one national pool. A count that can be read
+    # in the log costs nothing and makes that failure impossible to miss again.
+    ndist = len({r["district"] for r in rows if r["district"]})
+    print(f"{ndist} distinct districts; "
+          f"{sum(1 for r in rows if not r['district']):,} rows carry no district.")
+    if ndist < 20:
+        print("::warning::fewer districts than expected — comparator pools may be merging")
 
     # Guard 3 of the A2 pre-registration: report the comparator's distance to MRT, so a drift in
     # WHERE the surviving stock sits is visible rather than assumed absent. Best-effort — the
