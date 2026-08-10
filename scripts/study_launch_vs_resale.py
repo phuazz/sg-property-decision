@@ -91,6 +91,19 @@ MIN_YEAR_CELLS = 20      # per segment per year, before a year is reported as a 
 LEASE_PRIMARY_MIN = 85            # the like-for-like read a buyer of a fresh 99 actually faces
 LEASE_BUCKETS = ((85, 9999, "85+"), (70, 84, "70-84"), (55, 69, "55-69"), (0, 54, "<55"))
 MIN_SEGMENT_N = 20                # pre-registered stop condition: below this, report infeasible
+
+# --- Test C, pre-registered 2026-08-10 in reviews/2026-08-10_building-age-decay_PREREG.md
+# A2 measures the gap on day one. C measures what happens to it: each RESALE against its own
+# (district, quarter, size band) cell median, grouped by building age at the transaction date.
+# Size is in the cell key rather than stratified afterwards, because the exploratory pass showed
+# age and unit size are collinear and a raw age gradient is partly a size gradient in disguise.
+AGE_BUCKETS = ((0, 5, "0-5"), (6, 10, "6-10"), (11, 15, "11-15"),
+               (16, 20, "16-20"), (21, 30, "21-30"), (31, 999, "31+"))
+MIN_AGE_BUCKET_N = 30             # pre-registered stop condition
+MIN_AGE_BUCKET_DISTRICTS = 5      # pre-registered stop condition
+# Standard leasehold only. Excludes freehold and the 999-year strings that make lease_left
+# return four- and six-digit artefacts; 103 and 110 year terms are ordinary and kept.
+LEASE_TERM_MIN, LEASE_TERM_MAX = 95, 110
 CONDO_TYPES = ("Condominium", "Apartment")
 SALE_NEW, SALE_SUB, SALE_RESALE = "1", "2", "3"
 
@@ -163,6 +176,31 @@ def lease_left(tenure: str, cur_year: int):
     return None
 
 
+def lease_terms(tenure: str):
+    """'99 yrs lease commencing from 2016' -> (99, 2016). Freehold/unparseable -> (None, None).
+
+    Distinct from lease_left, which returns years REMAINING measured from the current year. Test C
+    needs the commencement year itself, so age can be measured at the transaction date rather than
+    today — a 2021 sale of a 2010 building is age 11, not age 16. Measuring from today would push
+    every older transaction into a higher bucket and flatten the gradient being tested.
+    """
+    t = str(tenure or "")
+    if "Freehold" in t:
+        return (None, None)
+    m = re.search(r"(\d+)\s*yr?s?\s*lease\s*commencing\s*from\s*(\d{4})", t, re.I)
+    return (int(m.group(1)), int(m.group(2))) if m else (None, None)
+
+
+def age_bucket(age):
+    """Building age in years -> bucket label, or None if outside the reported range."""
+    if not isinstance(age, int) or age < 0:
+        return None
+    for lo, hi, lab in AGE_BUCKETS:
+        if lo <= age <= hi:
+            return lab
+    return None
+
+
 def lease_bucket(ll):
     """Remaining-years int -> bucket label, or None for FH/unparseable."""
     if not isinstance(ll, int):
@@ -210,6 +248,12 @@ def flatten(projects: list) -> list:
                 "tenure": tenure_class(t.get("tenure")),
                 "sale": str(t.get("typeOfSale", "")).strip(),
                 "lease": lease_left(t.get("tenure"), cur_year),
+                # Test C needs the term and commencement year, not years remaining, so that age
+                # can be measured at the transaction date. sqft is kept to report size drift
+                # inside a band, which is the residual confound the cell key cannot remove.
+                "lease_term": lease_terms(t.get("tenure"))[0],
+                "lease_start": lease_terms(t.get("tenure"))[1],
+                "sqft": sqft,
                 "x": px, "y": py,
             })
     return rows
@@ -509,6 +553,138 @@ def test_b_premium_recovery(rows) -> dict:
     }
 
 
+def test_c_age_decay(rows) -> dict:
+    """Pre-registered 2026-08-10. How fast does the new-build premium erode, and when is it zero?
+
+    Estimand: each RESALE's $psf against the median of its own (district, quarter, size band) cell,
+    that cell pooling ALL building ages — which is exactly the benchmark a buyer scanning a district
+    sees — with the transaction's own project excluded from the median. Grouped by building age at
+    the transaction date.
+
+    New sales run through the SAME denominator and are reported as the age-0 anchor, so entry and
+    exit sit on one scale. That is the number the published break-even hurdle needs: it prices exit
+    at the all-vintage district median, i.e. it assumes this curve is at zero the day you sell.
+    """
+    # Cells are resale-only. A new sale must never enter the denominator it is measured against,
+    # or an actively-selling project would inflate its own benchmark and shrink its own premium.
+    cell = defaultdict(list)
+    for r in rows:
+        if r["sale"] == SALE_RESALE:
+            cell[(r["district"], r["quarter"], r["band"])].append((r["project"], r["psf"]))
+
+    def premium(r):
+        """r's $psf against its own cell, own project removed. None if the cell is too thin."""
+        vals = [p for pj, p in cell.get((r["district"], r["quarter"], r["band"]), []) if pj != r["project"]]
+        if len(vals) < MIN_CELL_N:
+            return None
+        return (r["psf"] / statistics.median(vals) - 1) * 100.0
+
+    def standard_lease(r):
+        t = r.get("lease_term")
+        return isinstance(t, int) and LEASE_TERM_MIN <= t <= LEASE_TERM_MAX and r.get("lease_start")
+
+    by, dist, sizes, by_year = defaultdict(list), defaultdict(set), defaultdict(list), defaultdict(list)
+    skipped_thin_cell = skipped_lease = 0
+    for r in rows:
+        if r["sale"] != SALE_RESALE:
+            continue
+        if not standard_lease(r):
+            skipped_lease += 1
+            continue
+        age = r["quarter"] // 4 - r["lease_start"]      # quarter index // 4 is the calendar year
+        lab = age_bucket(age)
+        if lab is None:
+            continue
+        p = premium(r)
+        if p is None:
+            skipped_thin_cell += 1
+            continue
+        by[lab].append(p)
+        dist[lab].add(r["district"])
+        sizes[lab].append(r["sqft"])
+        by_year[(lab, r["quarter"] // 4)].append(p)
+
+    out = {"gradient": {}, "coverage": {}}
+    for _lo, _hi, lab in AGE_BUCKETS:
+        vals = by.get(lab)
+        if not vals:
+            continue
+        d = _describe(vals)
+        d["districts"] = len(dist[lab])
+        d["median_sqft"] = round(statistics.median(sizes[lab]))
+        # Both pre-registered stop conditions. A bucket failing either is reported, not published.
+        d["feasible"] = len(vals) >= MIN_AGE_BUCKET_N and len(dist[lab]) >= MIN_AGE_BUCKET_DISTRICTS
+        out["gradient"][lab] = d
+
+    # The age-0 anchor: new sales against the same all-age resale cells.
+    new_prem, new_dist = [], set()
+    for r in rows:
+        if r["sale"] != SALE_NEW:
+            continue
+        p = premium(r)
+        if p is None:
+            continue
+        new_prem.append(p)
+        new_dist.add(r["district"])
+    if new_prem:
+        out["entry_anchor_new_sales"] = _describe(new_prem)
+        out["entry_anchor_new_sales"]["districts"] = len(new_dist)
+        out["entry_anchor_new_sales"]["feasible"] = (
+            len(new_prem) >= MIN_AGE_BUCKET_N and len(new_dist) >= MIN_AGE_BUCKET_DISTRICTS)
+
+    # ---- falsification checks, pre-registered ------------------------------------------------
+    feas = [(lab, out["gradient"][lab]["median"])
+            for _lo, _hi, lab in AGE_BUCKETS if out["gradient"].get(lab, {}).get("feasible")]
+    meds = [m for _lab, m in feas]
+    out["monotone_decreasing"] = all(a >= b for a, b in zip(meds, meds[1:])) if len(meds) > 1 else None
+
+    # Zero crossing, linearly interpolated between the midpoints of the two straddling buckets.
+    mids = {lab: (lo + min(hi, 60)) / 2 for lo, hi, lab in AGE_BUCKETS}
+    cross = None
+    for (l1, m1), (l2, m2) in zip(feas, feas[1:]):
+        if m1 > 0 >= m2:
+            cross = round(mids[l1] + (mids[l2] - mids[l1]) * (m1 / (m1 - m2)), 1)
+            break
+    out["zero_crossing_age"] = cross
+    out["prediction_held"] = {
+        "monotone_decreasing": out["monotone_decreasing"],
+        "zero_crossing_in_11_to_15": (cross is not None and 11 <= cross <= 15),
+        "age_6_10_in_8_to_18pct": (
+            8 <= out["gradient"].get("6-10", {}).get("median", -999) <= 18
+            if out["gradient"].get("6-10", {}).get("feasible") else None),
+    }
+
+    # ---- risk 3 guard: is this ageing, or is it cohort? ---------------------------------------
+    # A building seen at age 30 was built for a mid-1990s market. If the gradient has the same
+    # shape in 2021 as in 2025, a pure cohort story is harder to sustain — the same age buckets
+    # are being filled by different buildings each year. This bounds the confound, not removes it.
+    years = sorted({y for _lab, y in by_year})
+    out["gradient_by_year"] = {}
+    for y in years:
+        row = {lab: round(statistics.median(by_year[(lab, y)]), 1)
+               for _lo, _hi, lab in AGE_BUCKETS
+               if len(by_year.get((lab, y), [])) >= MIN_AGE_BUCKET_N}
+        if len(row) >= 3:
+            out["gradient_by_year"][str(y)] = row
+
+    out["coverage"] = {
+        "min_comparators_per_cell": MIN_CELL_N,
+        "min_transactions_per_bucket": MIN_AGE_BUCKET_N,
+        "min_districts_per_bucket": MIN_AGE_BUCKET_DISTRICTS,
+        "lease_term_range_kept": [LEASE_TERM_MIN, LEASE_TERM_MAX],
+        "resale_rows_dropped_non_standard_lease": skipped_lease,
+        "resale_rows_dropped_thin_cell": skipped_thin_cell,
+        "age_measured": "at the transaction date (contract year - lease commencement year)",
+    }
+    out["_ceiling"] = (
+        "The decay is the SUM of lease run-down, physical depreciation and design obsolescence; "
+        "this design cannot separate them. It is also cross-sectional — a 5.25-year window cannot "
+        "follow one building from 8 to 30 years old — and en-bloc removes the old cohort's "
+        "redevelopment candidates, in a direction that is genuinely ambiguous. It describes stock "
+        "that remained on the market, not the path of any individual building.")
+    return out
+
+
 def _describe(vals):
     """Distribution, not just the mean — the mean is what made the source claims misleading."""
     v = sorted(vals)
@@ -781,13 +957,155 @@ def self_test() -> int:
     check("A2 freehold control reports a freehold-vs-freehold gap",
           test_a2_lease_matched(fhpair)["freehold_control"]["FH"].get("OCR", {}).get("median"), 20.0)
 
+    # --- Test C: age arithmetic, bucket edges, and the age-graded comparator ----------------
+    check("lease_terms parses term and start", lease_terms("99 yrs lease commencing from 2016"), (99, 2016))
+    check("lease_terms rejects freehold", lease_terms("Freehold"), (None, None))
+    check("lease_terms rejects unparseable", lease_terms("Leasehold"), (None, None))
+    check("lease_terms reads a 999 term (filtered later, not here)",
+          lease_terms("999 yrs lease commencing from 1875"), (999, 1875))
+    check("age bucket 5 is 0-5", age_bucket(5), "0-5")
+    check("age bucket 6 is 6-10", age_bucket(6), "6-10")
+    check("age bucket 10 is 6-10", age_bucket(10), "6-10")
+    check("age bucket 11 is 11-15", age_bucket(11), "11-15")
+    check("age bucket 31 is 31+", age_bucket(31), "31+")
+    check("age bucket rejects negative", age_bucket(-1), None)
+    check("age bucket rejects non-int", age_bucket("8"), None)
+
+    # Three projects in ONE cell (D19, 2024Q1, band 2), differing only in vintage. Lease
+    # commencement years are absolute, not offsets from today, so these expectations do not
+    # drift as the calendar moves.
+    #   YOUNG 1200 psf, commenced 2016 -> age 8 at a 2024 sale -> "6-10"
+    #   MID   1000 psf, commenced 2004 -> age 20               -> "16-20"
+    #   OLD    800 psf, commenced 1984 -> age 40               -> "31+"
+    # Each is measured against the other two: YOUNG vs median(800x5,1000x5)=900 -> +33.33%
+    #                                          MID   vs median(800x5,1200x5)=1000 ->   0.00%
+    #                                          OLD   vs median(1000x5,1200x5)=1100 -> -27.27%
+    def aged(psf, start, sqm=100, mmyy="0324", n=MIN_CELL_N):
+        return [_tx(mmyy, psf * sqm * SQM_TO_SQFT, sqm, SALE_RESALE,
+                    f"99 yrs lease commencing from {start}") for _ in range(n)]
+
+    crows = flatten([proj("CYOUNG", aged(1200, 2016)),
+                     proj("CMID", aged(1000, 2004)),
+                     proj("COLD", aged(800, 1984))])
+    c = test_c_age_decay(crows)
+    # .get() rather than [] throughout: if a change moves a row into the wrong bucket, the key
+    # vanishes and a bare subscript raises KeyError, aborting the suite before the check that
+    # would have NAMED the fault. The mutation sweep hit exactly this - breaking the age
+    # arithmetic crashed the run instead of reporting "C ages at the transaction date".
+    check("C young premium", c["gradient"].get("6-10", {}).get("median"), 33.33)
+    check("C mid premium", c["gradient"].get("16-20", {}).get("median"), 0.0)
+    check("C old premium", c["gradient"].get("31+", {}).get("median"), -27.27)
+    # The falsification check runs over FEASIBLE buckets only, so on a fixture this thin it must
+    # withhold a verdict rather than certify a shape from 5 transactions in 1 district. Asserting
+    # True here was the author's error and this check is what caught it.
+    check("C withholds monotonicity when no bucket is feasible", c["monotone_decreasing"], None)
+    check("C reports median sqft per bucket", c["gradient"].get("6-10", {}).get("median_sqft"), round(100 * SQM_TO_SQFT))
+
+    # STOP CONDITIONS. n=5 is below MIN_AGE_BUCKET_N and 1 district is below the district floor,
+    # so nothing here may be published. Both must read False, not merely be absent.
+    check("C marks a thin bucket infeasible", c["gradient"].get("6-10", {}).get("feasible"), False)
+    check("C counts districts per bucket", c["gradient"].get("6-10", {}).get("districts"), 1)
+    check("C withholds a crossing when no bucket is feasible", c["zero_crossing_age"], None)
+
+    # THE DISTRICT FLOOR MUST BIND ON ITS OWN. The fixture above fails both stop conditions at
+    # once, so it cannot tell them apart: deleting the district floor entirely would still leave
+    # feasible=False there. This one clears the transaction floor (40 >= 30) in a single district,
+    # so it isolates the district floor and fails if that condition is ever dropped.
+    onedist = flatten([proj("D1YOUNG", aged(1200, 2016, n=40)),
+                       proj("D1MID", aged(1000, 2004, n=40)),
+                       proj("D1OLD", aged(800, 1984, n=40))])
+    cd = test_c_age_decay(onedist)
+    check("C one-district bucket clears the transaction floor", cd["gradient"].get("6-10", {}).get("n"), 40)
+    check("C one-district bucket still infeasible", cd["gradient"].get("6-10", {}).get("feasible"), False)
+
+    # ...AND THE TRANSACTION FLOOR MUST BIND ON ITS OWN, for the mirror-image reason. 6 districts
+    # clears the district floor while 24 transactions per bucket misses the 30 floor, so deleting
+    # the transaction floor flips feasible to True here and nowhere else. A mutation sweep found
+    # this guard untested: every earlier fixture failed BOTH conditions, so removing either left
+    # feasible=False and the suite green.
+    thinbucket = []
+    for d in ("10", "11", "12", "13", "14", "15"):
+        for nm, psf, start in (("T1", 1200, 2016), ("T2", 1000, 2004), ("T3", 800, 1984)):
+            thinbucket.append({"project": f"{nm}D{d}", "district": d, "marketSegment": "OCR",
+                               "transaction": aged(psf, start, n=4)})
+    ct = test_c_age_decay(flatten(thinbucket))
+    check("C thin bucket clears the district floor", ct["gradient"].get("6-10", {}).get("districts"), 6)
+    check("C thin bucket misses the transaction floor", ct["gradient"].get("6-10", {}).get("n"), 24)
+    check("C thin bucket is infeasible on count alone", ct["gradient"].get("6-10", {}).get("feasible"), False)
+
+    # THE COMPARATOR FLOOR MUST BIND. Every earlier fixture gave a project either 5+ comparators
+    # or none at all, so lowering MIN_CELL_N to 1 changed nothing and the guard went unverified.
+    # Here CTHIN_A has only CTHIN_B's 2 sales to compare against and must be dropped, while
+    # CTHIN_B has A's 5 and survives — so the young bucket disappears and only the old remains.
+    thincell = flatten([proj("CTHIN_A", aged(1200, 2016, n=MIN_CELL_N)),
+                        proj("CTHIN_B", aged(1000, 2004, n=2))])
+    cc = test_c_age_decay(thincell)
+    check("C drops a row whose cell is below the comparator floor", sorted(cc["gradient"]), ["16-20"])
+    check("C counts the rows it dropped for a thin cell", cc["coverage"]["resale_rows_dropped_thin_cell"], MIN_CELL_N)
+
+    # AGE IS MEASURED AT THE TRANSACTION DATE, not today. Commencing 2019 and sold in 2021 is
+    # age 2; measured from today (>=2026) it would be >=7 and land in a different bucket. This
+    # is the check that fails if that arithmetic is ever "simplified" to use the current year.
+    early = flatten([proj("CEARLY", aged(1200, 2019, mmyy="0321")),
+                     proj("CMID2", aged(1000, 2019, mmyy="0321")),
+                     proj("COLD2", aged(800, 2019, mmyy="0321"))])
+    check("C ages at the transaction date", sorted(test_c_age_decay(early)["gradient"]), ["0-5"])
+
+    # SELF-CONTAMINATION GUARD, by mutation: alone in its cell a project has no comparator and
+    # must produce nothing. Without the exclusion it would benchmark against itself and read 0%.
+    check("C self-contamination guard", test_c_age_decay(flatten([proj("CSOLO", aged(1200, 2016))]))["gradient"], {})
+
+    # NEW SALES MUST NOT ENTER THE DENOMINATOR. Adding an actively-selling project at 3000 psf
+    # to the cell must leave every resale premium untouched; if new sales leaked into the pool
+    # the median would jump and all three numbers would move.
+    withnew = crows + flatten([proj("CNEWSALE", units(3000, MIN_CELL_N, "0324", SALE_NEW))])
+    cn = test_c_age_decay(withnew)
+    check("C denominator ignores new sales", cn["gradient"].get("6-10", {}).get("median"), 33.33)
+    check("C reports the new-sale entry anchor", cn["entry_anchor_new_sales"]["median"], 200.0)
+
+    # NON-STANDARD TENURE IS DROPPED, not silently bucketed. A 999-year lease commencing 1875
+    # would otherwise read as age 151 and land in "31+", dragging the old bucket.
+    fhmix = crows + flatten([proj("C999", [
+        _tx("0324", 900 * 100 * SQM_TO_SQFT, 100, SALE_RESALE, "999 yrs lease commencing from 1875")
+        for _ in range(MIN_CELL_N)])])
+    cf = test_c_age_decay(fhmix)
+    check("C drops non-standard lease terms", cf["coverage"]["resale_rows_dropped_non_standard_lease"], MIN_CELL_N)
+    check("C 999-year stock never reaches a bucket",
+          sum(b["n"] for b in cf["gradient"].values()), sum(b["n"] for b in c["gradient"].values()))
+
+    # ZERO CROSSING, on a fixture built to clear both stop conditions: 6 districts x 6 sales.
+    # Bucket midpoints are 8 ("6-10") and 18 ("16-20"); medians +33.33 and 0.00 put the crossing
+    # exactly at the older midpoint, 18.0. Recomputed by hand: 8 + (18-8) * (33.33/33.33) = 18.0.
+    wide = []
+    for i, d in enumerate(("10", "11", "12", "13", "14", "15")):
+        for nm, psf, start in (("W1", 1200, 2016), ("W2", 1000, 2004), ("W3", 800, 1984)):
+            wide.append({"project": f"{nm}D{d}", "district": d, "marketSegment": "OCR",
+                         "transaction": aged(psf, start, n=6)})
+    cw = test_c_age_decay(flatten(wide))
+    check("C wide fixture clears the bucket floor", cw["gradient"].get("6-10", {}).get("feasible"), True)
+    check("C wide fixture clears the district floor", cw["gradient"].get("6-10", {}).get("districts"), 6)
+    check("C wide fixture gradient is monotone decreasing", cw["monotone_decreasing"], True)
+    check("C zero crossing interpolated", cw["zero_crossing_age"], 18.0)
+    check("C prediction check reports the crossing is outside 11-15",
+          cw["prediction_held"]["zero_crossing_in_11_to_15"], False)
+
+    # NON-MONOTONE MUST BE DETECTED, not smoothed. Invert the young and old prices so the
+    # gradient rises with age; monotone_decreasing must flip to False.
+    inv = []
+    for d in ("10", "11", "12", "13", "14", "15"):
+        for nm, psf, start in (("V1", 800, 2016), ("V2", 1000, 2004), ("V3", 1200, 1984)):
+            inv.append({"project": f"{nm}D{d}", "district": d, "marketSegment": "OCR",
+                        "transaction": aged(psf, start, n=6)})
+    check("C detects a non-monotone gradient", test_c_age_decay(flatten(inv))["monotone_decreasing"], False)
+
     if fails:
         print("SELF-TEST FAILED")
         for f in fails:
             print("  -", f)
         return 1
     print(f"SELF-TEST PASSED ({len(ran)} checks) - date boundaries, banding, "
-          "self-contamination guard, SSD-hold and thin-cell exclusions, both tests.")
+          "self-contamination guard, SSD-hold and thin-cell exclusions, age-at-transaction "
+          "arithmetic, and both stop conditions on every test (A, A2, B, C).")
     return 0
 
 
@@ -887,6 +1205,7 @@ def main() -> int:
         "test_a_launch_premium_pct": test_a_launch_premium(rows),
         "test_a_by_year": test_a_by_year(rows),
         "test_a2_lease_matched": test_a2_lease_matched(rows, mrt_by_project=mrt),
+        "test_c_age_decay": test_c_age_decay(rows),
         "test_b_premium_recovery": test_b_premium_recovery(rows),
     }
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
