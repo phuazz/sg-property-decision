@@ -708,6 +708,167 @@
     "_paired_note": "Median of (baseline gap - 85+ gap) over the new-sale observations that clear the cell floor in BOTH pools. District, quarter, size band and project are identical on each side, so this isolates the comparator's lease from the district-mix change that the segment-level figures confound.",
     "_ceiling": "Bounds the blend, does not decompose it: lease and newness are collinear by construction, so the true newness premium is no larger than the lease-matched gap, not equal to it."
   },
+  "test_c_age_decay": {
+    "gradient": {
+      "0-5": {
+        "n": 187,
+        "median": 19.79,
+        "mean": 21.54,
+        "p10": 4.0,
+        "p25": 12.46,
+        "p75": 29.05,
+        "p90": 40.28,
+        "share_positive_pct": 95.2,
+        "districts": 12,
+        "median_sqft": 732,
+        "feasible": true
+      },
+      "6-10": {
+        "n": 10774,
+        "median": 9.92,
+        "mean": 11.99,
+        "p10": -6.77,
+        "p25": 0.66,
+        "p75": 21.04,
+        "p90": 33.56,
+        "share_positive_pct": 76.4,
+        "districts": 24,
+        "median_sqft": 743,
+        "feasible": true
+      },
+      "11-15": {
+        "n": 12072,
+        "median": 0.07,
+        "mean": 1.97,
+        "p10": -14.72,
+        "p25": -8.31,
+        "p75": 10.28,
+        "p90": 21.58,
+        "share_positive_pct": 50.2,
+        "districts": 24,
+        "median_sqft": 915,
+        "feasible": true
+      },
+      "16-20": {
+        "n": 4190,
+        "median": 1.39,
+        "mean": 2.43,
+        "p10": -17.04,
+        "p25": -8.85,
+        "p75": 12.65,
+        "p90": 23.39,
+        "share_positive_pct": 53.3,
+        "districts": 25,
+        "median_sqft": 1216,
+        "feasible": true
+      },
+      "21-30": {
+        "n": 7582,
+        "median": -12.4,
+        "mean": -10.65,
+        "p10": -28.33,
+        "p25": -21.35,
+        "p75": -2.25,
+        "p90": 9.34,
+        "share_positive_pct": 21.4,
+        "districts": 25,
+        "median_sqft": 1206,
+        "feasible": true
+      },
+      "31+": {
+        "n": 2917,
+        "median": -25.23,
+        "mean": -23.57,
+        "p10": -41.27,
+        "p25": -34.77,
+        "p75": -13.03,
+        "p90": -3.3,
+        "share_positive_pct": 6.4,
+        "districts": 24,
+        "median_sqft": 1324,
+        "feasible": true
+      }
+    },
+    "coverage": {
+      "min_comparators_per_cell": 5,
+      "min_transactions_per_bucket": 30,
+      "min_districts_per_bucket": 5,
+      "lease_term_range_kept": [
+        95,
+        110
+      ],
+      "resale_rows_dropped_non_standard_lease": 22054,
+      "resale_rows_dropped_thin_cell": 1208,
+      "age_measured": "at the transaction date (contract year - lease commencement year)"
+    },
+    "entry_anchor_new_sales": {
+      "n": 34623,
+      "median": 45.22,
+      "mean": 46.36,
+      "p10": 23.18,
+      "p25": 32.61,
+      "p75": 57.54,
+      "p90": 70.85,
+      "share_positive_pct": 99.7,
+      "districts": 25,
+      "feasible": true
+    },
+    "monotone_decreasing": false,
+    "zero_crossing_age": 18.8,
+    "prediction_held": {
+      "monotone_decreasing": false,
+      "zero_crossing_in_11_to_15": false,
+      "age_6_10_in_8_to_18pct": true
+    },
+    "gradient_by_year": {
+      "2021": {
+        "0-5": 19.6,
+        "6-10": 4.6,
+        "11-15": 2.4,
+        "16-20": -4.1,
+        "21-30": -14.4,
+        "31+": -28.9
+      },
+      "2022": {
+        "0-5": 20.2,
+        "6-10": 6.6,
+        "11-15": 1.2,
+        "16-20": -1.2,
+        "21-30": -13.3,
+        "31+": -23.3
+      },
+      "2023": {
+        "0-5": 18.0,
+        "6-10": 9.4,
+        "11-15": 0.7,
+        "16-20": 3.8,
+        "21-30": -11.7,
+        "31+": -24.7
+      },
+      "2024": {
+        "6-10": 13.3,
+        "11-15": -1.1,
+        "16-20": 2.4,
+        "21-30": -11.3,
+        "31+": -23.9
+      },
+      "2025": {
+        "6-10": 12.8,
+        "11-15": -1.3,
+        "16-20": 2.0,
+        "21-30": -12.1,
+        "31+": -28.3
+      },
+      "2026": {
+        "6-10": 13.7,
+        "11-15": 1.1,
+        "16-20": 0.6,
+        "21-30": -11.3,
+        "31+": -23.7
+      }
+    },
+    "_ceiling": "The decay is the SUM of lease run-down, physical depreciation and design obsolescence; this design cannot separate them. It is also cross-sectional \u2014 a 5.25-year window cannot follow one building from 8 to 30 years old \u2014 and en-bloc removes the old cohort's redevelopment candidates, in a direction that is genuinely ambiguous. It describes stock that remained on the market, not the path of any individual building."
+  },
   "test_b_premium_recovery": {
     "by_segment": {},
     "all": null,
