@@ -467,7 +467,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="mob-hint">&#8596; Scroll the table sideways (the project name stays pinned), or rotate to landscape for every column.</div>
         <div class="pcount" id="p-topcount"></div>
         <div class="tbl-wrap tbl-freeze"><table id="projects-table"></table></div>
-        <div class="note"><span id="projects-count"></span> · Resale, last 12 months, every project with at least one resale; a project with fewer than 6 resales is marked <span style="color:var(--a)">thin</span> — its median is indicative, so weigh it lightly. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (the same 12-month turnover, log-scaled) + remaining lease + MRT proximity, each percentile-ranked across all projects so no single factor dominates, equal-weight; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for lease or MRT, so a large discount often just reflects a shorter lease or being further from a station (both shown in the columns beside it); for a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
+        <div class="note"><span id="projects-count"></span> · Resale, last 12 months, every project with at least one resale; a project with fewer than 6 resales is marked <span style="color:var(--a)">thin</span> — its median is indicative, so weigh it lightly. <b>Score</b> (the default sort) is a broad attractiveness read — value (vs area) + liquidity (the same 12-month turnover, log-scaled) + remaining lease + MRT proximity, each percentile-ranked across all projects so no single factor dominates, equal-weight; every column is still sortable, so re-sort by whatever you care about most. <b>vs area</b> compares the project's median $psf to its district median (negative = cheaper than the area). <b>Turnover</b> (12-month resale count) is the liquidity proxy — higher is easier to sell. A lease under 60 years (shown red) flags financing and CPF-usage limits. <b>Nearest MRT</b> is straight-line to the closest station exit (LTA data); walking distance is typically 20–40% longer. <b>vs area</b> is a raw cue — <i>not</i> adjusted for age, lease or MRT, so a large discount often just reflects older stock, a shorter lease or being further from a station (all shown in the columns beside it). <span id="decay-explainer"></span> For a like-for-like read use the <b>Is this asking price fair?</b> tool below, which conditions on tenure and the specific project. A &#9888; on the $psf marks a project whose latest resale is over 9 months old (its 12-month median may be stale).</div>
       </div>
       <div class="card" id="newlaunch-card">
         <h3>Current new launches — <em style="font-style:normal;color:var(--t3-text)">live URA developer sales</em></h3>
@@ -1267,7 +1267,7 @@ function renderFairValue(){
   if(!p||!size||!price){ $('f-result').innerHTML='<div class="note">Enter a district (or the exact project), unit size and asking price. Add tenure or the project name to tighten the comparison.</div>'; return; }
   const psf=price/size;
   let band,cls;
-  if(psf<p[0]){band='well below the market — check why (short lease, low floor, condition)';cls='good';}
+  if(psf<p[0]){band='well below the market — check why (age, short lease, low floor, condition)';cls='good';}
   else if(psf<p[1]){band='on the cheap side';cls='good';}
   else if(psf<=p[3]){band='within the fair range';cls='';}
   else if(psf<=p[4]){band='above the fair range';cls='warn';}
@@ -1280,7 +1280,7 @@ function renderFairValue(){
     `<line x1="${W(psf).toFixed(2)}" y1="1.5" x2="${W(psf).toFixed(2)}" y2="18.5" stroke="${mc}" stroke-width="0.9"/></svg>`;
   $('f-result').innerHTML=`<div class="verdict ${cls||'good'}" style="margin-bottom:10px">At <b>$${fmt0(Math.round(psf))} psf</b> (${sgd(price)} ÷ ${fmt0(size)} sqft), this asking is <b>${band}</b>.<div style="font-weight:400;color:var(--t2);font-size:12px;margin-top:5px">Compared to ${basis}</div></div>`+note2+bar+
     `<div class="bars" style="font-size:12px;margin-top:4px">`+[['Cheapest 10% (p10)',p[0]],['p25',p[1]],['Median',p[2]],['p75',p[3]],['Dearest 10% (p90)',p[4]]].map(([k,v])=>`<div class="bar-row" style="grid-template-columns:180px 1fr"><span>${k}</span><span class="bar-num">$${fmt0(v)} psf</span></div>`).join('')+`</div>`+
-    `<div class="note">Resale condo/apartment $psf (URA caveats, last 12 months). The green band is the fair p25–p75 range. The comparison is <b>size-matched</b> where the sample allows (larger units trade at a lower $psf); floor, facing, condition and remaining lease still move a specific unit within the band — market context, not a valuation.</div>`;
+    `<div class="note">Resale condo/apartment $psf (URA caveats, last 12 months). The green band is the fair p25–p75 range. The comparison is <b>size-matched</b> where the sample allows (larger units trade at a lower $psf); floor, facing, condition and remaining lease still move a specific unit within the band — market context, not a valuation. Naming the project holds <b>age</b> constant; a district does not, because its median mixes every vintage — stock past thirty years typically trades about a quarter below it, so a below-band price on an old building may be its age rather than a bargain.</div>`;
 }
 
 function renderWhere(){
@@ -1467,10 +1467,27 @@ function wire(){
   $('try-example').addEventListener('click',()=>{applyPreset(PRESETS[0].v);switchTab('afford');});
 }
 
+/* How much of a project's discount to its district is simply age. Rendered from rules.json rather
+   than typed into the prose above, for the same reason the land multiple is: a figure typed into
+   HTML drifts the moment the study is re-run, and this one sits directly under a column readers
+   sort by to find bargains. Silent if the block is absent, so an older rules.json still builds. */
+function renderDecay(){
+  const el=$('decay-explainer'), A=(D.rules||{}).age_decay; if(!el) return;
+  if(!A||!A.gradient_pct){ el.innerHTML=''; return; }
+  const g=A.gradient_pct, sp=v=>`<b>${v>0?'+':v<0?'&minus;':''}${Math.abs(Math.round(v))}%</b>`;
+  el.innerHTML=`Age alone is worth a lot of it: across ${fmt0(A.n)} resales in ${A.districts} districts a `+
+    `project typically sits ${sp(g['6-10'])} against its district at six to ten years old, about level `+
+    `from eleven to twenty, ${sp(g['21-30'])} at twenty-one to thirty and ${sp(g['31+'])} past thirty `+
+    `(age &asymp; 99 &minus; the lease column). So a ${sp(g['31+'])} here on a thirty-year-old building is `+
+    `par for its vintage rather than a bargain. Those are national medians over wide bands, <i>not</i> a `+
+    `per-project expectation, and the eleven-to-twenty buckets are indistinguishable — `+
+    `<a class="xlink" href="https://github.com/phuazz/sg-property-decision/blob/main/reviews/2026-08-10_building-age-decay.md" target="_blank" rel="noopener">method and limits</a>.`;
+}
+
 (async function init(){
   try{
     D=await loadData();
-    renderKPIs(); renderRatesChart(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderUnsold(); renderFairValue(); renderAtGlance();
+    renderKPIs(); renderRatesChart(); renderHook(); wire(); renderAfford(); renderType(); renderWhere(); renderDistricts(); renderProjects(); renderDistrictMap(); renderNewLaunches(); renderUnsold(); renderFairValue(); renderDecay(); renderAtGlance();
   }catch(e){
     document.querySelector('.shell').insertAdjacentHTML('beforeend',
       `<div class="disc">Could not load data (${e.message}). Serve from the project root with <span class="mono">npx serve .</span> so <span class="mono">data/*.json</span> is reachable, or run <span class="mono">python scripts/pipeline.py</span> to build the standalone page.</div>`);
