@@ -102,5 +102,17 @@
     "oa_rate": 0.025,
     "note": "CPF Ordinary Account pays 2.5% p.a. Cash used for downpayment/instalments has an opportunity cost at least equal to this (and typically the investor's portfolio return). Used in the cash-vs-mortgage module as the CPF hurdle.",
     "source": "CPF Board (floor rate)"
+  },
+
+  "age_decay": {
+    "gradient_pct": {"0-5": 19.8, "6-10": 9.9, "11-15": 0.1, "16-20": 1.4, "21-30": -12.4, "31+": -25.2},
+    "n": 37722,
+    "districts": 25,
+    "zero_crossing_years": 18.8,
+    "monotone": false,
+    "note": "How much of a project's discount to its district is simply its age. Each resale's $psf against the median of its own (district, quarter, size band) cell — a cell pooling ALL building ages, own project excluded — grouped by building age at the transaction date. This is what the Projects table's 'vs area' column measures, so it is the right yardstick for reading that column.",
+    "flag": "National medians over wide age bands, NOT a per-project expectation. Not monotone: the 11-15 and 16-20 buckets are indistinguishable, partly because the top size band is open-ended above 1,150 sqft, so the zero crossing is placeable only to 15-20 years. The decay is the sum of lease run-down, physical depreciation and design obsolescence and this cannot separate them; it is cross-sectional, not one building followed through time; and en-bloc removes the old cohort's redevelopment candidates in an ambiguous direction.",
+    "source": "URA PMI_Resi_Transaction via scripts/study_launch_vs_resale.py::test_c_age_decay, pre-registered 2026-08-10, CI run 31360128362; reviews/2026-08-10_building-age-decay.md",
+    "asof": "2026-08-10"
   }
 }
