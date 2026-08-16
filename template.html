@@ -1226,6 +1226,11 @@ function renderUnsold(){
 }
 const _sizeband=s=>s<600?0:s<850?1:s<1150?2:3;
 const _bandLabel=b=>['≤600 sqft (compact)','600–850 sqft (2-bed)','850–1150 sqft (3-bed)','>1150 sqft (large)'][b];
+/* Band 3 is open-ended: it pools every resale above 1,150 sqft, so a genuinely large unit is
+   benchmarked partly against stock far bigger than itself (larger units trade at a lower $psf,
+   which drags the band down). Caution above this size rather than silently returning a loose band.
+   1,500 sqft ≈ 1.3x the band floor — by then the entered unit sits well above the band's mass. */
+const _BIG_SQFT=1500;
 function renderFairValue(){
   const DS=D.market.districts, card=$('fair-card'); if(!card) return;
   if(!DS||!DS.rows||!DS.rows.length){ card.style.display='none'; return; }
@@ -1247,14 +1252,20 @@ function renderFairValue(){
   if(pmatch && pmatch.psf_p){
     p=pmatch.psf_p;
     basis=`<b>${pmatch.project}</b> — its own resale over the last 12 months (${pmatch.vol_12m} deal${pmatch.vol_12m===1?'':'s'}${pmatch.lease?', '+_leaseTxt(pmatch.lease)+' lease':''}, ${pmatch.district}). The tightest benchmark: same location, same lease.`;
-    if(pmatch.vol_12m<10) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Only ${pmatch.vol_12m} resale deals in this project over 12 months — treat the band as indicative.</div>`;
+    if(pmatch.vol_12m<10) note2+=`<div class="flag" style="font-size:11.5px;margin-top:6px">Only ${pmatch.vol_12m} resale deals in this project over 12 months — treat the band as indicative.</div>`;
+    /* Same project holds location and lease constant but not size: a 1,600 sqft unit benchmarked
+       against a year of 700 sqft resales in the same block is not a like-for-like $psf. size_r is
+       the p10–p90 of what actually transacted there. */
+    const sr=pmatch.size_r;
+    if(sr && size && (size<sr[0]||size>sr[1])) note2+=`<div class="flag" style="font-size:11.5px;margin-top:6px">This project's resales ran <b>${fmt0(sr[0])}–${fmt0(sr[1])} sqft</b> over the year; at ${fmt0(size)} sqft your unit sits outside that, so the band is not size-matched (larger units usually trade at a lower $psf).</div>`;
   } else if(drow){
     const band = size?_sizeband(size):null;
     const szp = (band!=null && drow.psf_sz && drow.psf_sz[band]) ? drow.psf_sz[band] : null;
     const byt = tenure==='fh'?drow.psf_p_fh : tenure==='lh'?drow.psf_p_lh : null;
     if(szp){
       p=szp; basis=`${drow.district} ${drow.name} · ${_bandLabel(band)} resale, last 12 months (size-matched).`;
-      if(tenure!=='any') note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Size-matched, not additionally split by tenure (keeps the sample robust); your lease still shifts a unit within this band.</div>`;
+      if(band===3 && size>=_BIG_SQFT) note2+=`<div class="flag" style="font-size:11.5px;margin-top:6px">The largest band is <b>open-ended</b> — it pools every resale above 1,150 sqft, including units far bigger than ${fmt0(size)} sqft, and bigger units trade at a lower $psf. Treat this as a loose comparison; naming the project above, or the Projects table filtered to a size range, is the tighter read.</div>`;
+      if(tenure!=='any') note2+=`<div class="flag" style="font-size:11.5px;margin-top:6px">Size-matched, not additionally split by tenure (keeps the sample robust); your lease still shifts a unit within this band.</div>`;
     } else if(byt){
       p=byt; basis=`${drow.district} ${drow.name} · ${tenure==='fh'?'freehold':'leasehold'} resale, last 12 months.`;
       if(band!=null) note2=`<div class="flag" style="font-size:11.5px;margin-top:6px">Too few ${_bandLabel(band)} resale here for a size band — using ${tenure==='fh'?'freehold':'leasehold'}, all sizes.</div>`;
