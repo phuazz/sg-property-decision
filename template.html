@@ -508,7 +508,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-where">
     <h2 class="section">Where to buy — and what the land bids are telling you</h2>
     <p class="lead">Where your budget actually reaches, what each area yields, and a forward signal most buyers miss: <b>developers' winning land bids</b>. A high, competitive bid prices tomorrow's launches and sets a floor under nearby prices.</p>
-    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body prose">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of sellable space. <span id="ltl-explainer"></span> A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
+    <details class="fp"><summary>How to read a land bid</summary><div class="fp-body prose">Government Land Sales are how the state releases sites; developers tender for them. The winning <b>$psf per plot ratio (ppr)</b> is what a developer paid per square foot of <b>gross floor area</b> — the floor area it is allowed to build, which is not the same as the floor area it can sell you. <span id="ltl-explainer"></span> A high bid with many bidders near an area you like is a forward vote of confidence that pulls nearby resale prices up; a lone low bid is the opposite.</div></details>
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
       <div class="card" id="district-card">
         <h3>Most attractive areas — <em style="font-style:normal;color:var(--t3-text)">live URA resale data</em></h3>
@@ -1350,8 +1350,28 @@ function renderWhere(){
   // the demand caveat is read off the two richest multiples, not asserted, so it cannot drift
   const top=(L.pairs||[]).slice().sort((a,b)=>b.multiple-a.multiple).slice(0,2).filter(p=>p.takeup!=null);
   const dmd=top.length===2?` And it says nothing about whether a project will sell: the two highest multiples in the set are ${pct(top[0].takeup,0)} and ${pct(top[1].takeup,0)} sold.`:'';
+  // Hybrid plots. The land rate is struck across ALL the floor area on a site; the launch price is
+  // charged only on the flats. Where a plot also carries shops, or a serviced-apartment block the
+  // developer must hold and rent rather than sell, those two are not measuring the same thing and
+  // the multiple reads high. On the current sample the two flagged pairs are the two ENDS of the
+  // published band, which is exactly the figure this column scales - so it is named on the page.
+  // Read off the flag rather than written into the sentence, so it cannot drift from the feed.
+  // Feed project names are upper-case ("ZYON GRAND"); title-case them, leaving joining words alone
+  // so "UPPERHOUSE AT ORCHARD BOULEVARD" does not come back as "Upperhouse At Orchard Boulevard".
+  const _TCSKIP=new Set(['at','the','of','on','in','and','de','by']);
+  const _tc=s=>String(s||'').toLowerCase().replace(/(^|[\s(@])([a-z]+)/g,
+    (m,a,w)=>a+(_TCSKIP.has(w)&&a!==''?w:w.charAt(0).toUpperCase()+w.slice(1)));
+  const ltlSort=ltlPairs.slice().sort((a,b)=>a.multiple-b.multiple),
+        ltlEnd=ltlSort.length>1?[ltlSort[0],ltlSort[ltlSort.length-1]].filter(p=>p.hybrid_site):[],
+        // compare like with like: the same subset the headline is on, minus the hybrids
+        ltlPure=(ltlH&&L.harmonised_strata_only&&L.harmonised_strata_only.median)?L.harmonised_strata_only
+               :(L.strata_only&&L.strata_only.median)?L.strata_only:null;
+  const _sa=ltlEnd.filter(p=>p.nonstrata_gfa_min_share)[0];
+  const hyb=(ltlEnd.length&&ltlPure)?` <b>${ltlEnd.length>1?'Both ends':'One end'} of that band sit${ltlEnd.length>1?'':'s'} on ${ltlEnd.length>1?'hybrid plots':'a hybrid plot'}.</b> ${ltlEnd.map(p=>_tc(p.project)).join(' and ')} ${ltlEnd.length>1?'were':'was'} built on land whose floor area is not all sold as flats`
+      +(_sa?` — at ${_tc(_sa.project)} at least <b>${pct(_sa.nonstrata_gfa_min_share,0)}</b> of it is a serviced-apartment block the developer must keep and rent out, never sell`:'')
+      +`. The land rate is struck across all of that floor area and the launch price only across the flats, so those multiples read <b>high</b> by an amount nobody can size from public data — the split as built is not published. On the <b>${ltlPure.n}</b> plots in this set that are flats and nothing else the band pulls in at both ends to <b>${ltlPure.range[0].toFixed(2)}×–${ltlPure.range[1].toFixed(2)}×</b>${ltlPure.median===(ltlMed||0)?', on an unchanged median':` (median ${ltlPure.median.toFixed(2)}×)`} — so it is the ends of the wide band that are flattered, not the middle. Anchor on the middle.`:'';
   $('ltl-explainer').innerHTML=`Across the <b>${ltlN}</b> state-land sites that can be paired with a project now selling on them, the price has landed at <b>${lx}×–${hx}× the land bid</b> (median <b>${mx}×</b>) — sites awarded ${monYr(ltlSpan[0])}–${monYr(ltlSpan[1])}, prices as at ${mmyy((D.market.new_launches||{}).asof)||monYr(L.asof)}. `+
-    `Treat that as a range, not a formula, and note what it is <i>not</i>. It uses each project's median for a <b>single recent month</b>, not its launch-day price, and on a project selling its last few units that can rest on a handful of transactions — developers raise prices as a project sells through. It is <b>not a developer margin</b>: those sites were awarded ${age}, so the multiple carries however much the whole market moved while the project was being built.${dfl} All are state land — a collective sale prices differently. The multiple above is the <b>${ltlN}</b> sites awarded after URA harmonised the floor-area definitions on 1 June 2023, which is the like-for-like basis for a land rate priced on gross floor area against a price charged on strata area; across all <b>${L.n}</b> pairs the median is <b>${(L.factor_median||0).toFixed(2)}×</b>.${dmd}`;
+    `Treat that as a range, not a formula, and note what it is <i>not</i>. It uses each project's median for a <b>single recent month</b>, not its launch-day price, and on a project selling its last few units that can rest on a handful of transactions — developers raise prices as a project sells through. It is <b>not a developer margin</b>: those sites were awarded ${age}, so the multiple carries however much the whole market moved while the project was being built.${dfl} All are state land — a collective sale prices differently. The multiple above is the <b>${ltlN}</b> sites awarded after URA harmonised the floor-area definitions on 1 June 2023, which is the like-for-like basis for a land rate priced on gross floor area against a price charged on strata area; across all <b>${L.n}</b> pairs the median is <b>${(L.factor_median||0).toFixed(2)}×</b>.${hyb}${dmd}`;
 
   const seg2col={OCR:'chip-g',RCR:'chip-a',CCR:'chip-b'};
   $('gls-table').innerHTML=`<thead><tr><th>Site</th><th>Seg</th><th>Closed</th><th class="num">$psf ppr</th><th class="num">Bids</th><th class="num">Est. launch $psf</th></tr></thead><tbody>`+
