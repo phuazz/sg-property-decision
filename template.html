@@ -73,6 +73,7 @@ h1,h2,h3{font-weight:400}
 .tab:hover{color:var(--t1)}
 .tab.active{color:var(--t1);font-weight:600}
 .tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--t1)}
+.t-mini{display:none}   /* tab labels: full on desktop, number-over-word on mobile — see the 640px block */
 /* iOS / touch polish */
 .tab,.preset{-webkit-user-select:none;user-select:none}
 .preset{transition:transform .08s ease,background .15s ease,border-color .15s ease}
@@ -114,6 +115,18 @@ th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hove
 .a-short{display:none}   /* area names: full on desktop, first segment only on mobile — see _areaLbl */
 .cell-sub{display:block;font-size:11px;font-weight:400;color:var(--t3-text)}   /* raw counts under a ratio */
 @media(max-width:640px){
+  /* Six equal columns cannot overflow at any width, so no step can sit off-screen. The scrolling
+     bar held 910px of tabs in a 362px track at 390px: only "Start here" and step 1 were fully
+     visible, step 4 began 1.6 screen-widths to the right and step 5 two full screen-widths out,
+     with no fade or arrow to say they were there. Numbers are kept on their own line because the
+     1-5 sequence is the walkthrough; Start carries a blank line so all six words share a baseline. */
+  #tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:0;overflow:visible}
+  #tabs .tab{padding:6px 2px}
+  .t-full{display:none}
+  .t-mini{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.25}
+  .t-mini b{font-size:11px;font-weight:700;color:var(--t3,var(--t2));font-variant-numeric:tabular-nums}
+  .tab.active .t-mini b{color:var(--t1)}
+  .t-mini i{font-size:12px;font-style:normal}
   .mob-hint{display:block}
   .a-full{display:none} .a-short{display:inline}
   .tbl-freeze td,.tbl-freeze th{padding:7px 8px}
@@ -284,12 +297,12 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <div class="kpi-strip" id="kpis"></div>
 
   <nav class="tabs" id="tabs">
-    <button class="tab active" data-t="start">Start here</button>
-    <button class="tab" data-t="afford">1 · Can I afford it?</button>
-    <button class="tab" data-t="leverage">2 · Cash or loan?</button>
-    <button class="tab" data-t="type">3 · HDB, condo or landed?</button>
-    <button class="tab" data-t="where">4 · Where to buy?</button>
-    <button class="tab" data-t="which">5 · Which condo?</button>
+    <button class="tab active" data-t="start" aria-label="Start here"><span class="t-full">Start here</span><span class="t-mini"><b>&nbsp;</b><i>Start</i></span></button>
+    <button class="tab" data-t="afford" aria-label="Step 1: Can I afford it?"><span class="t-full">1 · Can I afford it?</span><span class="t-mini"><b>1</b><i>Afford</i></span></button>
+    <button class="tab" data-t="leverage" aria-label="Step 2: Cash or loan?"><span class="t-full">2 · Cash or loan?</span><span class="t-mini"><b>2</b><i>Cash</i></span></button>
+    <button class="tab" data-t="type" aria-label="Step 3: HDB, condo or landed?"><span class="t-full">3 · HDB, condo or landed?</span><span class="t-mini"><b>3</b><i>Type</i></span></button>
+    <button class="tab" data-t="where" aria-label="Step 4: Where to buy?"><span class="t-full">4 · Where to buy?</span><span class="t-mini"><b>4</b><i>Where</i></span></button>
+    <button class="tab" data-t="which" aria-label="Step 5: Which condo?"><span class="t-full">5 · Which condo?</span><span class="t-mini"><b>5</b><i>Which</i></span></button>
   </nav>
 
   <!-- OVERVIEW -->
