@@ -28,6 +28,168 @@ even before the market moved" holds on the median and should not be read as hold
 See *Stability of the launch side* below. The article that cites this record carries the same
 correction.
 
+## Correction, 2026-08-16 (Sun): both ends of the published range sit on hybrid sites
+
+**The denominator is not always a residential land rate, and this record never said so.** The
+multiple divides a launch price charged on condominium strata by a land rate struck on the whole
+site's gross floor area. Where part of that GFA is *not* sellable strata, the two sides are not
+measuring the same thing and the multiple reads **high**. Two of the eight pairs are in that
+position, and they are **the two ends of the range this page publishes**.
+
+### Zyon Grand — a quarter of the plot was never for sale
+
+URA awarded **Zion Road (Parcel A)** as one of two pilot sites for long-stay Serviced Apartments
+(SA2). The award release states the condition outright: *"A minimum 20,000 m² of GFA is to be set
+aside for Long-Stay Serviced Apartments (SA2) use"*, against a maximum permissible GFA of
+**85,557 m²** — so **at least 23.4%** of the floor area behind the $1,202 psf ppr land rate.
+URA's SA2 circular settles what that floor area is: SA2 is *"expected to be owned en-bloc and
+operated by a single operator"*, so **none of it is ever sold as strata**. CDL's own launch
+release describes the built form — a 36-storey serviced-apartment tower plus a retail galleria with
+F&B, a supermarket and a childcare centre — alongside the 706-unit condominium.
+
+The numerator is the 706-unit condominium alone. The denominator is blended across all of it.
+Serviced-apartment floor area is worth less per square foot to a developer than sellable strata, so
+the condominium's true land cost is **above** $1,202 and **2.83× is overstated**.
+
+This record earlier judged the strata-to-GFA shift unquantifiable because it *"needs the plans"*.
+That was right about the DC22-09 harmonisation and **wrong to be carried over to this**: the
+*minimum* set-aside is published. What is not published is the split as built, which is why the
+correction below is a flag and an illustration, not a restatement.
+
+| f = SA2 floor area's worth per sq ft, as a fraction of condo strata | implied residential land $psf | × on $3,400 | × on $3,050 |
+|---|---:|---:|---:|
+| 1.00 *(no discount — the published basis)* | 1,202 | 2.83× | 2.54× |
+| 0.80 | 1,261 | 2.70× | 2.42× |
+| 0.60 | 1,326 | 2.56× | 2.30× |
+| 0.40 | 1,398 | 2.43× | 2.18× |
+
+**Illustrative arithmetic on the published minimum, not an estimate.** `f` is not observable from
+free public data and no value of it is asserted here. What the table shows is that the direction is
+one-way and the magnitude is not small: on any discount at all, Zyon Grand stops being the top of
+the range. On the launch basis with a mid-range discount it lands around 2.3×, which is the middle
+of the pack. **The Sen at 2.78× — a plain residential plot — is the more defensible ceiling.**
+
+### The other seven, checked
+
+| Pair | Site | URA "Type of Development Allowed" | Non-strata GFA | Cleared against |
+|---|---|---|---|---|
+| Upperhouse | Orchard Boulevard | Residential **with Commercial at 1st Storey** | commercial, quantum not published | pr24-07 |
+| Nava Grove | Pine Grove (Parcel B) | Residential | none | pr23-42, workbook |
+| 8@BT | Bukit Timah Link | Residential | none | workbook, SA2 pilot list |
+| Norwood Grand | Champions Way | Residential | none | workbook, SA2 pilot list |
+| Promenade Peak | Zion Road (Parcel B) | Residential | none | pr24-40 |
+| River Green | River Valley Green (Parcel A) | Residential | none | pr24-33 |
+| The Sen | De Souza Avenue | Residential | none | pr24-40 |
+| Zyon Grand | Zion Road (Parcel A) | Residential **with Commercial at 1st Storey** | commercial **+ SA2 ≥ 20,000 m² (≥23.4%)** | pr24-15, pr23-48, DC23-11 |
+
+Two of eight. The SA2 pilot is a closed list of **two parcels** — Zion Road (Parcel A) and Upper
+Thomson Road (Parcel A), per pr23-48 — and only the first is in this sample, which is what lets the
+remaining six be cleared on the workbook's use column rather than one release at a time. Bukit
+Timah Link and Champions Way were cleared on those two signals alone; the other four were checked
+against their award releases directly.
+
+**Note the workbook does not know about SA2.** Zion Road (Parcel A) reads there as ordinary
+"Residential with Commercial at 1st Storey" — identical to Orchard Boulevard, where the
+non-residential share is a strip of shops rather than a quarter of the plot. The workbook column
+alone would have flagged the site but understated it by an order of magnitude, so the set-aside is
+carried as a curated entry keyed to the site, with its source.
+
+### What this does to the published figures
+
+Nothing is corrected. The flag is emitted per pair and the restricted subsets alongside, exactly as
+`gfa_basis` is:
+
+| Basis | n | Median | Range |
+|---|---:|---:|---|
+| All pairs (as published) | 8 | 2.31× | 2.13×–2.83× |
+| Strata-only | 6 | **2.31×** | **2.20×–2.78×** |
+| Post-harmonisation (page headline) | 7 | 2.33× | 2.13×–2.83× |
+| Post-harmonisation **and** strata-only | 5 | **2.33×** | **2.20×–2.78×** |
+
+**The median does not move at all; the range pulls in at both ends.** That is the Kassia shape
+again — a pair that looks fine in isolation, leaves the median alone and damages the *range*, which
+is the figure the page publishes and the figure the "Est. launch $psf" column scales.
+
+**The column keeps the all-pairs-post-harmonisation basis, and the page now says why.** Switching
+it to the double-restricted subset would buy a median that does not change and a range 0.05×–0.07×
+tighter, at the cost of running the estimate column off **n = 5** — exactly the withhold floor, so
+one project finishing its sales would take the column out entirely. Month-to-month noise on these
+endpoints is around 0.3× (see *Stability of the launch side*), which is five times the tightening
+on offer. The honest fix is the caveat, not the narrower sample. The page now names both flagged
+projects, states the ≥23% set-aside, gives the strata-only band and tells the reader to anchor on
+the middle rather than the ends.
+
+Three of the ten sites the estimate column prices are themselves hybrid — Bayshore Drive
+(Commercial and Residential), Dunearn Road and Dover Drive (Residential with Commercial at 1st
+Storey). Applying a blended-basis multiple to a blended-basis land rate is the more nearly
+like-for-like operation, so this is an argument for flagging both sides rather than for purifying
+the sample.
+
+### The reference month is not the launch, and the endpoint is being read as if it were
+
+Stated separately because it compounds with the above and is a different error. Zyon Grand's 2.83×
+uses its **current reference-month median — 5 units in 06-2026 at $3,400 psf**. The launch was
+priced materially lower: CDL's release of **26 October 2025 (Sun)** records **590 of 706 units
+(84%) sold at an average selling price of S$3,050 psf**. On the launch basis the multiple is
+**2.54×, not 2.83×**.
+
+This record already says the multiple is *"not a launch-day price"*, and that remains the first
+item under *What the multiple is not*. It is not enough. The caveat is prose while **2.83× is the
+published number**, and a range endpoint gets read as the thing it is nearest to — a launch price.
+The two corrections push the same way: reference-month rather than launch, and blended rather than
+residential land. Both inflate, and they inflate the same pair, which is the one setting the top of
+the published range.
+
+### Guards
+
+| Guard | Verified by making it fail | Load-bearing? |
+|---|---|---|
+| Prohibition clauses must not flag | Removing the negation handling makes "Condominium (Service Apartment will not be allowed)" flag as serviced-apartments | **Yes** — 3 sites in the workbook name a use in order to forbid it |
+| Nested-bracket exclusions must not swallow real uses | `[^)]*` lets `(… Commercial … (Excluding Hospital))` strip the commercial component; `[^()]*` does not | **Yes** — caught before publication |
+| Workbook use column present | Renaming it makes Upperhouse silently lose its flag; the run now warns instead | **Yes** — the one failure that looks like a clean sample |
+| Curated set-aside key still resolves | Renaming the key drops Zyon Grand's SA2 component and its share; the run warns | **Yes** |
+| Subsets withhold below `LTL_MIN_PAIRS` | Raising the floor to 6 withholds `harmonised_strata_only` (n=5); to 7 withholds `strata_only` (n=6) | **Yes** — the strata-only sets are thin by construction |
+| Overlay carries new feed fields to the page | An unknown field in the feed now emits a build warning | **Yes** — see below |
+
+**The overlay guard exists because this failure had already happened twice.** `pipeline.py` copies
+*named* fields from the feed onto the curated baseline, so a new field is invisible to the template
+until it is named there — and nothing errors. It swallowed `harmonised_only` once (the page quietly
+kept serving the wider all-pairs median) and it swallowed `strata_only` and
+`harmonised_strata_only` on the first build of this correction. Caught by reading the rendered
+page, not the source, which is the third time in this project's records that the artefact and the
+inputs disagreed. The build now warns on any feed field that is neither carried nor explicitly
+listed as not-for-page.
+
+### Unresolved
+
+The **unit split is not confirmed**. Secondary portals give Zion Road (Parcel A) as 735
+conventional units plus 435–500 SA units; URA's pr23-48 gives roughly **535 SA units and 1,275
+conventional across both pilot sites combined**, which does not reconcile with 435–500 on this
+parcel alone. No URA source found states the per-parcel unit split, so it is **not used anywhere in
+this correction** — the arithmetic above rests on the published GFA set-aside, which is primary.
+Flagged rather than resolved.
+
+### Sources for this correction
+
+All primary, all public.
+
+- [pr24-15](https://www.ura.gov.sg/Corporate/Media-Room/Media-Releases/pr24-15) — Zion Road
+  (Parcel A) award, 16 Apr 2024: tenderer, $1,106,888,000 at $12,937.43/m² GFA, site 15,277.9 m²,
+  max GFA 85,557 m², and the SA2 minimum 20,000 m² set-aside.
+- [pr23-48](https://www.ura.gov.sg/Corporate/Media-Room/Media-Releases/pr23-48) — the SA2 pilot,
+  naming Zion Road (Parcel A) and Upper Thomson Road (Parcel A) as the only two sites.
+- [DC23-11](https://www.ura.gov.sg/Corporate/Guidelines/Circulars/dc23-11) — SA2 guidelines: three-
+  month minimum stay, and SA2 *"expected to be owned en-bloc and operated by a single operator"*.
+- [pr24-07](https://www.ura.gov.sg/Corporate/Media-Room/Media-Releases/pr24-07) (Orchard
+  Boulevard), [pr24-33](https://www.ura.gov.sg/Corporate/Media-Room/Media-Releases/pr24-33) (River
+  Valley Green Parcel A), [pr24-40](https://www.ura.gov.sg/Corporate/Media-Room/Media-Releases/pr24-40)
+  (De Souza Avenue, Zion Road Parcel B) — award particulars and use conditions.
+- [CDL news release, 26 Oct 2025](https://www.cdl.com.sg/newsroom/84-of-units-at-zyon-grand-sold-on-launch-weekend)
+  — *"590 out of 706 units (84%) sold at an average selling price of S$3,050 psf"*, and the
+  36-storey long-stay serviced-apartment tower alongside the retail galleria.
+- URA Past-Sale-Sites workbook — the `Type of Development Allowed` column, already the source for
+  the land side of every pair.
+
 ## Verdict
 
 **The published rule was materially too low, and it was wrong in the table as well as in the
@@ -80,7 +242,11 @@ GLS awards older than the window, neither of which this method can price.
 | 2.33× | Promenade Peak | RCR | Zion Road (Parcel B) | 2024-08-07 | 1,304 | 3,037 | 71.3% |
 | 2.35× | River Green | CCR | River Valley Green (Parcel A) | 2024-06-27 | 1,325 | 3,111 | 93.9% |
 | 2.78× | The Sen | RCR | De Souza Avenue | 2024-08-07 | 841 | 2,341 | 38.3% |
-| 2.83× | Zyon Grand | RCR | Zion Road (Parcel A) | 2024-04-16 | 1,202 | 3,400 | 89.8% |
+| 2.83× | Zyon Grand ⚑ | RCR | Zion Road (Parcel A) | 2024-04-16 | 1,202 | 3,400 | 89.8% |
+
+⚑ **hybrid site — the land $psf ppr is blended across floor area that is not all sellable strata,
+so the multiple is overstated.** Upperhouse (2.13×, top row) carries the same flag. Both are the
+ends of this range. See *Correction, 2026-08-16*.
 
 Median 2.31×. Awards span 2022-11-15 to 2024-08-07, which is 24 to 44 months before the run date.
 
@@ -212,7 +378,9 @@ All four of these are stated on the page, because each is a way to misread the f
 1. **Not a launch-day price, and not a settled one.** It uses each project's median for the most
    recent reference month — a handful of units, sometimes one. Developers raise prices as a
    project sells through, so the multiple drifts up with take-up, and it also moves with which
-   units happened to transact that month.
+   units happened to transact that month. The gap is not decorative: Zyon Grand launched at an
+   average **$3,050 psf** (CDL, 26 Oct 2025) and its 06-2026 reference month reads **$3,400**, so
+   the multiple is **2.54× on the launch basis against the 2.83× published here**.
 2. **Not a developer margin.** It carries the market's own move over 24 to 44 months. The
    deflated column is the closer proxy for what construction, financing and margin cost.
 3. **State land only.** A collective sale prices differently, and 42 of the 50 selling projects
@@ -310,3 +478,10 @@ return — but it removes land cost from that study's untested list.
   national number.
 - **GFA basis is flagged, not corrected**, and classified by award date rather than by the
   development-application date the rule actually keys off. See the section above.
+- **Two of the eight sites are hybrid**, and they are the two ends of the published range. Their
+  land rate is blended across floor area that is not all sellable strata, so both multiples read
+  high by an amount the public data cannot size. Flagged per pair (`hybrid_site`), not corrected;
+  the strata-only subsets are emitted alongside. See *Correction, 2026-08-16*.
+- **The launch side is a reference-month median, not the launch price.** Where a developer has
+  published a launch ASP the two differ materially — 2.54× against 2.83× on Zyon Grand. The feed
+  cannot read launch ASPs, so the record carries this and the page states the basis.

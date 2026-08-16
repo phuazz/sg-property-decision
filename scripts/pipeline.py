@@ -24,6 +24,11 @@ def read(name, required=True):
     with open(p, encoding="utf-8") as f:
         return json.load(f)
 
+# land_to_launch fields that deliberately stay out of the built page: run bookkeeping, or audit
+# detail the page has no use for. Anything NOT listed here and not carried is a bug, not a choice.
+_LTL_NOT_FOR_PAGE = {"ok", "reason", "launch_asof", "note", "dropped_outliers",
+                     "hybrid_flag_warnings"}
+
 def merge_live(market, live):
     """Overlay live feeds onto the curated market baseline (canonical fields)."""
     if not live:
@@ -80,7 +85,22 @@ def merge_live(market, live):
             # template until it is named here — which is exactly what happened: the feed carried
             # harmonised_only, the page fell back to the all-pairs median, and nothing errored.
             "harmonised_only": ltl.get("harmonised_only"),
+            # Pairs whose land rate bought sellable strata and nothing else. Where part of a site's
+            # GFA is shops or a serviced-apartment block held en bloc, the land rate is blended
+            # across uses while the launch price is condominium strata alone, so the multiple reads
+            # high. Flagged per pair, not corrected; these subsets let the page say so.
+            "strata_only": ltl.get("strata_only"),
+            "harmonised_strata_only": ltl.get("harmonised_strata_only"),
+            "n_hybrid": ltl.get("n_hybrid"),
             "pairs": ltl["pairs"]})
+        # This overlay has now silently dropped a new feed field twice - harmonised_only, then the
+        # hybrid-site subsets. Nothing errors when it happens: the page just keeps rendering the
+        # older, wider number. So make an uncarried field announce itself.
+        carried = set(market["gls"]["land_to_launch"])
+        missed = [k for k in ltl if k not in carried and k not in _LTL_NOT_FOR_PAGE]
+        if missed:
+            print(f"::warning::land_to_launch fields in the feed but NOT carried to the page: "
+                  f"{sorted(missed)} - add them here or to _LTL_NOT_FOR_PAGE")
     # HDB resale live medians
     if live.get("hdb_resale"):
         market["hdb_resale"] = live["hdb_resale"]

@@ -725,6 +725,66 @@ LTL_MIN_PAIRS = 5         # below this the median is one project's idiosyncrasy,
 LTL_GFA_HARMONISED = datetime.datetime(2023, 6, 1)   # URA circular DC22-09
 LTL_SANE_BAND = (1.5, 3.5)  # a median outside this says the match broke, not that the market moved
 
+# ---- hybrid sites: GFA that is not sellable condominium strata -----------------------
+# The land rate is struck on the WHOLE site's GFA. Where part of that GFA is something other than
+# sellable condominium strata - shops on the first storey, or a long-stay serviced apartment block
+# URA requires to be held en bloc - the denominator of this multiple is blended across uses while
+# the numerator is condominium strata alone. Non-strata floor area is worth less per square foot to
+# a developer than sellable strata, so the residential component's true land cost is ABOVE the
+# blended rate and the multiple is OVERSTATED. How much cannot be computed: URA publishes the
+# minimum set-aside in the tender conditions but not how the built GFA actually splits. So this
+# flags and does not correct, exactly as gfa_basis does.
+
+# Uses named in the workbook's "Type of Development Allowed" that are not sellable residential
+# strata. Matched on the lower-cased string AFTER prohibition clauses are stripped, so
+# "Condominium (Service Apartment will not be allowed)" does not match on "service apartment".
+_LTL_NONSTRATA_USES = (
+    ("serviced apartment", "serviced-apartments"), ("service apartment", "serviced-apartments"),
+    ("commercial", "commercial"), ("shop", "retail"), ("retail", "retail"),
+    ("food", "f&b"), ("hotel", "hotel"), ("office", "office"), ("white", "white-site"),
+    ("carpark", "carpark"), ("car park", "carpark"), ("bus interchange", "transport"),
+    ("civic", "civic"), ("hospital", "hospital"), ("medical", "medical"),
+    ("industr", "industrial"), ("recreation", "recreation"), ("columbarium", "other"))
+# "(Serviced apartments will not be allowed)", "excluding Hospital & Sanatorium" and friends name a
+# use in order to forbid it. Strip those clauses before scanning or the flag fires backwards.
+# [^()]* rather than [^)]* so a prohibition in an INNER bracket cannot swallow the real uses listed
+# in the outer one: "White Site (permitted uses are Commercial ... (Excluding Hospital))" must lose
+# only the exclusion, not the commercial and hotel components in front of it.
+_LTL_USE_PROHIBITION = re.compile(
+    r"\([^()]*\bnot\b[^()]*\ballowed\b[^()]*\)|\([^()]*\bexcluding\b[^()]*\)|\bexcluding\b[^,;)]*",
+    re.I)
+
+# GFA the tender conditions set aside for a component that cannot be sold as strata. URA does NOT
+# put this in the sale-sites workbook - Zion Road (Parcel A) reads as plain "Residential with
+# Commercial at 1st Storey" there - so it is curated from the award media release and carries its
+# source. Keyed on the workbook's Location string; the share is computed against the workbook's own
+# GFA column rather than a transcribed one. Add a site here when URA sets aside GFA for SA2.
+LTL_GFA_SETASIDE = {
+    "Zion Road (Parcel A)": {
+        "component": "long-stay serviced apartments (SA2)", "min_sqm": 20000,
+        "source": "URA media release pr24-15 (tender award, 2024-04-16): 'A minimum 20,000 m2 of "
+                  "GFA is to be set aside for Long-Stay Serviced Apartments (SA2) use'. SA2 is "
+                  "held en bloc by a single operator (URA circular DC23-11), so none of it is "
+                  "sellable strata."},
+    "Upper Thomson Road (Parcel A)": {
+        "component": "long-stay serviced apartments (SA2)", "min_sqm": None,
+        "source": "URA media release pr23-48 names this and Zion Road (Parcel A) as the two sites "
+                  "piloting SA2. The award release pr25-56 does not restate the quantum, so the "
+                  "set-aside is flagged without a share."}}
+
+def _nonstrata_uses(use):
+    """Non-strata components named in a workbook 'Type of Development Allowed' string.
+
+    Returns a de-duplicated list of tags, empty for a purely residential site. Conservative by
+    design: it reports what URA named, and names nothing about how much GFA the component takes.
+    """
+    s = _LTL_USE_PROHIBITION.sub(" ", html.unescape(str(use or "")).replace("\xa0", " ")).lower()
+    out = []
+    for needle, tag in _LTL_NONSTRATA_USES:
+        if needle in s and tag not in out:
+            out.append(tag)
+    return out
+
 def _entities(name):
     """Entity token-tuples in a tenderer/developer field, which may name a JV of several companies."""
     out = []
@@ -761,6 +821,20 @@ def land_to_launch(launches):
     cutoff = datetime.datetime.now() - datetime.timedelta(days=365 * LTL_WINDOW_YEARS)
     win = df[df["award"] >= cutoff]
 
+    # The hybrid flag fails SILENTLY if its inputs move: rename the workbook column and every site
+    # reads as purely residential, so the caveat disappears while the numbers stay plausible. That
+    # is the failure shape the vault rule on unattended agents exists for, so check the inputs and
+    # say so rather than trusting a flag that has quietly stopped firing.
+    warn = []
+    if "use" not in df.columns or not df["use"].astype(str).str.strip().any():
+        warn.append("workbook has no usable 'Type of Development Allowed' column - every pair will "
+                    "read as purely residential and the hybrid flag is NOT trustworthy this run")
+    known = set(df["Location"].astype(str).str.strip())
+    for k in LTL_GFA_SETASIDE:
+        if k not in known:
+            warn.append(f"curated GFA set-aside key {k!r} matches no site in the workbook - the "
+                        "Location string moved and this site is no longer being flagged")
+
     site_by_ent = collections.defaultdict(list)
     for _, r in win.iterrows():
         for e in _entities(r["tenderer"]):
@@ -781,6 +855,18 @@ def land_to_launch(launches):
         if len(hits) != 1:      # no match, or a project we cannot pin to one plot
             continue
         site, r = next(iter(hits.items()))
+        # Non-strata GFA on this plot, from two sources that see different things. The workbook's
+        # own use string catches a named commercial/hotel/white component; the curated map catches
+        # a set-aside (SA2) that the workbook does not record at all. Both are needed: Zion Road
+        # (Parcel A) reads as ordinary "Residential with Commercial at 1st Storey" in the workbook
+        # while a quarter of its GFA is a serviced-apartment tower that is never sold as strata.
+        comps = _nonstrata_uses(r.get("use"))
+        setaside = LTL_GFA_SETASIDE.get(site)
+        if setaside and setaside["component"] not in comps:
+            comps.append(setaside["component"])
+        gfa = float(r["GFA"]) if str(r.get("GFA", "")).replace(".", "", 1).isdigit() else None
+        share = (round(setaside["min_sqm"] / gfa, 3)
+                 if setaside and setaside.get("min_sqm") and gfa else None)
         pairs[p["project"]] = {
             "project": p["project"], "site": site, "region": p.get("region"),
             "award": r["award"].strftime("%Y-%m-%d"), "land_psf_ppr": int(r["psf_ppr"]),
@@ -797,7 +883,18 @@ def land_to_launch(launches):
             # have nothing to do with the market. Award date is a PROXY for which regime a project
             # sits under - the rule keys off the DA submission date, which URA does not publish -
             # so this flags rather than corrects, and consumers can restrict to one basis.
-            "gfa_basis": "harmonised" if r["award"] >= LTL_GFA_HARMONISED else "pre-harmonised"}
+            "gfa_basis": "harmonised" if r["award"] >= LTL_GFA_HARMONISED else "pre-harmonised",
+            # Same posture as gfa_basis: a flag for the consumer, not a correction. The land rate
+            # below is blended across every use on the plot; the launch price above is condominium
+            # strata alone. Where hybrid_site is true the multiple is overstated by an amount that
+            # cannot be computed from public data, because the built GFA split is not published.
+            "hybrid_site": bool(comps),
+            "gfa_uses": " ".join(str(r.get("use") or "").split()) or None,
+            "nonstrata_components": comps,
+            "nonstrata_gfa_min_share": share,
+            "hybrid_source": (setaside["source"] if setaside else
+                              "URA Past-Sale-Sites workbook, Type of Development Allowed"
+                              if comps else None)}
     allp = sorted(pairs.values(), key=lambda x: x["multiple"])
     # A pair outside the sane band is a broken join, not a market observation, and it would widen
     # the published range far more than it moves the median - so drop it, but say so rather than
@@ -808,14 +905,27 @@ def land_to_launch(launches):
     if len(mult) < LTL_MIN_PAIRS:
         return {"ok": False, "reason": f"only {len(mult)} land/launch pairs matched (need {LTL_MIN_PAIRS})"}
     med = round(statistics.median(mult), 2)
-    # Same median restricted to one GFA basis, so a consumer comparing a post-2023 site is not
-    # mixing regimes. Emitted rather than substituted: on the current sample it moves the median
-    # by about 1%, but on a set weighted the other way it would not.
-    harm = [x["multiple"] for x in pairs if x["gfa_basis"] == "harmonised"]
-    harmonised_only = ({"n": len(harm), "median": round(statistics.median(harm), 2),
-                        "range": [min(harm), max(harm)]} if len(harm) >= LTL_MIN_PAIRS else
-                       {"n": len(harm), "median": None,
-                        "range": None, "note": "too few to publish separately"})
+    # The median restricted to a subset of the pairs, or a withhold note if the subset is too thin
+    # to say anything. Every one of these is EMITTED alongside the headline rather than substituted
+    # for it: each names a way the two sides of the ratio fail to measure the same thing, and the
+    # consumer is better placed than this feed to decide which basis its question needs.
+    def subset(pred):
+        v = sorted(x["multiple"] for x in pairs if pred(x))
+        if len(v) < LTL_MIN_PAIRS:
+            return {"n": len(v), "median": None, "range": None,
+                    "note": "too few to publish separately"}
+        return {"n": len(v), "median": round(statistics.median(v), 2), "range": [v[0], v[-1]]}
+
+    # One GFA basis, so a consumer comparing a post-2023 site is not mixing regimes. On the current
+    # sample this moves the median by about 1%; on a set weighted the other way it would not.
+    harmonised_only = subset(lambda x: x["gfa_basis"] == "harmonised")
+    # Pairs whose land rate bought sellable strata and nothing else, so both sides of the ratio are
+    # on the same footing. Emitted rather than substituted, for the same reason harmonised_only is:
+    # on the current sample dropping the hybrids leaves the median untouched and pulls both ends of
+    # the RANGE in - and the range is what the page publishes and what the estimate column scales.
+    strata_only = subset(lambda x: not x["hybrid_site"])
+    harmonised_strata_only = subset(
+        lambda x: x["gfa_basis"] == "harmonised" and not x["hybrid_site"])
     if not LTL_SANE_BAND[0] <= med <= LTL_SANE_BAND[1]:
         return {"ok": False, "reason": f"median multiple {med} outside the sane band {LTL_SANE_BAND}"}
 
@@ -847,6 +957,9 @@ def land_to_launch(launches):
         relativedelta(today, datetime.date.fromisoformat(x["award"]))) for x in pairs)
 
     return {"ok": True, "factor_range": [mult[0], mult[-1]], "harmonised_only": harmonised_only,
+            "strata_only": strata_only, "harmonised_strata_only": harmonised_strata_only,
+            "n_hybrid": sum(1 for x in pairs if x["hybrid_site"]),
+            "hybrid_flag_warnings": warn,
             "factor_median": med,
             "n": len(pairs), "award_span": [min(x["award"] for x in pairs),
                                             max(x["award"] for x in pairs)],
@@ -869,7 +982,10 @@ def land_to_launch(launches):
                      "only. Not a developer margin - it also carries whatever the market did between "
                      "award and today. The two sides are measured differently: land is priced on gross "
                      "floor area and the launch price on strata area, and URA harmonised those "
-                     "definitions for applications from 2023-06-01 - see gfa_basis on each pair.")}
+                     "definitions for applications from 2023-06-01 - see gfa_basis on each pair. "
+                     "Where hybrid_site is true the land rate is blended across uses that are not "
+                     "all sellable strata, so that pair's multiple is overstated by an amount the "
+                     "public data cannot size - see nonstrata_components and strata_only.")}
 
 def _has_data(v):
     """True only if a feed actually carries content.
@@ -929,7 +1045,12 @@ def main():
             print("  skip land_to_launch (no developer-sales data)")
         elif v.get("ok"):
             live["land_to_launch"] = v
-            print(f"  ok   land_to_launch (n={v['n']}, median {v['factor_median']}x)")
+            print(f"  ok   land_to_launch (n={v['n']}, median {v['factor_median']}x, "
+                  f"{v['n_hybrid']} hybrid)")
+            # A flag that has stopped firing looks exactly like a clean sample, so it has to
+            # announce itself rather than wait to be noticed.
+            for w in v.get("hybrid_flag_warnings") or []:
+                print(f"::warning::land_to_launch hybrid flag: {w}")
         else:
             # withheld by a guard: leave the key unset so carry-forward keeps the last good value
             live["_meta"]["errors"]["land_to_launch"] = v["reason"]

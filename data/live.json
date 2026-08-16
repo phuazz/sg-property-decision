@@ -55308,6 +55308,24 @@
     2.83
    ]
   },
+  "strata_only": {
+   "n": 6,
+   "median": 2.31,
+   "range": [
+    2.2,
+    2.78
+   ]
+  },
+  "harmonised_strata_only": {
+   "n": 5,
+   "median": 2.33,
+   "range": [
+    2.2,
+    2.78
+   ]
+  },
+  "n_hybrid": 2,
+  "hybrid_flag_warnings": [],
   "factor_median": 2.31,
   "n": 8,
   "award_span": [
@@ -55316,7 +55334,7 @@
   ],
   "award_age_months": [
    24,
-   44
+   45
   ],
   "launch_asof": "0626",
   "deflated": {
@@ -55339,7 +55357,14 @@
     "takeup": 0.814,
     "sold_in_month": 3,
     "multiple": 2.13,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": true,
+    "gfa_uses": "Residential with Commercial at 1st Storey",
+    "nonstrata_components": [
+     "commercial"
+    ],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": "URA Past-Sale-Sites workbook, Type of Development Allowed"
    },
    {
     "project": "NAVA GROVE",
@@ -55351,7 +55376,12 @@
     "takeup": 0.996,
     "sold_in_month": 1,
     "multiple": 2.2,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": false,
+    "gfa_uses": "Residential",
+    "nonstrata_components": [],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": null
    },
    {
     "project": "8@BT",
@@ -55363,7 +55393,12 @@
     "takeup": 0.703,
     "sold_in_month": 1,
     "multiple": 2.25,
-    "gfa_basis": "pre-harmonised"
+    "gfa_basis": "pre-harmonised",
+    "hybrid_site": false,
+    "gfa_uses": "Residential",
+    "nonstrata_components": [],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": null
    },
    {
     "project": "NORWOOD GRAND",
@@ -55375,7 +55410,12 @@
     "takeup": 0.905,
     "sold_in_month": 3,
     "multiple": 2.29,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": false,
+    "gfa_uses": "Residential",
+    "nonstrata_components": [],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": null
    },
    {
     "project": "PROMENADE PEAK",
@@ -55387,7 +55427,12 @@
     "takeup": 0.713,
     "sold_in_month": 4,
     "multiple": 2.33,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": false,
+    "gfa_uses": "Residential",
+    "nonstrata_components": [],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": null
    },
    {
     "project": "RIVER GREEN",
@@ -55399,7 +55444,12 @@
     "takeup": 0.939,
     "sold_in_month": 1,
     "multiple": 2.35,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": false,
+    "gfa_uses": "Residential",
+    "nonstrata_components": [],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": null
    },
    {
     "project": "THE SEN",
@@ -55411,7 +55461,12 @@
     "takeup": 0.383,
     "sold_in_month": 6,
     "multiple": 2.78,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": false,
+    "gfa_uses": "Residential",
+    "nonstrata_components": [],
+    "nonstrata_gfa_min_share": null,
+    "hybrid_source": null
    },
    {
     "project": "ZYON GRAND",
@@ -55423,11 +55478,19 @@
     "takeup": 0.898,
     "sold_in_month": 5,
     "multiple": 2.83,
-    "gfa_basis": "harmonised"
+    "gfa_basis": "harmonised",
+    "hybrid_site": true,
+    "gfa_uses": "Residential with Commercial at 1st Storey",
+    "nonstrata_components": [
+     "commercial",
+     "long-stay serviced apartments (SA2)"
+    ],
+    "nonstrata_gfa_min_share": 0.234,
+    "hybrid_source": "URA media release pr24-15 (tender award, 2024-04-16): 'A minimum 20,000 m2 of GFA is to be set aside for Long-Stay Serviced Apartments (SA2) use'. SA2 is held en bloc by a single operator (URA circular DC23-11), so none of it is sellable strata."
    }
   ],
   "dropped_outliers": [],
   "source": "URA Past-Sale-Sites .xlsx x URA PMI_Resi_Developer_Sales, matched on tenderer entity",
-  "note": "A selling project's median $psf of units SOLD in ONE reference month (URA records a sale on the Option to Purchase), over the $psf ppr its developer paid for the site. Read the range, not the third digit: across the pairs that month carries only a couple of dozen transactions in total, and recomputing on the previous month moves the median by about 0.15x. State land only. Not a developer margin - it also carries whatever the market did between award and today. The two sides are measured differently: land is priced on gross floor area and the launch price on strata area, and URA harmonised those definitions for applications from 2023-06-01 - see gfa_basis on each pair."
+  "note": "A selling project's median $psf of units SOLD in ONE reference month (URA records a sale on the Option to Purchase), over the $psf ppr its developer paid for the site. Read the range, not the third digit: across the pairs that month carries only a couple of dozen transactions in total, and recomputing on the previous month moves the median by about 0.15x. State land only. Not a developer margin - it also carries whatever the market did between award and today. The two sides are measured differently: land is priced on gross floor area and the launch price on strata area, and URA harmonised those definitions for applications from 2023-06-01 - see gfa_basis on each pair. Where hybrid_site is true the land rate is blended across uses that are not all sellable strata, so that pair's multiple is overstated by an amount the public data cannot size - see nonstrata_components and strata_only."
  }
 }
