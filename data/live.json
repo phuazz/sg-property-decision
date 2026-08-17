@@ -1,7 +1,25 @@
 {
  "_meta": {
-  "fetched": "2026-08-10T03:49:00Z",
-  "errors": {}
+  "fetched": "2026-08-17T02:55:08Z",
+  "errors": {
+   "segments_official": "HTTPError('403 Client Error: status for url: https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1')",
+   "districts": "HTTPError('403 Client Error: status for url: https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1')",
+   "projects": "HTTPError('403 Client Error: status for url: https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1')",
+   "ec_resale": "HTTPError('403 Client Error: status for url: https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1')",
+   "target_homes": "HTTPError('403 Client Error: status for url: https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1')"
+  },
+  "carried_forward": {
+   "from": "2026-08-10T03:49:00Z",
+   "feeds": [
+    "districts",
+    "ec_resale",
+    "land_to_launch",
+    "projects",
+    "segments_official",
+    "target_homes"
+   ],
+   "note": "these feeds returned no data this run; the previous values were preserved"
+  }
  },
  "ura_ppi": {
   "label": "URA Private Residential PPI (All Residential)",
@@ -120,29 +138,29 @@
  },
  "hdb_resale": {
   "asof_month": "2026-08",
-  "n": 154,
-  "median_price": 610000,
-  "median_psf": 586,
+  "n": 273,
+  "median_price": 628000,
+  "median_psf": 581,
   "by_type": {
    "2 ROOM": {
-    "n": 1,
-    "median_price": 280000
+    "n": 2,
+    "median_price": 330000
    },
    "3 ROOM": {
-    "n": 33,
-    "median_price": 430000
+    "n": 50,
+    "median_price": 432500
    },
    "4 ROOM": {
-    "n": 75,
-    "median_price": 610000
+    "n": 136,
+    "median_price": 606000
    },
    "5 ROOM": {
-    "n": 30,
-    "median_price": 754444
+    "n": 62,
+    "median_price": 733000
    },
    "EXECUTIVE": {
-    "n": 15,
-    "median_price": 963000
+    "n": 23,
+    "median_price": 960000
    }
   },
   "source": "data.gov.sg d_8b84c4ee (HDB resale register)"
@@ -150,7 +168,7 @@
  "hdb_town": {
   "town": "MARINE PARADE",
   "asof_month": "2026-08",
-  "n": 1444,
+  "n": 1446,
   "by_type": {
    "2 ROOM": {
     "n_all": 9,
@@ -167,29 +185,29 @@
     }
    },
    "3 ROOM": {
-    "n_all": 705,
-    "n_12m": 65,
-    "n_36m": 222,
+    "n_all": 707,
+    "n_12m": 67,
+    "n_36m": 224,
     "price_p_12m": [
      415000,
      447000,
      470000,
-     505000,
-     528888
+     508000,
+     535000
     ],
     "price_p_36m": [
      400000,
-     432000,
+     435000,
      465000,
      500000,
-     528888
+     530000
     ],
     "sqm_range": [
      59.0,
      79.0
     ],
     "models": {
-     "Improved": 705
+     "Improved": 707
     }
    },
    "4 ROOM": {
@@ -5138,8 +5156,8 @@
    }
   ],
   "lease_commence": {
-   "1975": 1013,
-   "1976": 318,
+   "1975": 1014,
+   "1976": 319,
    "1977": 112,
    "1978": 1
   },
@@ -5245,6 +5263,9 @@
   "yoy": 0.17,
   "asof": "2026-08-07",
   "source": "URA Past-Sale-Sites .xlsx (residential awards)"
+ },
+ "new_launches": {
+  "error": "HTTPError('403 Client Error: status for url: https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1')"
  },
  "segments_official": {
   "CCR": {
@@ -32889,563 +32910,6 @@
   ],
   "mrt_ok": true,
   "source": "URA PMI_Resi_Transaction resale, per project; nearest MRT from LTA exits (data.gov.sg)"
- },
- "new_launches": {
-  "asof": "0626",
-  "n": 50,
-  "rows": [
-   {
-    "project": "PARKTOWN RESIDENCE",
-    "developer": "Topaz Residential Pte Ltd",
-    "region": "OCR",
-    "district": "D18",
-    "psf": 2263,
-    "units": 1193,
-    "sold": 1164,
-    "sold_in_month": 1,
-    "takeup": 0.976
-   },
-   {
-    "project": "SPRINGLEAF RESIDENCE",
-    "developer": "Springleaf Residence Pte. Ltd. ",
-    "region": "OCR",
-    "district": "D26",
-    "psf": 2251,
-    "units": 941,
-    "sold": 917,
-    "sold_in_month": 2,
-    "takeup": 0.974
-   },
-   {
-    "project": "GRAND DUNMAN",
-    "developer": "Grand Dunman Pte Ltd",
-    "region": "RCR",
-    "district": "D15",
-    "psf": 2473,
-    "units": 1008,
-    "sold": 912,
-    "sold_in_month": 3,
-    "takeup": 0.905
-   },
-   {
-    "project": "CHUAN PARK",
-    "developer": "Chuan Park Development Pte. Ltd.",
-    "region": "OCR",
-    "district": "D19",
-    "psf": 2631,
-    "units": 916,
-    "sold": 883,
-    "sold_in_month": 11,
-    "takeup": 0.964
-   },
-   {
-    "project": "TENGAH GARDEN RESIDENCES",
-    "developer": "TENGAH GARDEN DEVELOPMENT PTE. LTD./TGA DEVELOPMENT PTE. LTD.",
-    "region": "OCR",
-    "district": "D24",
-    "psf": 2178,
-    "units": 863,
-    "sold": 861,
-    "sold_in_month": 1,
-    "takeup": 0.998
-   },
-   {
-    "project": "THE CONTINUUM",
-    "developer": "Hoi Hup Sunway Katong Pte Ltd",
-    "region": "RCR",
-    "district": "D15",
-    "psf": 2789,
-    "units": 816,
-    "sold": 781,
-    "sold_in_month": 11,
-    "takeup": 0.957
-   },
-   {
-    "project": "THE ORIE",
-    "developer": "Transcend Residential (Toa Payoh) Pte Ltd",
-    "region": "RCR",
-    "district": "D12",
-    "psf": 2725,
-    "units": 777,
-    "sold": 741,
-    "sold_in_month": 1,
-    "takeup": 0.954
-   },
-   {
-    "project": "CANNINGHILL PIERS",
-    "developer": "DBS Trustee Limited/Legend Commercial Trustee Pte Ltd/Legend Quay Pte Ltd",
-    "region": "RCR",
-    "district": "D6",
-    "psf": 3133,
-    "units": 696,
-    "sold": 689,
-    "sold_in_month": 3,
-    "takeup": 0.99
-   },
-   {
-    "project": "ONE MARINA GARDENS",
-    "developer": "Kingsford Marina Development Pte. Ltd.",
-    "region": "RCR",
-    "district": "D1",
-    "psf": 3002,
-    "units": 937,
-    "sold": 642,
-    "sold_in_month": 5,
-    "takeup": 0.685
-   },
-   {
-    "project": "ZYON GRAND",
-    "developer": "CDL-MFA Altair Property Pte. Ltd. &amp; CDL-MFA Vega Property Pte. Ltd.",
-    "region": "RCR",
-    "district": "D3",
-    "psf": 3400,
-    "units": 706,
-    "sold": 634,
-    "sold_in_month": 5,
-    "takeup": 0.898
-   },
-   {
-    "project": "COASTAL CABANA",
-    "developer": "PASIR RIS DEVELOPMENT PTE. LTD.",
-    "region": "OCR",
-    "district": "D17",
-    "psf": 1836,
-    "units": 748,
-    "sold": 617,
-    "sold_in_month": 21,
-    "takeup": 0.825
-   },
-   {
-    "project": "RIVELLE TAMPINES",
-    "developer": "SIM LIAN JV (TAMPINES 7) PTE LTD",
-    "region": "OCR",
-    "district": "D18",
-    "psf": 1947,
-    "units": 572,
-    "sold": 560,
-    "sold_in_month": 6,
-    "takeup": 0.979
-   },
-   {
-    "project": "PINERY RESIDENCES",
-    "developer": "HOI HUP SUNWAY TAMPINES RESIDENTIAL PTE. LTD.",
-    "region": "OCR",
-    "district": "D16",
-    "psf": 2585,
-    "units": 588,
-    "sold": 551,
-    "sold_in_month": 3,
-    "takeup": 0.937
-   },
-   {
-    "project": "NAVA GROVE",
-    "developer": "Golden Ray Edge 3 Pte Ltd",
-    "region": "RCR",
-    "district": "D21",
-    "psf": 2686,
-    "units": 552,
-    "sold": 550,
-    "sold_in_month": 1,
-    "takeup": 0.996
-   },
-   {
-    "project": "LUMINA GRAND",
-    "developer": "CDL Zenith Pte Ltd",
-    "region": "OCR",
-    "district": "D23",
-    "psf": 1732,
-    "units": 512,
-    "sold": 512,
-    "sold_in_month": 1,
-    "takeup": 1.0
-   },
-   {
-    "project": "RIVER GREEN",
-    "developer": "WINCHAMP INVESTMENT PTE LTD",
-    "region": "CCR",
-    "district": "D9",
-    "psf": 3111,
-    "units": 524,
-    "sold": 492,
-    "sold_in_month": 1,
-    "takeup": 0.939
-   },
-   {
-    "project": "HILLOCK GREEN",
-    "developer": "Lentor Central Developments Pte Ltd",
-    "region": "OCR",
-    "district": "D26",
-    "psf": 2098,
-    "units": 474,
-    "sold": 471,
-    "sold_in_month": 3,
-    "takeup": 0.994
-   },
-   {
-    "project": "PROMENADE PEAK",
-    "developer": "Valerian Residential Pte. Ltd.",
-    "region": "RCR",
-    "district": "D3",
-    "psf": 3037,
-    "units": 596,
-    "sold": 425,
-    "sold_in_month": 4,
-    "takeup": 0.713
-   },
-   {
-    "project": "RIVER MODERN",
-    "developer": "River Modern Pte. Ltd.",
-    "region": "CCR",
-    "district": "D9",
-    "psf": 3377,
-    "units": 455,
-    "sold": 424,
-    "sold_in_month": 1,
-    "takeup": 0.932
-   },
-   {
-    "project": "ELTA",
-    "developer": "HC LAND (CLEMENTI) PTE LTD",
-    "region": "OCR",
-    "district": "D5",
-    "psf": 2825,
-    "units": 501,
-    "sold": 412,
-    "sold_in_month": 6,
-    "takeup": 0.822
-   },
-   {
-    "project": "THE MYST",
-    "developer": "CDL Aries Pte Ltd",
-    "region": "OCR",
-    "district": "D23",
-    "psf": 2101,
-    "units": 408,
-    "sold": 389,
-    "sold_in_month": 1,
-    "takeup": 0.953
-   },
-   {
-    "project": "FABER RESIDENCE",
-    "developer": "Faber Residence Pte Ltd",
-    "region": "OCR",
-    "district": "D5",
-    "psf": 2301,
-    "units": 399,
-    "sold": 383,
-    "sold_in_month": 3,
-    "takeup": 0.96
-   },
-   {
-    "project": "VELA BAY",
-    "developer": "BAYSHORE WALK PTE. LTD.",
-    "region": "OCR",
-    "district": "D16",
-    "psf": 2847,
-    "units": 515,
-    "sold": 371,
-    "sold_in_month": 1,
-    "takeup": 0.72
-   },
-   {
-    "project": "J'DEN",
-    "developer": "Tanglin R.E. Holdings Pte Ltd",
-    "region": "OCR",
-    "district": "D22",
-    "psf": 2515,
-    "units": 368,
-    "sold": 359,
-    "sold_in_month": 2,
-    "takeup": 0.976
-   },
-   {
-    "project": "CANBERRA CRESCENT RESIDENCES",
-    "developer": "Peak Crescent Pte Ltd",
-    "region": "OCR",
-    "district": "D27",
-    "psf": 2015,
-    "units": 376,
-    "sold": 339,
-    "sold_in_month": 1,
-    "takeup": 0.902
-   },
-   {
-    "project": "NORWOOD GRAND",
-    "developer": "CDL STELLAR PTE. LTD.",
-    "region": "OCR",
-    "district": "D25",
-    "psf": 2072,
-    "units": 348,
-    "sold": 315,
-    "sold_in_month": 3,
-    "takeup": 0.905
-   },
-   {
-    "project": "BLOOMSBURY RESIDENCES",
-    "developer": "Media Circle Development Pte Ltd",
-    "region": "RCR",
-    "district": "D5",
-    "psf": 2551,
-    "units": 358,
-    "sold": 311,
-    "sold_in_month": 6,
-    "takeup": 0.869
-   },
-   {
-    "project": "THE LAKEGARDEN RESIDENCES",
-    "developer": "Winville Investment Pte Ltd",
-    "region": "OCR",
-    "district": "D22",
-    "psf": 2327,
-    "units": 306,
-    "sold": 303,
-    "sold_in_month": 2,
-    "takeup": 0.99
-   },
-   {
-    "project": "LENTORIA",
-    "developer": "Lentor View Pte Ltd",
-    "region": "OCR",
-    "district": "D26",
-    "psf": 2605,
-    "units": 267,
-    "sold": 245,
-    "sold_in_month": 1,
-    "takeup": 0.918
-   },
-   {
-    "project": "UPPERHOUSE AT ORCHARD BOULEVARD",
-    "developer": "UNITED VENTURE DEVELOPMENT (NO. 7) PTE. LTD.",
-    "region": "CCR",
-    "district": "D10",
-    "psf": 3437,
-    "units": 301,
-    "sold": 245,
-    "sold_in_month": 3,
-    "takeup": 0.814
-   },
-   {
-    "project": "KASSIA",
-    "developer": "Tripartite Developers Pte Ltd",
-    "region": "OCR",
-    "district": "D17",
-    "psf": 2045,
-    "units": 276,
-    "sold": 228,
-    "sold_in_month": 1,
-    "takeup": 0.826
-   },
-   {
-    "project": "SORA",
-    "developer": "Lakeside Residential Pte Ltd",
-    "region": "OCR",
-    "district": "D22",
-    "psf": 2338,
-    "units": 440,
-    "sold": 226,
-    "sold_in_month": 3,
-    "takeup": 0.514
-   },
-   {
-    "project": "HUDSON PLACE RESIDENCES",
-    "developer": "MEDIA CIRCLE ALPHA DEVELOPMENT PTE. LTD.",
-    "region": "RCR",
-    "district": "D5",
-    "psf": 2577,
-    "units": 327,
-    "sold": 221,
-    "sold_in_month": 12,
-    "takeup": 0.676
-   },
-   {
-    "project": "THE ROBERTSON OPUS",
-    "developer": "RIVERSIDE PROPERTY PTE. LTD",
-    "region": "CCR",
-    "district": "D9",
-    "psf": 3231,
-    "units": 348,
-    "sold": 207,
-    "sold_in_month": 1,
-    "takeup": 0.595
-   },
-   {
-    "project": "TERRA HILL",
-    "developer": "Hoi Hup Sunway Kent Ridge Pte Ltd",
-    "region": "RCR",
-    "district": "D5",
-    "psf": 2654,
-    "units": 270,
-    "sold": 204,
-    "sold_in_month": 9,
-    "takeup": 0.756
-   },
-   {
-    "project": "NEWPORT RESIDENCES",
-    "developer": "CDL Pisces Commercial Pte Ltd/CDL Pisces Serviced Residences Pte Ltd/Hong Leong Properties Pte Ltd",
-    "region": "CCR",
-    "district": "D2",
-    "psf": 3056,
-    "units": 246,
-    "sold": 198,
-    "sold_in_month": 4,
-    "takeup": 0.805
-   },
-   {
-    "project": "NARRA RESIDENCES",
-    "developer": "DAIRY FARM WALK JV DEVELOPMENT PTE. LTD.",
-    "region": "OCR",
-    "district": "D23",
-    "psf": 2219,
-    "units": 540,
-    "sold": 185,
-    "sold_in_month": 6,
-    "takeup": 0.343
-   },
-   {
-    "project": "WATTEN HOUSE",
-    "developer": "United Venture Development (Watten) Pte Ltd",
-    "region": "CCR",
-    "district": "D11",
-    "psf": 3274,
-    "units": 180,
-    "sold": 180,
-    "sold_in_month": 1,
-    "takeup": 1.0
-   },
-   {
-    "project": "UNION SQUARE RESIDENCES",
-    "developer": "CDL Libra Pte. Ltd.",
-    "region": "RCR",
-    "district": "D1",
-    "psf": 2762,
-    "units": 366,
-    "sold": 178,
-    "sold_in_month": 11,
-    "takeup": 0.486
-   },
-   {
-    "project": "MEYER BLUE",
-    "developer": "UNITED VENTURE DEVELOPMENT (MEYER) PTE. LTD.",
-    "region": "RCR",
-    "district": "D15",
-    "psf": 3409,
-    "units": 226,
-    "sold": 177,
-    "sold_in_month": 2,
-    "takeup": 0.783
-   },
-   {
-    "project": "THE SEN",
-    "developer": "SL CAPITAL (8) PTE LTD",
-    "region": "RCR",
-    "district": "D21",
-    "psf": 2341,
-    "units": 347,
-    "sold": 133,
-    "sold_in_month": 6,
-    "takeup": 0.383
-   },
-   {
-    "project": "8@BT",
-    "developer": "Bukit One Pte. Ltd.",
-    "region": "RCR",
-    "district": "D21",
-    "psf": 3017,
-    "units": 158,
-    "sold": 111,
-    "sold_in_month": 1,
-    "takeup": 0.703
-   },
-   {
-    "project": "THE COLLECTIVE AT ONE SOPHIA",
-    "developer": "Sophia Residential Pte Ltd/Sophia Commercial Pte Ltd",
-    "region": "CCR",
-    "district": "D9",
-    "psf": 2761,
-    "units": 367,
-    "sold": 99,
-    "sold_in_month": 1,
-    "takeup": 0.27
-   },
-   {
-    "project": "THE ARCADY AT BOON KENG",
-    "developer": "KSH Ultra Unity Pte Ltd",
-    "region": "RCR",
-    "district": "D12",
-    "psf": 2586,
-    "units": 172,
-    "sold": 99,
-    "sold_in_month": 2,
-    "takeup": 0.576
-   },
-   {
-    "project": "AMBER HOUSE",
-    "developer": "Urban Park Pte Ltd",
-    "region": "RCR",
-    "district": "D15",
-    "psf": 3081,
-    "units": 105,
-    "sold": 82,
-    "sold_in_month": 1,
-    "takeup": 0.781
-   },
-   {
-    "project": "AUREA",
-    "developer": "GMC Property Pte. Ltd.",
-    "region": "CCR",
-    "district": "D7",
-    "psf": 2886,
-    "units": 188,
-    "sold": 68,
-    "sold_in_month": 1,
-    "takeup": 0.362
-   },
-   {
-    "project": "POLLEN COLLECTION II",
-    "developer": "Singapore United Estates (Private) Limited.",
-    "region": "OCR",
-    "district": "D28",
-    "psf": 2270,
-    "units": 186,
-    "sold": 37,
-    "sold_in_month": 4,
-    "takeup": 0.199
-   },
-   {
-    "project": "ARDOR RESIDENCE",
-    "developer": "NS Property (Haig) Pte Ltd",
-    "region": "RCR",
-    "district": "D15",
-    "psf": 2519,
-    "units": 35,
-    "sold": 32,
-    "sold_in_month": 1,
-    "takeup": 0.914
-   },
-   {
-    "project": "THE SHOREFRONT",
-    "developer": "165@Loyang Pte Ltd",
-    "region": "OCR",
-    "district": "D17",
-    "psf": 1992,
-    "units": 23,
-    "sold": 15,
-    "sold_in_month": 2,
-    "takeup": 0.652
-   },
-   {
-    "project": "LANDED HOUSING DEVELOPMENT",
-    "developer": "AURUM LAND (PRIVATE) LIMITED",
-    "region": "CCR",
-    "district": "D11",
-    "psf": 3615,
-    "units": 8,
-    "sold": 6,
-    "sold_in_month": 2,
-    "takeup": 0.75
-   }
-  ],
-  "source": "URA PMI_Resi_Developer_Sales (new-sale median $psf, units, take-up, developer)"
  },
  "ec_resale": {
   "asof": "2026-08",
