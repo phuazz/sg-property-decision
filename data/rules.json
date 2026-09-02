@@ -1,10 +1,10 @@
 {
   "_meta": {
     "title": "Singapore property decision — regulatory & loan-engine constants",
-    "asof": "2026-07-10",
+    "asof": "2026-09-02",
     "not_advice": "Educational illustration of published rules, not financial or mortgage advice. Verify against MAS / MoneySense / IRAS / HDB before acting.",
-    "stability_note": "Buyer-side parameters (TDSR, MSR, LTV, BSD, ABSD) unchanged since 27 Apr 2023 (ABSD/BSD) and 20 Aug 2024 (HDB LTV). Seller-side is NOT static: SSD holding period extended 3y->4y with rates raised 4pp on 4 Jul 2025 (encoded below); EC-specific tightening 8 May 2026 (see market.json ec_policy_2026).",
-    "sources": "MAS; MoneySense (retrieved Jul 2026); IRAS / MOF (15 Feb 2023 stamp-duty revision); HDB / MND (20 Aug 2024)."
+    "stability_note": "Buyer-side parameters (TDSR, MSR, LTV, BSD, ABSD) unchanged since 27 Apr 2023 (ABSD/BSD) and 20 Aug 2024 (HDB LTV). Seller-side is NOT static: SSD holding period extended 3y->4y with rates raised 4pp on 4 Jul 2025 (encoded below); EC-specific tightening 8 May 2026 (see market.json ec_policy_2026). Owner-occupier property-tax schedule (bands from 1 Jan 2025) added 2 Sep 2026; curated rates refreshed the same day.",
+    "sources": "MAS; MoneySense (retrieved Jul 2026); IRAS / MOF (15 Feb 2023 stamp-duty revision; property-tax bands from 1 Jan 2025); HDB / MND (20 Aug 2024)."
   },
 
   "tdsr": {
@@ -82,10 +82,27 @@
     "source": "MAS/MOF/MND joint release 3 Jul 2025; IRAS SSD (residential)"
   },
 
+  "property_tax": {
+    "note": "Owner-occupier residential property tax: progressive marginal rates on the Annual Value (AV), which IRAS sets from the market rent of comparable properties. The page proxies AV with gross yield x price (flagged as a proxy; prime rents yield less, so the tax there runs lower than the proxy). Non-owner-occupier rates (12-36%) are not modelled - the tool is for a home you live in. The 2026 one-off 15% rebate for owner-occupied HDB flats is not modelled.",
+    "effective": "2025-01-01",
+    "owner_occupier_brackets": [
+      { "up_to": 12000,  "rate": 0.00 },
+      { "up_to": 40000,  "rate": 0.04 },
+      { "up_to": 50000,  "rate": 0.06 },
+      { "up_to": 75000,  "rate": 0.10 },
+      { "up_to": 85000,  "rate": 0.14 },
+      { "up_to": 100000, "rate": 0.20 },
+      { "up_to": 140000, "rate": 0.26 },
+      { "up_to": null,   "rate": 0.32 }
+    ],
+    "checkpoints_sgd": { "57375": 2458, "140250": 19100 },
+    "source": "IRAS property tax rates (owner-occupier, from 1 Jan 2025; Budget 2024 AV-band revision); gov.sg explainer 'Property tax on residential property' (retrieved 2 Sep 2026)"
+  },
+
   "rates": {
-    "sora_3m":            { "value": 0.011153, "asof": "2026-07-08", "source": "MAS daily rates via Cashew.sg", "flag": "published by MAS; retrieved via an aggregator, not independently verified to the basis point" },
-    "fixed_best":         { "value": 0.0130, "range": [0.0130, 0.0170], "asof": "2026-07-09", "source": "DollarBack / MortgageWise; DBS 2yr fixed 1.68%", "flag": "broker-negotiated promo, not board rate" },
-    "floating_typical":   { "value": 0.0170, "range": [0.0140, 0.0210], "source": "3M SORA ~1.12% + spread 0.25-1.00%", "flag": "synthesised range" },
+    "sora_3m":            { "value": 0.011265, "asof": "2026-09-02", "source": "MAS-published 3M compounded SORA, via DollarBack Mortgage (2 Sep 2026: 1.1265%), cross-checked to PropertyNet (8 Aug 2026: 1.12%)", "flag": "published by MAS; retrieved via aggregators, not independently verified to the basis point" },
+    "fixed_best":         { "value": 0.0140, "range": [0.0140, 0.0170], "asof": "2026-09-02", "source": "PropertyNet (8 Aug 2026: HSBC 2-yr fixed 1.40%); DollarBack (2 Sep 2026: Maybank 2-yr fixed 1.45%)", "flag": "broker-negotiated promo, not board rate; the two aggregators differ by 5bp" },
+    "floating_typical":   { "value": 0.0163, "range": [0.0132, 0.0210], "source": "3M SORA ~1.13% + spread 0.20-1.00% (PropertyNet 8 Aug 2026: Maybank 3M SORA + 0.20% = 1.32%)", "flag": "synthesised range" },
     "hdb_concessionary":  { "value": 0.0260, "source": "HDB (CPF OA + 0.1pp), unchanged" },
     "default_mortgage_rate": 0.0160,
     "sora_history": {

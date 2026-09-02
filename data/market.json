@@ -1,7 +1,7 @@
 {
   "_meta": {
     "title": "Singapore residential market — curated baseline",
-    "asof": "2026-07-10",
+    "asof": "2026-09-02",
     "not_advice": "Educational baseline from primary public sources (URA, HDB, MAS, SingStat) plus portal aggregations where no official figure exists. Portal-sourced / computed / flash values are flagged. pipeline.py overlays data/live.json (data.gov.sg + URA GLS) where present; without it this baseline stands. Not financial advice."
   },
 
@@ -26,39 +26,40 @@
   },
 
   "segments": {
+    "_outlook_note": "outlook_2026_range is a curated FULL-YEAR 2026 price view from public commentary, not a primary-source figure; the page labels it curated. It was keyed 'qoq' until 2 Sep 2026 and printed as a quarterly rate, which would have implied 8-12% a year for OCR.",
     "OCR": {
       "label": "Outside Central Region (suburban / mass-market)",
       "median_psf": 1650, "median_psf_flag": "portal aggregation, not a URA median",
       "yield_gross": [0.040, 0.045], "yield_pt": 0.0425,
-      "outlook_2026_qoq_range": [0.02, 0.03], "momentum_qoq": -0.002, "momentum_asof": "2026-Q2 flash",
+      "outlook_2026_range": [0.02, 0.03], "momentum_qoq": -0.002, "momentum_asof": "2026-Q2 flash",
       "note": "Best gross yield and the only segment where the $1.2-1.5m 2-bed brief fits comfortably (resale). Suburban demand anchored by upgrader / new-household formation."
     },
     "RCR": {
       "label": "Rest of Central Region (city fringe)",
       "median_psf": 2180, "median_psf_flag": "portal aggregation",
       "yield_gross": [0.030, 0.040], "yield_pt": 0.0336,
-      "outlook_2026_qoq_range": [0.00, 0.01], "momentum_qoq": -0.014, "momentum_asof": "2026-Q2 flash",
+      "outlook_2026_range": [0.00, 0.01], "momentum_qoq": -0.014, "momentum_asof": "2026-Q2 flash",
       "note": "Above-budget for 2-bed resale (avg ~$1.64m) except older / fringe stock — D14 (Geylang / Eunos) is the main value pocket."
     },
     "CCR": {
       "label": "Core Central Region (prime)",
       "median_psf": 2650, "median_psf_flag": "portal aggregation",
       "yield_gross": [0.020, 0.028], "yield_pt": 0.024,
-      "outlook_2026_qoq_range": [0.01, 0.02], "momentum_qoq": 0.020, "momentum_asof": "2026-Q2 flash",
+      "outlook_2026_range": [0.01, 0.02], "momentum_qoq": 0.020, "momentum_asof": "2026-Q2 flash",
       "note": "Lowest yield; within the $1.2-1.5m budget only 1-bedders fit. Momentum rotates quarter to quarter - read the live q/q column rather than a fixed narrative."
     },
     "Landed": {
       "label": "Landed housing",
       "median_psf": null, "median_psf_flag": "n/a",
       "yield_gross": [0.018, 0.025], "yield_pt": 0.020,
-      "outlook_2026_qoq_range": [0.00, 0.01], "momentum_qoq": 0.026, "momentum_asof": "2026-Q2 flash",
+      "outlook_2026_range": [0.00, 0.01], "momentum_qoq": 0.026, "momentum_asof": "2026-Q2 flash",
       "note": "Scarce, citizen-only (PRs need LDAU approval), lowest yield and least liquid, but structurally supply-constrained. Entry quantum comes from landed_resale (live); outside the worked example's budget and liquidity brief."
     },
     "HDB": {
       "label": "HDB resale",
       "median_psf": null, "median_psf_flag": "see live HDB resale median",
       "yield_gross": [0.045, 0.056], "yield_pt": 0.050,
-      "outlook_2026_qoq_range": [0.00, 0.02], "momentum_qoq": -0.003, "momentum_asof": "2026-Q2 flash",
+      "outlook_2026_range": [0.00, 0.02], "momentum_qoq": -0.003, "momentum_asof": "2026-Q2 flash",
       "note": "Highest gross yield and most liquid by volume, but MOP/eligibility/ethnic-quota rules, MSR cap, and no ABSD-free 2nd-property leverage. Mild two-quarter price decline into 2026."
     }
   },
@@ -74,8 +75,13 @@
     "note": "Recurring owner costs a mortgage instalment does not include. Estimates — MCST fees vary by project and share value; property tax uses IRAS owner-occupier bands on the annual value.",
     "flag": "estimate",
     "maintenance_monthly_2br_condo": [300, 450],
+    "maintenance_psf_month": [0.40, 0.60],
+    "maintenance_psf_note": "The 2-bed range above over its ~750 sqft, so a larger unit scales with share value instead of paying a 2-bed's fee. The page sizes the unit at the suburban median $psf.",
+    "hdb_scc_monthly": [60, 110],
+    "hdb_scc_note": "Town-council service & conservancy charges, typical 3- to 5-room range after the 2025-26 revisions; varies by town and flat type.",
     "property_tax_owner_occ_annual_at_brief": [1500, 2500],
-    "source": "typical 2026 MCST fee ranges (portal-sourced); IRAS owner-occupier tax schedule"
+    "property_tax_note": "Retained as the fallback only; the page computes tax from rules.json property_tax (IRAS owner-occupier schedule) on a gross-yield AV proxy.",
+    "source": "typical 2026 MCST fee ranges and town-council S&CC schedules (portal-sourced); IRAS owner-occupier tax schedule"
   },
 
   "gls": {

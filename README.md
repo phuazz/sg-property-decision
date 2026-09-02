@@ -16,7 +16,7 @@ seller — but any age, income, budget, property type and buyer profile can be e
    LTV **and** TDSR (and MSR for HDB/EC), the monthly instalment at the 4% stress floor **and** at the
    live package rate, and the full upfront cash bill (downpayment split, BSD, ABSD). This is where the
    "42 means a shorter loan" point becomes a number: at 42 full 75% LTV caps tenure at 23 years.
-2. **Buy vs rent · cash vs mortgage** — the debate. With 3-month SORA near 1% and packages ~1.3–1.7%,
+2. **Buy vs rent · cash vs mortgage** — the debate. With 3-month SORA near 1% and packages ~1.4–1.7%,
    the mortgage rate sits **below** both property's long-run inflation-plus-real return and a balanced
    portfolio's expected return, so borrowing and keeping cash invested wins on expected value — *if* the
    liquidity buffer is there. The module shows the interest-rate spread (carry net of running costs), a
@@ -54,8 +54,14 @@ broker research that informed the framework (see IP firewall below).
 - **Market snapshot** (`data/market.json`) — URA PPI + rental index and HDB RPI (levels + quarterly path),
   segment $psf and gross yields, 2-bed quantum by segment, the 2026 GLS tender table, and the 8 May 2026
   EC policy change. Every figure carries a source; portal aggregations and computed/flash values are flagged.
-- **Rates** — 3-month compounded SORA 1.12% (MAS, 8 Jul 2026); package rates ~1.3–1.7% fixed / ~1.4–2.1%
-  floating (aggregators; broker-promo, curated — no public feed exists for package rates).
+- **Rates** — 3-month compounded SORA 1.13% (MAS-published, via two aggregators, 2 Sep 2026); package rates
+  ~1.4–1.7% fixed / ~1.3–2.1% floating (aggregators; broker-promo, curated — no public feed exists for
+  package rates; the two aggregators differ by 5bp on the best fixed rate).
+- **Running costs** (`rules.json` `property_tax`, `market.json` `ownership_costs`) — IRAS owner-occupier
+  property-tax schedule (AV bands from 1 Jan 2025, verified against IRAS and the gov.sg explainer) applied
+  to an annual value proxied by the gross-yield rent; MCST at S$0.40–0.60 psf a month on a unit sized at the
+  suburban median $psf; HDB town-council S&CC S$60–110 a month. The AV proxy and both fee ranges are
+  flagged estimates.
 
 ### Live data (wired)
 
@@ -263,5 +269,32 @@ all six tabs at 390 / 844 / 768 / 1280 px: no body horizontal scroll, no unwrapp
 smallest type 11px; prose measures 51–55 chars a line at 390 px and wider above (pre-existing —
 the page caps no running measure — parked in `C:\dev\NEXT.md`). The landed aggregation is a pure
 function with its own test, run in CI and before every weekly fetch.
+
+**Review pass (2026-09-02, same day).** A structured sweep of every tab after the three reader reports:
+an edge-case pass in a real browser (zero income, blank price, zero cash, blank age, oversized debt, 6%
+rate at 35 years, zero surplus, foreigner on HDB, junk in the budget field), the arithmetic and copy of
+each render function against `rules.json`, and provenance labels. Fixed: (1) zero income printed "NaN%
+of income" and "TDSR = NaN%", a blank price printed "NaN% of price" and "−Infinity%" net yield — each now
+names the missing input; (2) a mortgage rate above the expected return printed "S$-19,434 better off … the
+reward for the spread" — the tile and note are now sign-aware ("Gain from prepaying", "the spread is
+negative"), and every currency helper renders negatives as −S$; (3) running costs were pinned to the
+S$1.35m example (~S$540/month whatever the price), so a S$3.3m purchase carried a fifth of its property
+tax — now the IRAS owner-occupier schedule (AV bands from 1 Jan 2025, encoded in `rules.json`, verified
+against IRAS and the gov.sg explainer) on a gross-yield AV proxy, MCST per sqft on a unit sized at the
+suburban median $psf, and town-council S&CC for HDB, with the basis printed beside the figure
+(S$565/month at the example, S$2,472 at S$3.3m, S$85 + tax for a S$750k flat); (4) the segment
+"2026 outlook" was keyed and printed as a quarterly rate ("+2%…3% q/q", which would be 8–12% a year) —
+it is a curated full-year view and is now labelled so, with a note that it has no primary source;
+(5) the HDB worked example was MSR-bound at S$506k on S$8,000 income, so its own upfront beat its cash
+and the example opened on "short by S$15k" — S$9,000 and S$280k make it LTV-bound with a 28-month buffer;
+(6) eligibility notes: a foreigner on HDB, a PR household's 3-year rule, and the citizen requirement for
+an HDB loan (HDB rules; the HDB pages were not reachable at review, so verified against several
+consistent secondary summaries), and the Type-tab chips put eligibility ahead of budget (HDB "not
+eligible" / "PR: 3 yrs in", landed "LDAU approval needed"); (7) the masthead pill and footer labelled
+the market baseline's date as the rules date — they now show each file's own; the best-fixed-package
+KPI carries its as-of date; curated rates refreshed to 2 Sep 2026 from two aggregators (3M SORA 1.13%,
+best 2-year fixed 1.40–1.45%, they differ by 5bp). Verified again: engine parity, lease labels, landed
+test, inline-script syntax check, static mobile check, no NaN/Infinity/undefined leak across ten
+degenerate scenarios, and no overflow or sub-11px type on all six tabs at 390 and 1280 px.
 
 _Last updated: 2026-09-02._

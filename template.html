@@ -400,7 +400,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-leverage">
     <h2 class="section">Pay cash for peace of mind, or borrow cheaply?</h2>
     <p class="lead">With interest rates near 1%, the loan costs <b>less</b> than what your cash could earn elsewhere — so on the maths, borrowing and keeping cash invested usually wins. But "no mortgage, less stress" is real too. This weighs both, and the <b>safety buffer</b> that matters more than either.</p>
-    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.3–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
+    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.4–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
     <div class="card" id="rates-card">
       <h3>3-month SORA &mdash; the rate this rests on <em style="font-style:normal;color:var(--t3-text)">curated &middot; MAS-published benchmark</em></h3>
       <p class="intro">The cash-versus-loan case turns on how cheap the mortgage is, and most floating packages price off <b>3-month compounded SORA</b>. Here is where the benchmark has been. <span id="sora-now"></span></p>
@@ -587,8 +587,9 @@ async function loadData(){
 /* ---------- helpers ---------- */
 const $=id=>document.getElementById(id);
 const fmt0=n=>n.toLocaleString('en-SG',{maximumFractionDigits:0});
-const sgd=n=>'S$'+fmt0(Math.round(n));
-const sgdk=n=>n>=1e6?('S$'+(n/1e6).toFixed(2)+'m'):('S$'+fmt0(Math.round(n/1000))+'k');
+// Sign-aware: a negative amount reads "−S$19,434", never "S$-19,434".
+const sgd=n=>(n<0?'−':'')+'S$'+fmt0(Math.round(Math.abs(n)));
+const sgdk=n=>{const a=Math.abs(n), s=n<0?'−':'';return a>=1e6?(s+'S$'+(a/1e6).toFixed(2)+'m'):(s+'S$'+fmt0(Math.round(a/1000))+'k');};
 const pct=(n,d=1)=>(n*100).toFixed(d)+'%';
 // "2022-11-15" -> "Nov 2022". Parsed off the ISO string rather than via Date: no timezone shift,
 // and no 0-indexed-month trap (the lookup is indexed by month-1, months being 1-based in ISO).
@@ -752,16 +753,23 @@ function renderAfford(){
   // verdict
   let vClass='good', vMsg='';
   const affordable = c.upfront<=inp.cash;
-  const tdsrOk = c.tdsrUsed<=D.rules.tdsr.limit+1e-6;
+  const hasIncome=c.incomeEff>0, hasPrice=inp.price>0;
+  const tdsrOk = hasIncome && c.tdsrUsed<=D.rules.tdsr.limit+1e-6;
   if(!affordable){vClass='bad';}
   else if(c.bufferMonths<12){vClass='warn';}
   const bufTxt=c.bufferMonths>=24?'a comfortable':(c.bufferMonths>=12?'a thin':'an insufficient');
   vMsg=`<b>${c.bind==='LTV (cash)'?'Cash / LTV is the binding limit':'Income (TDSR/MSR) is the binding limit'}.</b> `+
-    `You can borrow up to <b>${sgd(c.maxLoan)}</b> (${pct(c.maxLoan/inp.price,0)} of price) over ${c.tenure} years. `+
+    `You can borrow up to <b>${sgd(c.maxLoan)}</b> (${hasPrice?pct(c.maxLoan/inp.price,0):'—'} of price) over ${c.tenure} years. `+
     `Upfront you need <b>${sgd(c.upfront)}</b>; you have ${sgd(inp.cash)} `+
     (affordable?`— leaving ${sgd(c.bufferAfter)}, ${bufTxt} <b>${c.bufferMonths.toFixed(0)}-month</b> instalment buffer.`
       :`— <b>short by ${sgd(c.upfront-inp.cash)}</b>. Lower the price or raise cash.`);
   const extra=[];
+  // Eligibility first: it outranks every loan figure below it.
+  if(c.isHDB){
+    if(inp.cz==='Foreigner') extra.push('HDB flats are for citizens and PRs — a foreigner cannot buy one (HDB eligibility)');
+    else if(inp.cz==='PR') extra.push('a PR household can buy a resale flat only if at least one buyer has held PR status for 3 years, and two newly-granted PRs cannot buy together (HDB eligibility)');
+    if(c.hdbLoan&&inp.cz!=='SC') extra.push('an HDB loan needs at least one Singapore Citizen owner — otherwise it is a bank loan (HDB)');
+  }
   if(c.reduced) extra.push(`this ${c.tenure}-year tenure runs past the age-65 / ${c.cliffTenure}-year line, so LTV drops to ${pct(c.ltv,0)} and minimum cash rises to ${pct(c.cashMinFrac,0)}`
     +(autoT&&autoT!==c.tenure?` — at ${autoT} years you would keep the full ${pct(fullLtv,0)} (tenure slider under More options)`:''));
   // Income-bound and a longer loan would borrow more, even across the cliff: say so, do not choose it.
@@ -787,14 +795,17 @@ function renderAfford(){
     else if(inp.lease<60) extra.push('many banks trim LTV or tenure below ~60 years of remaining lease (varies by bank)');
   }
   if(extra.length) vMsg+=` <span class="flag">Note: ${extra.join('; ')}.</span>`;
+  // Degenerate inputs: name what is missing rather than print "0%" and "NaN%".
+  if(!hasPrice){vClass='warn'; vMsg='<b>Enter a target purchase price.</b> The loan, the duties and the buffer are all sized off it.';}
+  else if(!hasIncome){vClass='warn'; vMsg=`<b>Enter a gross monthly income.</b> The debt tests (TDSR${c.msrApplies?' and MSR':''}) size the loan off recognised income; with none entered no bank loan is possible, so the upfront figure is a cash purchase: <b>${sgd(c.upfront)}</b> against ${sgd(inp.cash)}${c.upfront>inp.cash?` — short by ${sgd(c.upfront-inp.cash)}`:''}.`;}
   $('verdict').innerHTML=`<div class="verdict ${vClass}">${vMsg}</div>`;
 
   // tiles
   const stressLbl=(c.stress*100).toFixed(2).replace(/\.?0+$/,'');
   const tiles=[
-    {l:'Max loan',v:sgdk(c.maxLoan),s:pct(c.maxLoan/inp.price,0)+' of price · '+c.bind,cls:'hl'},
-    {l:'Monthly instalment',v:sgd(c.instActual),s:'at '+(inp.rate*100).toFixed(2)+'% · '+pct(c.instActual/c.incomeEff,0)+' of income'},
-    {l:'Instalment at '+stressLbl+'% stress',v:sgd(c.instStress),s:(c.msrApplies?'MSR '+pct(c.msrUsed,0)+' · ':'')+'TDSR = '+pct(c.tdsrUsed,0)+(tdsrOk?' ✓':' ✗ over 55%'),cls:tdsrOk?'':'warn'},
+    {l:'Max loan',v:sgdk(c.maxLoan),s:(hasPrice?pct(c.maxLoan/inp.price,0):'—')+' of price · '+c.bind,cls:'hl'},
+    {l:'Monthly instalment',v:sgd(c.instActual),s:'at '+(inp.rate*100).toFixed(2)+'% · '+(hasIncome?pct(c.instActual/c.incomeEff,0)+' of income':'no income entered')},
+    {l:'Instalment at '+stressLbl+'% stress',v:sgd(c.instStress),s:hasIncome?((c.msrApplies?'MSR '+pct(c.msrUsed,0)+' · ':'')+'TDSR = '+pct(c.tdsrUsed,0)+(tdsrOk?' ✓':' ✗ over 55%')):'no income entered',cls:tdsrOk||!hasIncome?'':'warn'},
     {l:'Upfront cash needed',v:sgd(c.upfront),s:'downpay + '+sgd(c.stampBSD+c.absd)+' duties'},
     // A shortfall is not a negative buffer: below zero the months are meaningless, so say "short" and by how much.
     {l:'Forced-seller buffer',v:c.bufferAfter<0?'short':c.bufferMonths.toFixed(0)+' mo',s:c.bufferAfter<0?'upfront exceeds your cash by '+sgd(-c.bufferAfter):sgd(c.bufferAfter)+' left · '+Math.max(0,c.bufferMonthsStress).toFixed(0)+' mo at stress',cls:c.bufferAfter<0?'warn':(c.bufferMonths>=24?'good':'warn')}
@@ -805,7 +816,7 @@ function renderAfford(){
   const loan=c.maxLoan;
   const capT=(!c.hdbLoan&&c.fullLtvMaxTenure>=5)?c.fullLtvMaxTenure:null;
   const tset=[15,20,capT,25,30].filter((v,i,a)=>v&&v>=5&&v<=absCap&&a.indexOf(v)===i).sort((a,b)=>a-b);
-  const maxInst=Math.max(...tset.map(t=>pmt(inp.rate,t,loan)));
+  const maxInst=Math.max(1,...tset.map(t=>pmt(inp.rate,t,loan)));   // floor of 1 so a zero loan draws empty bars, not NaN widths
   $('age-intro').textContent=c.hdbLoan
     ?`Same ${sgd(loan)} HDB loan at ${(inp.rate*100).toFixed(2)}%: tenure is a hard cap — the shorter of 25 years and age 65 (${c.tenure} years for you) — rather than an LTV step-down.`
     :(capT?`Same ${sgd(loan)} loan at ${(inp.rate*100).toFixed(2)}%, over different tenures. At age ${inp.age}, full ${pct(D.rules.ltv.bank_individual.loan1.max,0)} LTV caps you at ${capT} years — stretch longer and the LTV falls, so the practical choice is a shorter loan and a higher monthly.`
@@ -831,7 +842,7 @@ function renderAfford(){
     {l:'ABSD ('+pct(c.absdRate,0)+')',v:c.absd,col:'var(--a)'},
     {l:'Legal + valuation',v:c.legal,col:'var(--t3)'}
   ].filter(p=>p.v>0);
-  const upMax=Math.max(...parts.map(p=>p.v));
+  const upMax=Math.max(1,...parts.map(p=>p.v));
   $('upfront-bars').innerHTML=parts.map(p=>`<div class="bar-row"><span>${p.l}</span><div class="bar-track"><div class="bar-fill" style="width:${p.v/upMax*100}%;background:${p.col}"></div></div><span class="bar-num">${sgd(p.v)}</span></div>`).join('')
     +`<div class="bar-row" style="border-top:1px solid var(--bd);padding-top:6px;margin-top:2px"><span><b>Total upfront</b></span><div></div><span class="bar-num"><b>${sgd(c.upfront)}</b></span></div>`;
 
@@ -848,18 +859,31 @@ function syncLev(){
   $('l-g-val').textContent=(g*100).toFixed(2)+'%'; $('l-n-val').textContent=N+' yr';
   const spread=p-m;
   const c=window._afford, inp=window._inp;
-  const oc=D.market.ownership_costs;
-  const runYr=(oc.maintenance_monthly_2br_condo[0]+oc.maintenance_monthly_2br_condo[1])/2*12
-             +(oc.property_tax_owner_occ_annual_at_brief[0]+oc.property_tax_owner_occ_annual_at_brief[1])/2;
-  const priceRef=inp?inp.price:D.market.brief.budget_sgd[1]-150000;
-  const yG=D.market.segments.OCR.yield_pt, yN=yG-runYr/priceRef;
+  const priceRef=(inp&&inp.price>0)?inp.price:D.market.brief.budget_sgd[1]-150000;
+  const isHDB=!!(inp&&inp.type==='hdb');
+  /* Running costs sized to the price and type, not to the worked example. They were a fixed
+     ~S$540/month (a 2-bed condo's MCST plus the property tax at S$1.35m) whatever the price, so a
+     S$3.3m purchase carried a fifth of its real tax. Property tax: the IRAS owner-occupier
+     schedule (rules.json) on an Annual Value proxied by the gross-yield rent - IRAS sets AV from
+     market rents, so the proxy has the right shape, and it is flagged as a proxy. Maintenance:
+     condo MCST scales with share value, so per sqft a month on a unit sized at the suburban median
+     $psf; an HDB flat pays town-council S&CC by flat type instead. Both ranges are estimates. */
+  const oc=D.market.ownership_costs, PT=D.rules.property_tax, mid=r=>(r[0]+r[1])/2;
+  const yG=isHDB?D.market.segments.HDB.yield_pt:D.market.segments.OCR.yield_pt;
+  const sizeEst=priceRef/D.market.segments.OCR.median_psf;
+  const maintMo=isHDB?mid(oc.hdb_scc_monthly||[60,110]):sizeEst*mid(oc.maintenance_psf_month||[0.4,0.6]);
+  const av=yG*priceRef, taxYr=(PT&&PT.owner_occupier_brackets)?bsd(av,PT.owner_occupier_brackets):mid(oc.property_tax_owner_occ_annual_at_brief);
+  const runYr=maintMo*12+taxYr;
+  const yN=yG-runYr/priceRef;
   // tiles
   const investGrow=surplus*Math.pow(1+p,N), prepayEquiv=surplus*Math.pow(1+m,N);
   const edge=investGrow-prepayEquiv;
   const tiles=[
     {l:'Rate spread (invest − borrow)',v:(spread>=0?'+':'')+pct(spread,2),s:spread>0?'leverage adds expected value':'prepaying wins',cls:spread>0?'good':'warn'},
-    {l:'Carry vs a suburban rent (net)',v:(yN-m>=0?'+':'')+pct(yN-m,2),s:'net yield ≈ '+pct(yN,1)+' (gross '+pct(yG,1)+' − est. costs) − rate'},
-    {l:'Give-up from prepaying',v:sgd(edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus · nominal, year-'+N+' dollars',cls:'hl'},
+    {l:isHDB?'Carry vs an HDB rent (net)':'Carry vs a suburban rent (net)',v:(yN-m>=0?'+':'')+pct(yN-m,2),s:'net yield ≈ '+pct(yN,1)+' (gross '+pct(yG,1)+' − est. costs) − rate'},
+    // Sign-aware: when the loan costs more than the cash is expected to earn, prepaying is the gain.
+    edge>=0?{l:'Give-up from prepaying',v:sgd(edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus · nominal, year-'+N+' dollars',cls:'hl'}
+           :{l:'Gain from prepaying',v:sgd(-edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus · the loan costs more than the cash is expected to earn',cls:'warn'},
   ];
   $('lev-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
   // buffer bars + the exit lock
@@ -900,20 +924,24 @@ function syncLev(){
     $('ovr-bars').innerHTML=rows.map(r=>`<div class="bar-row"><span>${r.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.abs(r.v)/omax*100}%;background:${r.col}"></div></div><span class="bar-num">${r.v>=0?'+':'−'}${sgd(Math.abs(r.v))}</span></div>`).join('')
       +`<div class="bar-row" style="border-top:1px solid var(--bd);padding-top:6px;margin-top:2px"><span><b>Net, year one</b></span><div></div><span class="bar-num"><b>${net>=0?'+':'−'}${sgd(Math.abs(net))} ${net>=0?'to owning':'to renting'}</b></span></div>`;
     const cpfBack=c.cpfOrCash*(Math.pow(1+D.rules.cpf.oa_rate,N)-1);
-    $('ovr-note').innerHTML=`A one-year expected-value snapshot, not a forecast: rent is proxied by the OCR gross yield (portal-sourced, flagged), interest is approximated on the opening balance, and principal repayments are excluded on both sides (they are saving, not cost). Two exit frictions to remember: SSD applies within 4 years, and CPF used for the home flows back to your own CPF with accrued interest at sale — roughly ${sgd(cpfBack)} after ${N} years if the ${sgd(c.cpfOrCash)} CPF-or-cash portion were fully CPF — so cash-in-hand at exit is less than the equity you see.`;
+    $('ovr-note').innerHTML=`A one-year expected-value snapshot, not a forecast: rent is proxied by the ${isHDB?'HDB':'OCR'} gross yield (portal-sourced, flagged), interest is approximated on the opening balance, and principal repayments are excluded on both sides (they are saving, not cost). `+
+      `Running costs: ${isHDB?`town-council S&CC ~${sgd(maintMo)}/month (estimate)`:`MCST ~${sgd(maintMo)}/month at S$${(oc.maintenance_psf_month||[0.4,0.6])[0].toFixed(2)}–${(oc.maintenance_psf_month||[0.4,0.6])[1].toFixed(2)} psf on ~${fmt0(sizeEst)} sqft (sized at the suburban median $psf, an estimate)`}, plus property tax ~${sgd(taxYr)}/year from the IRAS owner-occupier schedule${PT&&PT.effective?` (from ${monYr(PT.effective)})`:''} on an annual value proxied by the gross-yield rent — prime rents yield less, so the tax there runs lower than this.`;
+    $('ovr-note').innerHTML+=` Two exit frictions to remember: SSD applies within 4 years, and CPF used for the home flows back to your own CPF with accrued interest at sale — roughly ${sgd(cpfBack)} after ${N} years if the ${sgd(c.cpfOrCash)} CPF-or-cash portion were fully CPF — so cash-in-hand at exit is less than the equity you see.`;
   }
   // prepay vs invest projection bars (net worth delta narrative)
   const yrs=[Math.round(N/2),N];
   const rows=yrs.map(y=>{const inv=surplus*Math.pow(1+p,y), pre=surplus*Math.pow(1+m,y); return {y,inv,pre};});
-  const rmax=Math.max(...rows.map(r=>r.inv));
+  const rmax=Math.max(1,...rows.map(r=>Math.max(r.inv,r.pre)));
   $('lev-bars').innerHTML=rows.map(r=>`
     <div class="bar-row"><span>Invest · yr ${r.y}</span><div class="bar-track"><div class="bar-fill" style="width:${r.inv/rmax*100}%;background:var(--g)"></div></div><span class="bar-num">${sgdk(r.inv)}</span></div>
     <div class="bar-row"><span>Prepay · yr ${r.y}</span><div class="bar-track"><div class="bar-fill" style="width:${r.pre/rmax*100}%;background:var(--b2)"></div></div><span class="bar-num">${sgdk(r.pre)}</span></div>`).join('');
   // Basis stated beside the figure (a reader asked whether it was inflation-adjusted): both paths are
   // nominal, so inflation cannot change the ranking, only the size of the gap in today's money.
   const INFL_ILLUS=0.02;
-  $('lev-note').innerHTML=`Keeping ${sgdk(surplus)} invested at ${pct(p,1)} rather than prepaying a ${pct(m,1)} loan is expected to leave you <b>${sgd(edge)}</b> better off after ${N} years — the reward for the spread. Prepaying is the certain, lower-return path. `+
-    `Both paths are in <b>year-${N} dollars, nominal</b>: no inflation adjustment, no discounting to today, and before any tax on the returns. Inflation shrinks both alike, so it does not change which path wins, only the size of the gap in today's money — at ${pct(INFL_ILLUS,0)} a year (illustrative, not a forecast) about ${sgd(edge/Math.pow(1+INFL_ILLUS,N))}.`;
+  $('lev-note').innerHTML=(edge>=0
+      ?`Keeping ${sgdk(surplus)} invested at ${pct(p,1)} rather than prepaying a ${pct(m,1)} loan is expected to leave you <b>${sgd(edge)}</b> better off after ${N} years — the reward for the spread. Prepaying is the certain, lower-return path. `
+      :`At a ${pct(m,1)} mortgage against ${pct(p,1)} expected on the cash, the spread is negative: prepaying ${sgdk(surplus)} is expected to leave you <b>${sgd(-edge)}</b> better off after ${N} years than staying invested — and it is the certain path as well. `)+
+    `Both paths are in <b>year-${N} dollars, nominal</b>: no inflation adjustment, no discounting to today, and before any tax on the returns. Inflation shrinks both alike, so it does not change which path wins, only the size of the gap in today's money — at ${pct(INFL_ILLUS,0)} a year (illustrative, not a forecast) about ${sgd(Math.abs(edge)/Math.pow(1+INFL_ILLUS,N))}.`;
   $('lev-disc').innerHTML=`<b>Read this honestly.</b> The invested path only wins if you actually invest the cash and earn ${pct(p,1)} — it is an expectation, not a promise, and it carries market risk the mortgage does not. The buffer above is what lets you ride out a bad sequence without selling. If you value certainty or would not invest the difference, prepaying is the rational choice. Not advice.`;
 }
 
@@ -935,18 +963,22 @@ function renderType(){
   const lasof=(M.landed_resale&&M.landed_resale.asof)?monYr(M.landed_resale.asof):'';
   const chip=entry=>entry==null?'<span class="chip chip-n">—</span>':price>=entry?'<span class="chip chip-g">in reach</span>':price>=entry*0.85?'<span class="chip chip-a">a stretch</span>':'<span class="chip chip-n">above budget</span>';
   const sub=s=>`<div class="cell-sub">${s}</div>`;
+  // Eligibility outranks budget: an HDB flat is closed to a foreigner, and landed needs LDAU approval for anyone not a citizen.
+  const cz=inp?inp.cz:'SC';
+  const hdbFit=cz==='Foreigner'?'<span class="chip chip-r">not eligible</span>':cz==='PR'?'<span class="chip chip-a">PR: 3 yrs in, resale only</span>':chip(hdb3||500000);
+  const landedFit=cz!=='SC'?'<span class="chip chip-a">LDAU approval needed</span>':chip(ter?ter.price_p[1]:null);
   const rows=[
-    {t:'HDB resale',fit:chip(hdb3||500000),
+    {t:'HDB resale',fit:hdbFit,
      quantum:hdb3?`3-rm ${sgdk(hdb3)} · 4-rm ${sgdk(hdb4)} · 5-rm ${sgdk(hdb5)}`+sub(`medians · ${H.asof_month} (live)`):'S$0.5–0.8m'+sub('estimate'),
      liq:'Highest',yield:pct(S.HDB.yield_pt,1),app:'+0–2%',lev:'HDB loan 75% / bank; MSR 30%',restr:'Citizenship, MOP, ethnic quota; income ceilings for grants/HDB loan',hedge:'Moderate'},
     {t:'Private condo',fit:chip(condoEntry),
      quantum:`from ~${sgdk(condoEntry)}`+sub(condoLive?'cheapest tenth of project medians · resale 12 m (live)':'2-bed OCR resale average, 2025'),
      liq:'High',yield:pct(S.OCR.yield_pt,1)+' (OCR)',app:'+1–3%',lev:'Bank only; TDSR 55%',restr:'ABSD on 2nd+; SSD within 4 yr; few use restrictions',hedge:'Strong'},
-    {t:'Landed',fit:chip(ter?ter.price_p[1]:null),
+    {t:'Landed',fit:landedFit,
      quantum:ter?`terrace ${band(ter)}`+sub(`middle half · median ${sgdk(ter.price_p[2])} · resale 12 m to ${lasof} (live)`):'—'+sub('needs the live landed feed'),
      liq:'Lowest',yield:pct(S.Landed.yield_pt,1),app:'+0–1% (scarce)',lev:'Bank only; TDSR 55%',restr:'Citizens only (PRs need LDAU approval); large quantum',hedge:'Strongest (land-scarce)'}
   ];
-  $('type-table').innerHTML=`<thead><tr><th>Type</th><th>Entry quantum <span class="hint">— vs ${sgd(price)}</span></th><th>Liquidity</th><th class="num">Gross yield</th><th>2026 outlook</th><th>Leverage</th><th>Key restrictions</th><th>Inflation hedge</th></tr></thead><tbody>`+
+  $('type-table').innerHTML=`<thead><tr><th>Type</th><th>Entry quantum <span class="hint">— vs ${sgd(price)}</span></th><th>Liquidity</th><th class="num">Gross yield</th><th title="Curated full-year view from public commentary — no primary source">2026 outlook <span class="hint">(curated)</span></th><th>Leverage</th><th>Key restrictions</th><th>Inflation hedge</th></tr></thead><tbody>`+
     rows.map(r=>`<tr><td><b>${r.t}</b> ${r.fit}</td><td class="num">${r.quantum}</td><td>${r.liq}</td><td class="num">${r.yield}</td><td>${r.app}</td><td>${r.lev}</td><td>${r.restr}</td><td>${r.hedge}</td></tr>`).join('')+`</tbody>`;
   const condoIn=price>=condoEntry, landedIn=!!(ter&&price>=ter.price_p[1]);
   const cards=[
@@ -1382,14 +1414,14 @@ function renderWhere(){
   const S=D.market.segments, G=D.market.gls;
   const LT=(D.market.landed_resale||{}).by_type||{}, ter=(LT.Terrace&&LT.Terrace.price_p)?LT.Terrace:null;
   const order=['OCR','RCR','CCR','Landed','HDB'];
-  $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Latest q/q</th><th>2026 outlook</th><th>Read</th></tr></thead><tbody>`+
+  $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Latest q/q</th><th title="Curated full-year view from public commentary — no primary source; read it as a range of opinion, not a forecast">2026 outlook <span class="hint">(curated)</span></th><th>Read</th></tr></thead><tbody>`+
     order.map(k=>{const s=S[k];const mo=s.momentum_qoq;const psf=s.median_psf?('$'+fmt0(s.median_psf)):'—';
       const lead=['CCR','RCR','OCR'].reduce((a,b)=>S[a].momentum_qoq>=S[b].momentum_qoq?a:b);
       const read=k==='OCR'?('Best yield · most space per dollar'+(lead==='OCR'?' · leading q/q':''))
         :k==='CCR'?(lead==='CCR'?'Prime · leading q/q':'Prime · trailing q/q this print')
         :k==='HDB'?'Highest yield · rule-bound':k==='RCR'?('Fringe value in D14'+(lead==='RCR'?' · leading q/q':''))
         :('Scarce · citizens only'+(ter?` · terrace median ${sgdk(ter.price_p[2])}`:''));
-      return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}" title="${s.momentum_asof||''}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_qoq_range[0],0)+'…'+pct(s.outlook_2026_qoq_range[1],0)} q/q</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
+      return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}" title="${s.momentum_asof||''}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_range[0],0)+'…'+pct(s.outlook_2026_range[1],0)} for the year</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
 
   // live HDB resale median (present only when live.json is overlaid)
   const H=D.market.hdb_resale;
@@ -1493,7 +1525,7 @@ function renderKPIs(){
   const ppi=M.indices.ura_ppi, hdb=M.indices.hdb_rpi, live=M.live&&M.live.present;
   const k=[
     {l:'3M SORA',v:pct(R.rates.sora_3m.value,2),s:'curated · '+R.rates.sora_3m.asof,src:'MAS',href:'https://www.mas.gov.sg/monetary-policy/sora'},
-    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'curated · promo 1–3 yr',src:'MoneySense',href:'https://www.moneysense.gov.sg/'},
+    {l:'Best fixed package',v:pct(R.rates.fixed_best.value,2),s:'curated · '+(R.rates.fixed_best.asof||'')+' · promo 1–3 yr',src:'MoneySense',href:'https://www.moneysense.gov.sg/'},
     {l:'TDSR stress floor',v:pct(R.tdsr.stress_rate,0),s:'loans sized at this rate',src:'MAS 645',href:'https://www.mas.gov.sg/regulation/notices/notice-645'},
     {l:'Private PPI',v:(ppi.yoy>=0?'+':'')+pct(ppi.yoy,1),s:ppi.asof+' · q/q '+(ppi.qoq>=0?'+':'')+pct(ppi.qoq,1),src:'URA',href:'https://www.ura.gov.sg/Corporate/Property/Property-Data'},
     {l:'HDB resale RPI',v:(hdb.yoy>=0?'+':'')+pct(hdb.yoy,1),s:hdb.asof+' · q/q '+(hdb.qoq>=0?'+':'')+pct(hdb.qoq,1),src:'data.gov.sg',href:'https://data.gov.sg/datasets/d_14f63e595975691e7c24a27ae4c07c79/view'},
@@ -1510,13 +1542,13 @@ function renderKPIs(){
     if(stale){ el.textContent='LIVE · stale ('+ageDays+'d)'; el.className='pill pill-warn'; el.title='The weekly refresh has not landed for '+ageDays+' days — figures below carry their own as-of dates.'; }
     else if(failed.length){ el.textContent='LIVE · partial'; el.className='pill pill-warn'; el.title='Feeds failed at the last refresh: '+failed.join(', ')+' — curated baseline values stand for these.'; }
     else { el.innerHTML='<span class="dot"></span>LIVE'; el.title='All live feeds refreshed.'; }
-    $('pill-asof').textContent='data '+M.live.fetched.slice(0,10)+' · rules '+M._meta.asof;
+    $('pill-asof').textContent='data '+M.live.fetched.slice(0,10)+' · rules '+R._meta.asof;   // rules.json's own date, not the market baseline's
   }
-  else { $('pill-asof').textContent='snapshot '+M._meta.asof; }
+  else { $('pill-asof').textContent='snapshot '+M._meta.asof+' · rules '+R._meta.asof; }
   const liveTxt=live?`Indices, segment momentum, GLS land bids and HDB resale medians refreshed live ${M.live.fetched.slice(0,10)} from data.gov.sg + the URA GLS workbook; SORA and package rates are curated (no public feed); official segment $psf lights up when a URA Data Service key is supplied. `+(failed.length?`Feeds that failed at the last refresh (curated baseline stands for them): ${failed.join(', ')}. `:``):``;
   $('footer').innerHTML=`<b>Sources.</b> Rules — MAS / MoneySense / IRAS (in force July 2026; last cooling-measure changes: HDB LTV 75% on 20 Aug 2024 · SSD 4-year 16/12/8/4% on 4 Jul 2025 · EC package on 8 May 2026). Market — URA (PPI, rental index, GLS), HDB (RPI, resale register), MAS (SORA), SingStat; segment $psf and yields are partly portal aggregations, flagged in the data. `+liveTxt+
-    `<br><b>Not financial, mortgage or tax advice.</b> This is an educational illustration of published rules and public data. A bank's actual assessment (income recognition, CPF limits, guarantor rules) will differ; confirm with a licensed banker or broker before committing. Figures are a snapshot as of ${M._meta.asof} and date quickly. `+
-    `<br>Built on the vault dashboard convention · Personal project · ${M._meta.asof}.`;
+    `<br><b>Not financial, mortgage or tax advice.</b> This is an educational illustration of published rules and public data. A bank's actual assessment (income recognition, CPF limits, guarantor rules) will differ; confirm with a licensed banker or broker before committing. Figures are a snapshot — live feeds as of ${live?M.live.fetched.slice(0,10):'n/a'}, curated baseline as of ${M._meta.asof}, rules as of ${R._meta.asof} — and date quickly. `+
+    `<br>Built on the vault dashboard convention · Personal project · ${live?M.live.fetched.slice(0,10):M._meta.asof}.`;
 }
 
 /* ---------- overview hook: what your budget buys + three "aha" numbers ---------- */
@@ -1594,7 +1626,10 @@ const PRESETS=[
   {n:'42 · S$1.35m condo (example)',v:{age:42,income:11000,incomeVar:0,debt:0,cash:500000,price:1350000,type:'private',loan:'bank',cz:'SC',count:0,tenure:23,rate:1.6}},
   {n:'35 · S$1.5m condo, longer loan',v:{age:35,income:13000,incomeVar:0,debt:0,cash:520000,price:1500000,type:'private',loan:'bank',cz:'SC',count:0,tenure:30,rate:1.6}},
   {n:'45 · S$1.2m resale, cash-rich',v:{age:45,income:9000,incomeVar:0,debt:0,cash:700000,price:1200000,type:'private',loan:'bank',cz:'SC',count:0,tenure:20,rate:1.6}},
-  {n:'40 · HDB resale S$0.75m (HDB loan)',v:{age:40,income:8000,incomeVar:0,debt:0,cash:250000,price:750000,type:'hdb',loan:'hdb',cz:'SC',count:0,tenure:25,rate:2.6}}
+  // S$8,000 income put this example MSR-bound at S$506k, so its own upfront (S$265k) beat its S$250k
+  // cash and the worked example opened on "short by S$15k". S$9,000 makes LTV bind at S$562.5k;
+  // S$280k covers the S$208.6k upfront with a 28-month buffer.
+  {n:'40 · HDB resale S$0.75m (HDB loan)',v:{age:40,income:9000,incomeVar:0,debt:0,cash:280000,price:750000,type:'hdb',loan:'hdb',cz:'SC',count:0,tenure:25,rate:2.6}}
 ];
 function renderAtGlance(){
   const p=PRESETS[0].v;
