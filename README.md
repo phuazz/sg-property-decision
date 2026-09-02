@@ -297,4 +297,20 @@ best 2-year fixed 1.40–1.45%, they differ by 5bp). Verified again: engine pari
 test, inline-script syntax check, static mobile check, no NaN/Infinity/undefined leak across ten
 degenerate scenarios, and no overflow or sub-11px type on all six tabs at 390 and 1280 px.
 
-_Last updated: 2026-09-02._
+**Reading measure (2026-09-03).** Running prose had no cap: leads, intros, notes, verdicts, callouts
+and the footer ran 98–231 characters a line on a desktop. A `--measure` token (48ch — ch is the
+"0" advance and DM Sans's average character measures 0.66 of it, so 48ch prints ~73 characters on a
+bare paragraph and ~66 inside a padded box) now caps every running-prose element; tables, charts,
+bars and the field grids are exempt, and the two text-only explainer folds gained the `prose` class
+the third already had. On phones the column cannot get narrower, so type gets larger instead (lead
+16px, intros 15px, notes 13.5px, boxes 14.5px), which is the legibility a phone wants anyway.
+Measured with canvas `measureText` on a sentence from the page, all six tabs, folds open: at 844,
+768 and 1280 px every prose element prints 66–73 characters a line (guide 65–75); at 390 px leads,
+intros, verdicts, callouts and explainers print 44–50 (guide 40–50), and notes 53–54 and the footer
+64 — secondary text kept a step smaller by design, so they sit above the guide and are named here
+rather than hidden. No body horizontal scroll, no unwrapped overflow, nothing under 11px at any
+width. One trap for future edits: the first 640px media block precedes the base `.lead` / `.note` /
+`footer` rules at equal specificity, so phone sizes placed there silently lose; they live in the
+last media block.
+
+_Last updated: 2026-09-03._

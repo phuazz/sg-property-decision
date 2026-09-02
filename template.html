@@ -29,6 +29,12 @@
   --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
   --shadow-md:0 4px 6px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.04);
   --radius:8px; --radius-lg:12px;
+  /* Reading measure for running prose (C:\dev\MOBILE_CHECK.md: 65-75 characters a line). In ch,
+     so it scales with each element's own type size. 48ch, not 66ch: ch is the "0" advance and
+     DM Sans's average character measures 0.66 of it (canvas measureText on a sentence from this
+     page, 2026-09-03), so 48ch prints ~73 characters on a bare paragraph and ~66 inside a padded
+     box. Tables, charts and field grids are exempt. */
+  --measure:48ch;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
@@ -43,7 +49,7 @@ h1,h2,h3{font-weight:400}
 .masthead{padding:26px 0 20px;border-bottom:2px solid var(--t1);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
 .masthead h1{font-family:var(--serif);font-size:34px;letter-spacing:-0.5px}
 .masthead h1 em{font-style:italic;color:var(--t3)}  /* 30px+ = large text, passes at 3:1; keep the muted tone */
-.masthead .sub{font-size:13px;color:var(--t2);margin-top:4px;max-width:640px}
+.masthead .sub{font-size:13px;color:var(--t2);margin-top:4px;max-width:var(--measure)}
 .pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
 .pill-live{background:var(--g-bg);color:var(--g-text);border-color:var(--g-bg2)}
@@ -89,7 +95,7 @@ h1,h2,h3{font-weight:400}
 .grid{display:grid;gap:16px}
 .card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:18px 20px;min-width:0}
 .card h3{font-size:12px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--t2);margin-bottom:14px}
-.card .intro{font-size:13px;color:var(--t2);margin-bottom:14px}
+.card .intro{font-size:13px;color:var(--t2);margin-bottom:14px;max-width:var(--measure)}
 .two-col{display:grid;grid-template-columns:340px 1fr;gap:16px}
 @media(max-width:900px){.two-col{grid-template-columns:1fr}}
 
@@ -140,7 +146,7 @@ th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hove
 .dlegend span{display:inline-flex;align-items:center;gap:5px}
 .dlegend i{width:9px;height:9px;border-radius:50%;display:inline-block}
 #dmap-card{margin:4px 0 16px}
-.dmap-cap{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:8px}
+.dmap-cap{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:8px;max-width:var(--measure)}
 #dmap-wrap{position:relative;max-width:720px}
 #dmap svg{width:100%;height:auto;display:block;overflow:visible}
 #dmap path{cursor:pointer}
@@ -164,7 +170,7 @@ th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hove
 .tile.warn{background:var(--a-bg);border-color:rgba(180,83,9,0.2)}
 
 /* verdict banner */
-.verdict{border-radius:var(--radius);padding:13px 16px;font-size:13.5px;margin-bottom:14px;border:1px solid}
+.verdict{border-radius:var(--radius);padding:13px 16px;font-size:13.5px;margin-bottom:14px;border:1px solid;max-width:var(--measure)}
 .verdict.good{background:var(--g-bg);border-color:var(--g-bg2);color:#14603c}
 .verdict.warn{background:var(--a-bg);border-color:rgba(180,83,9,0.25);color:#7c4406}
 .verdict.bad{background:var(--r-bg);border-color:var(--r-bg2);color:#8f2a20}
@@ -188,19 +194,19 @@ td.num,th.num{text-align:right;font-family:var(--mono)}
 .bar-fill{height:100%;border-radius:4px}
 .bar-num{font-family:var(--mono);font-weight:600;text-align:right}
 
-.note{font-size:12px;color:var(--t3-text);margin-top:10px;line-height:1.55}
+.note{font-size:12px;color:var(--t3-text);margin-top:10px;line-height:1.55;max-width:var(--measure)}
 .flag{color:var(--a-text);font-weight:600}
-.callout{background:var(--bg3);border-left:3px solid var(--b);border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;font-size:13px;color:var(--t2);margin:14px 0}
+.callout{background:var(--bg3);border-left:3px solid var(--b);border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;font-size:13px;color:var(--t2);margin:14px 0;max-width:var(--measure)}
 .callout b{color:var(--t1)}
-footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--bd);font-size:11.5px;color:var(--t3-text);line-height:1.7}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--bd);font-size:11.5px;color:var(--t3-text);line-height:1.7;max-width:var(--measure)}
 footer b{color:var(--t2)}
-.disc{background:var(--a-bg);border:1px solid rgba(180,83,9,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#7c4406;margin-top:16px}
+.disc{background:var(--a-bg);border:1px solid rgba(180,83,9,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#7c4406;margin-top:16px;max-width:var(--measure)}
 h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
-.sec-sub{font-size:13px;color:var(--t2);margin-bottom:16px;max-width:820px}
+.sec-sub{font-size:13px;color:var(--t2);margin-bottom:16px;max-width:var(--measure)}
 
 /* onboarding: overview, leads, collapsibles, next-nav */
 .overview{max-width:920px}
-.lead{font-size:14.5px;color:var(--t2);line-height:1.6;margin:2px 0 18px;max-width:840px}
+.lead{font-size:14.5px;color:var(--t2);line-height:1.6;margin:2px 0 18px;max-width:var(--measure)}
 .lead b{color:var(--t1);font-weight:600}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:12px 0 20px}
 .step{text-align:left;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:16px 17px;cursor:pointer;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s,transform .15s;font-family:var(--sans)}
@@ -213,7 +219,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .btn-primary{font-family:var(--sans);font-size:14px;font-weight:600;color:#fff;background:var(--t1);border:none;border-radius:var(--radius);padding:11px 18px;cursor:pointer}
 .btn-primary:hover{background:#000}
 .startrow-note{font-size:12.5px;color:var(--t3-text);max-width:440px}
-.atglance{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:15px 18px;font-size:14px;color:var(--t2);line-height:1.65}
+.atglance{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:15px 18px;font-size:14px;color:var(--t2);line-height:1.65;max-width:var(--measure)}
 .atglance b{color:var(--t1);font-family:var(--mono);font-weight:700}
 .fp{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius-lg);margin:0 0 16px}
 .fp>summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--t2);list-style:none;display:flex;align-items:center;gap:8px}
@@ -222,10 +228,11 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .fp>summary::-webkit-details-marker{display:none}
 .fp-body{padding:0 16px 15px;font-size:13px;color:var(--t2);line-height:1.6}
 /* prose-only variant: caps the measure so a long explainer does not run 180 chars at desktop.
-   Not on .fp-body itself — two of these blocks hold field grids that need the full width.
-   58ch, not 80ch: ch is the "0" advance, and this font's average character is narrower, so
-   80ch measured 111 chars a line. 58ch measures ~80, which is the readable target. */
-.fp-body.prose{max-width:58ch}
+   Not on .fp-body itself — the "More options" and "More filters" blocks hold field grids and the
+   upfront-cash block holds bars, all of which need the full width. Uses the shared --measure
+   (~70 characters); the earlier 58ch here measured ~88. */
+.fp-body.prose{max-width:var(--measure)}
+#brief-map{max-width:var(--measure)}
 .fp.inline{border:none;background:none;margin:4px 0 0}
 .fp.inline>summary{padding:9px 0;color:var(--b-text)}
 .fp.inline .fp-body{padding:9px 0 2px}
@@ -249,7 +256,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .hook-buys-head input[type=range]{flex:1;min-width:200px;accent-color:var(--t1);height:6px}
 .buy-landed{grid-column:1/-1;display:flex;gap:14px;align-items:flex-start}
 .buy-landed .buy-emoji{flex:none}
-.buy-landed .buy-what{font-size:13.5px;font-weight:500;color:var(--t2)}
+.buy-landed .buy-what{font-size:13.5px;font-weight:500;color:var(--t2);max-width:var(--measure)}
 .buys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:640px){.buys{grid-template-columns:1fr}}
 .buy{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius);padding:15px 16px;position:relative}
@@ -284,6 +291,18 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   button,select,input:not([type=checkbox]):not([type=radio]){min-height:44px}
   .preset,.nextbtn,.pill-btn{display:inline-flex;align-items:center}
   .slider-row input[type=range],.hook-buys-head input[type=range]{height:44px}
+  /* Phone measure. At 390px the content column is 362px, and the desktop sizes put 55-67
+     characters on a line (MOBILE_CHECK asks for 40-50). Larger type is the honest lever - the
+     column cannot get narrower - and it is the legibility a phone wants anyway: leads and
+     verdicts land at ~50, intros ~47, notes ~59 (secondary text, kept a step smaller by
+     design). Sits in this last media block on purpose: the earlier 640px block precedes the
+     base rules for .lead / .note / footer at equal specificity, so sizes placed there lost. */
+  .lead{font-size:16px}
+  .card .intro{font-size:15px}
+  .note,.disc,.dmap-cap{font-size:13.5px}
+  .fp-body,.verdict,.callout,.atglance{font-size:14.5px}
+  .masthead .sub{font-size:14px}
+  footer{font-size:12.5px}
 }
 </style>
 </head>
@@ -350,7 +369,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-afford">
     <h2 class="section">Can I afford it — and what does my age do to the loan?</h2>
     <p class="lead">Enter a few details and see the biggest loan you can take, the monthly repayment, and the cash you need upfront. The one that catches people out: <b>your age quietly shrinks the loan</b>, because the best terms need it repaid by 65.</p>
-    <details class="fp"><summary>How the numbers are worked out</summary><div class="fp-body">The engine applies the published rules — the loan-to-value cap (LTV), the Total Debt Servicing Ratio tested at the higher of the 4% floor or your actual rate (TDSR), and the Mortgage Servicing Ratio for HDB/EC (MSR, same floor; 3% for HDB loans) — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill (downpayment, buyer's stamp duty, and ABSD where it applies). Variable and rental income is counted at 70%. It is an illustration of the rules, not a bank's approval.</div></details>
+    <details class="fp"><summary>How the numbers are worked out</summary><div class="fp-body prose">The engine applies the published rules — the loan-to-value cap (LTV), the Total Debt Servicing Ratio tested at the higher of the 4% floor or your actual rate (TDSR), and the Mortgage Servicing Ratio for HDB/EC (MSR, same floor; 3% for HDB loans) — and returns the biggest loan you can take, the instalment at both the stress rate and the real package rate, and the full upfront cash bill (downpayment, buyer's stamp duty, and ABSD where it applies). Variable and rental income is counted at 70%. It is an illustration of the rules, not a bank's approval.</div></details>
     <p class="label" style="margin:6px 0 8px">New here? Load an example, then edit it</p>
     <div class="presets" id="presets"></div>
     <div class="two-col">
@@ -400,7 +419,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
   <section class="pane" id="pane-leverage">
     <h2 class="section">Pay cash for peace of mind, or borrow cheaply?</h2>
     <p class="lead">With interest rates near 1%, the loan costs <b>less</b> than what your cash could earn elsewhere — so on the maths, borrowing and keeping cash invested usually wins. But "no mortgage, less stress" is real too. This weighs both, and the <b>safety buffer</b> that matters more than either.</p>
-    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body">3-month SORA is near 1% and packages are around 1.4–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
+    <details class="fp"><summary>Why cheap debt changes the answer</summary><div class="fp-body prose">3-month SORA is near 1% and packages are around 1.4–1.7% — below both property's long-run return and a balanced portfolio's. So the expected-value answer is to borrow and keep cash invested, <b>provided</b> you hold enough liquid reserve never to be a forced seller. This makes the trade-off explicit; it does not pretend the future is known. One caveat: fixed packages typically reprice after 2–3 years — the stress instalment on the Affordability tab is the guard for exactly that.</div></details>
     <div class="card" id="rates-card">
       <h3>3-month SORA &mdash; the rate this rests on <em style="font-style:normal;color:var(--t3-text)">curated &middot; MAS-published benchmark</em></h3>
       <p class="intro">The cash-versus-loan case turns on how cheap the mortgage is, and most floating packages price off <b>3-month compounded SORA</b>. Here is where the benchmark has been. <span id="sora-now"></span></p>
