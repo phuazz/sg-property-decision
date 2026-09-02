@@ -34,6 +34,11 @@ jobs:
       - name: Test the loan engine
         run: node scripts/test_engine_parity.js
 
+      # Same footing: the landed price bands are aggregated by a pure function, tested before the
+      # fetch so a broken aggregation never reaches the page.
+      - name: Test the landed price bands
+        run: python scripts/test_landed_summary.py
+
       - name: Fetch live data
         env:
           URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}   # optional — official segment $psf lights up if set

@@ -78,6 +78,7 @@ flips the pill to `LIVE · stale (Nd)`.
 | HDB resale transactions → median $/psf | data.gov.sg `d_8b84c4ee...` (235k rows) | Open API | **live** (latest month) |
 | GLS tender awards (land $psf ppr + bids) | URA Past-Sale-Sites `.xlsx` | Scrape page for href → download | **live** |
 | URA private transactions → official segment $psf | URA Data Service `PMI_Resi_Transaction` | Free daily token | **gated** on `URA_ACCESS_KEY` (skips cleanly) |
+| URA private transactions → landed resale price bands (terrace / semi-detached / detached, whole-house, 12 m) | same feed, `fetch_data.landed_resale` | Free daily token | **gated** on `URA_ACCESS_KEY`; no curated fallback by design |
 | 3M compounded SORA / package rates | MAS API portal / aggregators | Key / no feed | **curated** (SORA one line in `rules.json`) |
 | Land bid → launch price multiple | the two rows above, joined | Derived in `fetch_data.land_to_launch` | **live** where the URA key is set, else the last good value |
 
@@ -121,6 +122,7 @@ at run time rather than duplicating it, so neither can drift away from what the 
 ```
 node scripts/test_engine_parity.js    # engine parity, ~1.04m cases across the full input grid
 node scripts/test_lease_labels.js     # lease labels + tenure buckets, and every live project row
+python scripts/test_landed_summary.py # landed price bands: bucketing, 12-month window, thin-sample withholding
 ```
 
 `test_engine_parity.js` asserts `engine/engine.js` is bit-identical to the engine still inlined in
@@ -233,4 +235,33 @@ to carry forward, so the figure would be absent rather than flagged, and the pag
 the baseline. Adjacent to [`reviews/2026-08-01_launch-vs-resale.md`](reviews/2026-08-01_launch-vs-resale.md),
 which closed by naming land cost as a plausible driver it had not checked.
 
-_Last updated: 2026-08-08._
+**Budget ceiling, tenure default and shortfall display (2026-09-02).** Three reports from readers,
+all traced to the tool assuming its own worked example. (1) The Start-page budget slider was linear
+and stopped at S$3m — "your budget maxes me out" — while the resale file on the same page runs to
+projects with a S$23m median. The figure is now a typed field with no ceiling, the slider a log
+scale from S$500k to S$20m, the size labels run past "3-bedroom+" (4-bed, 4–5 bed / small penthouse,
+penthouse-scale with a "few units this size" caveat above ~2,500 sqft, cuts taken from the live
+file's project-size distribution), and a landed line names the house type the budget reaches from a
+new live feed — national landed resale bands by terrace / semi-detached / detached, whole-house
+prices, 12 months, strata-landed excluded, any type under 20 deals withheld. There is deliberately
+no curated landed figure: the line is absent rather than typed. The Type tab now grades HDB, condo
+and landed against the price actually entered (live HDB medians, the cheapest tenth of resale-condo
+project medians, the terrace band), instead of against the S$1.2–1.5m brief; the Where tab's
+"brief fits here / off-brief" reads are gone and the S$1.2–1.5m card is labelled as the worked
+example. (2) "Max LTV stuck at 55%": the tenure slider sits under *More options* and kept the
+example's 23 years when a reader typed 45, so the loan ran past 65 and the engine — correctly —
+stepped LTV down and reported a S$527k shortfall on a purchase that clears at 20 years and 75%.
+Tenure now follows the age until the slider is touched (the longest tenure inside the LTV cliff;
+fixed by rule for an HDB loan; left alone from 61, where no default is defensible), with a
+"set it for me" link once overridden, and the verdict names the tenure that would keep the full
+LTV whenever the reduced tier binds. When income binds instead, a longer loan that would borrow
+more — even across the cliff — is stated, not chosen. (3) A "−67 mo" buffer beside "0 mo at
+stress": upfront exceeded cash, and a negative month count was printed. The buffer tile and bars
+now say *short, by S$X* and stop at zero. Input caps widened alongside: age to 85, remaining lease
+to 9,999 years (ROXY SQUARE exists), package rate to 6%. Verified in a real emulated viewport on
+all six tabs at 390 / 844 / 768 / 1280 px: no body horizontal scroll, no unwrapped overflow,
+smallest type 11px; prose measures 51–55 chars a line at 390 px and wider above (pre-existing —
+the page caps no running measure — parked in `C:\dev\NEXT.md`). The landed aggregation is a pure
+function with its own test, run in CI and before every weekly fetch.
+
+_Last updated: 2026-09-02._

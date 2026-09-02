@@ -10,6 +10,7 @@ No-auth feeds (refresh automatically, incl. in CI):
 
 Key-gated feeds (skip cleanly unless the secret is present):
   - URA private transactions -> official segment median condo $psf      env URA_ACCESS_KEY
+  - URA private transactions -> landed resale price bands by house type env URA_ACCESS_KEY
 
 Derived (needs two feeds, so it runs after the fetch loop):
   - land bid -> launch price multiple                                   GLS awards x developer sales
@@ -672,6 +673,111 @@ def target_homes():
             "bedroom_note": "URA publishes no bedroom count; floor area is a proxy only",
             "source": "URA PMI_Resi_Transaction resale, unit level, 24 months"}
 
+# ---- landed housing: what a budget above the condo market actually reaches ----
+# The page's budget input has no ceiling, and the resale-condo file it sizes homes against runs
+# to projects whose median price exceeds S$20m - so above a few million the honest answer is
+# "landed", and that figure has to come from the caveats rather than be typed into the page.
+# Strata-landed (cluster housing: strata title, shared facilities, usually a 99-year lease) is a
+# different product; it is counted in the census but excluded from the three headline types.
+LANDED_TYPES = ("Terrace", "Semi-detached", "Detached")
+LANDED_MIN_N = 20          # below this a type's price band is withheld as thin, not published
+
+def _landed_type(pt):
+    """URA propertyType -> one of LANDED_TYPES, 'Strata' for strata-landed, or None (non-landed).
+
+    Keyword match, case-insensitive: URA's capitalisation of these labels has not matched a
+    guess before (see LANDED_WORDS). 'semi' is tested before 'detached' because a semi-detached
+    label contains the word detached.
+    """
+    p = (pt or "").lower()
+    if not any(w in p for w in LANDED_WORDS):
+        return None
+    if "strata" in p:
+        return "Strata"
+    if "semi" in p:
+        return "Semi-detached"
+    if "terrace" in p:
+        return "Terrace"
+    return "Detached"
+
+def _landed_summary(projs, today):
+    """National landed RESALE price bands by house type over the last 12 months.
+
+    Pure: takes the URA project list and the run date, so scripts/test_landed_summary.py can
+    exercise it with no key and no network. Price is the whole house. `area` for a landed record
+    is usually LAND area (typeOfArea 'Land'), which is why no $psf is published here - a $psf on
+    land area and a $psf on strata area are not the same number and must not sit in one column.
+    Month windowing uses the same month index as every other aggregation in this file
+    (year*12 + month, months 1-indexed, from the 'mmyy' contract date): a transaction dated
+    exactly 12 months before the run month is out, 11 months before is in.
+    """
+    now_i = today.year * 12 + today.month
+    by = {t: [] for t in LANDED_TYPES}
+    land = {t: [] for t in LANDED_TYPES}
+    fh = {t: 0 for t in LANDED_TYPES}
+    reg = {t: collections.defaultdict(list) for t in LANDED_TYPES}
+    census, n_strata = {}, 0
+    for proj in projs:
+        seg = proj.get("marketSegment")
+        for t in proj.get("transaction", []):
+            lt = _landed_type(t.get("propertyType"))
+            if lt is None:
+                continue
+            if str(t.get("typeOfSale", "")).strip() != "3":        # resale only
+                continue
+            mi = _midx(t.get("contractDate", ""))
+            if mi is None or mi <= now_i - 12:
+                continue
+            pt = t.get("propertyType")
+            census[pt] = census.get(pt, 0) + 1
+            if lt == "Strata":
+                n_strata += 1
+                continue
+            try:
+                price = float(t["price"])
+            except (KeyError, ValueError, TypeError):
+                continue
+            if price <= 0:
+                continue
+            by[lt].append(price)
+            if seg in ("CCR", "RCR", "OCR"):
+                reg[lt][seg].append(price)
+            if "Freehold" in str(t.get("tenure", "")):
+                fh[lt] += 1
+            if str(t.get("typeOfArea", "")).strip().lower() == "land":
+                try:
+                    a = float(t["area"]) * 10.7639
+                    if a > 0:
+                        land[lt].append(a)
+                except (KeyError, ValueError, TypeError):
+                    pass
+    out_types = {}
+    for lt in LANDED_TYPES:
+        v = by[lt]
+        thin = len(v) < LANDED_MIN_N
+        out_types[lt] = {
+            "n": len(v),
+            "price_p": (None if thin else _pctiles(v)),
+            "thin": thin,
+            "fh_share": (round(fh[lt] / len(v), 3) if v else None),
+            "land_sqft_p50": (round(statistics.median(land[lt])) if land[lt] else None),
+            "by_region": {s: {"n": len(p), "median_price": round(statistics.median(p))}
+                          for s, p in sorted(reg[lt].items()) if len(p) >= LANDED_MIN_N}}
+    n = sum(len(by[t]) for t in LANDED_TYPES)
+    return {"asof": today.strftime("%Y-%m"), "window_months": 12, "n": n,
+            "min_n_per_type": LANDED_MIN_N, "n_strata_excluded": n_strata,
+            "by_type": out_types,
+            "property_type_census": dict(sorted(census.items(), key=lambda kv: -kv[1])),
+            "source": "URA PMI_Resi_Transaction, resale (typeOfSale=3), landed house types, last 12 "
+                      "months, whole-house price; strata-landed excluded; percentiles p10/p25/p50/p75/p90"}
+
+def landed_resale():
+    """Key-gated wrapper for _landed_summary: national landed resale bands, last 12 months."""
+    key = os.environ.get("URA_ACCESS_KEY")
+    if not key:
+        return None
+    return _landed_summary(_ura_projects(key), datetime.date.today())
+
 def ura_new_launches():
     """URA developer sales (current new launches). Structure probe first — emits keys + a sample so the
     real parse can be written; integrated into the projects table as new-launch pricing after inspection."""
@@ -1023,7 +1129,8 @@ def main():
              "hdb_resale": hdb_resale, "hdb_town": hdb_town, "gls": gls,
              "segments_official": ura_transactions, "districts": ura_districts,
              "projects": ura_project_scorecard, "new_launches": ura_new_launches,
-             "ec_resale": ec_resale, "target_homes": target_homes}
+             "ec_resale": ec_resale, "target_homes": target_homes,
+             "landed_resale": landed_resale}
     for name, fn in feeds.items():
         try:
             val = fn()

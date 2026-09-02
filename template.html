@@ -241,8 +241,15 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 @media(max-width:600px){.hook-h1{font-size:25px}}
 .hook-buys{margin:8px 0 16px}
 .hook-buys-head{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:16px}
-.hook-budget-val{font-family:var(--mono);font-size:25px;font-weight:700;letter-spacing:-0.5px}
+/* The figure is a typed field, not a readout: the slider is a convenience with a top end, the
+   field has none. Underline only, so it still reads as the big number it replaced. */
+.hook-budget-wrap{display:flex;align-items:baseline;gap:3px;font-family:var(--mono);font-size:25px;font-weight:700;letter-spacing:-0.5px;color:var(--t1)}
+.hook-budget-val{font-family:var(--mono);font-size:25px;font-weight:700;letter-spacing:-0.5px;color:var(--t1);width:11ch;min-width:0;padding:0 2px;border:none;border-bottom:2px solid var(--bd2);border-radius:0;background:transparent}
+.hook-budget-val:focus{outline:none;border-bottom-color:var(--b)}
 .hook-buys-head input[type=range]{flex:1;min-width:200px;accent-color:var(--t1);height:6px}
+.buy-landed{grid-column:1/-1;display:flex;gap:14px;align-items:flex-start}
+.buy-landed .buy-emoji{flex:none}
+.buy-landed .buy-what{font-size:13.5px;font-weight:500;color:var(--t2)}
 .buys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:640px){.buys{grid-template-columns:1fr}}
 .buy{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--radius);padding:15px 16px;position:relative}
@@ -314,8 +321,8 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 
       <div class="card hook-buys">
         <div class="hook-buys-head">
-          <div><span class="label">Drag to your budget</span><div class="hook-budget-val" id="hook-bval">S$1,350,000</div></div>
-          <input id="hook-budget" type="range" min="500000" max="3000000" step="50000" value="1350000" aria-label="budget">
+          <div><span class="label">Drag, or type any budget</span><div class="hook-budget-wrap"><span>S$</span><input id="hook-bval" class="hook-budget-val" type="text" inputmode="numeric" autocomplete="off" value="1,350,000" aria-label="budget in Singapore dollars"></div></div>
+          <input id="hook-budget" type="range" min="0" max="1000" step="1" value="269" aria-label="budget slider, S$500k to S$20m; type a larger figure in the field">
         </div>
         <div class="buys" id="buys"></div>
         <div class="note" id="buys-note"></div>
@@ -349,7 +356,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <div class="two-col">
       <div class="card">
         <h3>Your details</h3>
-        <div class="field"><label>Age of borrower <span class="hint">— joint loan? banks use the income-weighted average age</span></label><input id="i-age" type="number" min="21" max="70" value="42"></div>
+        <div class="field"><label>Age of borrower <span class="hint">— joint loan? banks use the income-weighted average age</span></label><input id="i-age" type="number" min="21" max="85" value="42"></div>
         <div class="field"><label>Gross monthly income — fixed <span class="hint">— combined, all borrowers; variable income under More options</span></label><input id="i-income" type="text" inputmode="numeric" autocomplete="off" value="11,000"></div>
         <div class="field"><label>Target purchase price <span class="hint">— LTV applies to the lower of price and valuation</span></label><input id="i-price" type="text" inputmode="numeric" autocomplete="off" value="1,350,000"></div>
         <div class="field"><label>Cash + CPF available <span class="hint">— downpayment, duties, buffer; keep renovation aside</span></label><input id="i-cash" type="text" inputmode="numeric" autocomplete="off" value="500,000"></div>
@@ -366,9 +373,9 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
             <div class="slider-row"><input id="i-tenure" type="range" min="5" max="35" value="23"><span class="slider-val mono" id="ten-val">23 yr</span></div>
           </div>
           <div class="field"><label>Package interest rate <span class="hint">— actual rate you would pay</span></label>
-            <div class="slider-row"><input id="i-rate" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="rate-val">1.60%</span></div>
+            <div class="slider-row"><input id="i-rate" type="range" min="1.0" max="6.0" step="0.05" value="1.6"><span class="slider-val mono" id="rate-val">1.60%</span></div>
           </div>
-          <div class="field"><label>Remaining lease <span class="hint">— years, optional; blank for freehold / unknown</span></label><input id="i-lease" type="number" min="1" max="999" placeholder="e.g. 68"></div>
+          <div class="field"><label>Remaining lease <span class="hint">— years, optional; blank for freehold / unknown</span></label><input id="i-lease" type="number" min="1" max="9999" placeholder="e.g. 68"></div>
         </div></details>
       </div>
       <div>
@@ -404,7 +411,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <div class="two-col">
       <div class="card">
         <h3>Assumptions</h3>
-        <div class="field"><label>Mortgage rate</label><div class="slider-row"><input id="l-m" type="range" min="1.0" max="4.5" step="0.05" value="1.6"><span class="slider-val mono" id="l-m-val">1.60%</span></div></div>
+        <div class="field"><label>Mortgage rate</label><div class="slider-row"><input id="l-m" type="range" min="1.0" max="6.0" step="0.05" value="1.6"><span class="slider-val mono" id="l-m-val">1.60%</span></div></div>
         <div class="field"><label>Expected return on invested cash <span class="hint">— balanced portfolio, long-run</span></label><div class="slider-row"><input id="l-p" type="range" min="1.0" max="9.0" step="0.25" value="5.0"><span class="slider-val mono" id="l-p-val">5.00%</span></div></div>
         <div class="field"><label>Property appreciation <span class="hint">— long-run, nominal</span></label><div class="slider-row"><input id="l-g" type="range" min="0" max="6" step="0.25" value="3.0"><span class="slider-val mono" id="l-g-val">3.00%</span></div></div>
         <div class="field"><label>Surplus cash you could prepay or invest</label><input id="l-surplus" type="text" inputmode="numeric" autocomplete="off" value="120,000"></div>
@@ -537,7 +544,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
         <div class="note" id="unsold-note"></div>
       </div>
       <div class="card">
-        <h3>What S$1.2–1.5m buys today</h3>
+        <h3>The worked example — what S$1.2–1.5m buys today</h3>
         <div id="brief-map"></div>
       </div>
       <div class="card">
@@ -701,6 +708,23 @@ function readInputs(){
 }
 
 /* ---------- render tab 1 ---------- */
+/* Tenure follows the age until the slider is touched. The worked example's 23 years is the
+   full-LTV cap at 42; a reader who typed 45 and never opened "More options" kept that 23, crossed
+   the age-65 line, and was shown 55% LTV and a S$500k shortfall on a purchase they could make at
+   20 years and 75%. The rule was applied correctly; the default was wrong. Automatic tenure is the
+   longest that keeps the full LTV (every tenure inside the cliff borrows the same 75%, so this is
+   the biggest loan at the lowest instalment whenever cash/LTV binds). When income binds instead, a
+   longer tenure past the cliff can borrow more at the reduced LTV; that is shown as a note rather
+   than chosen, because it is a trade the reader should see. An HDB loan's tenure is fixed by rule.
+   From 61 no tenure of 5+ years sits inside the cliff and no default is defensible from the rules
+   alone, so the slider is left where it is. */
+let _tenureAuto=true;
+function autoTenure(inp, absCap){
+  const c=computeLoan(Object.assign({},inp,{tenure:5}));
+  // HDB loan: the rule fixes it at the shorter of the 25-year cap and age 65, whatever the slider says
+  if(c.hdbLoan) return Math.max(1,Math.min(absCap,D.rules.ltv.reduction_trigger.age_plus_tenure_gt-inp.age));
+  return c.fullLtvMaxTenure>=5?Math.min(c.fullLtvMaxTenure,absCap):null;
+}
 function renderAfford(){
   const inp=readInputs();
   // sync tenure ceiling + financing selector to type
@@ -712,12 +736,18 @@ function renderAfford(){
               :D.rules.tenure_cap_years.private_bank;
   $('i-tenure').max=absCap;
   if(inp.tenure>absCap){inp.tenure=absCap;$('i-tenure').value=absCap;}
+  const autoT=autoTenure(inp,absCap);
+  if(_tenureAuto&&autoT){inp.tenure=autoT;$('i-tenure').value=autoT;}
   $('rate-val').textContent=(inp.rate*100).toFixed(2)+'%';
   const c=computeLoan(inp);
+  const fullLtv=D.rules.ltv.bank_individual[inp.count==0?'loan1':(inp.count==1?'loan2':'loan3plus')].max;
   $('ten-val').textContent=c.tenure+' yr';
-  $('ten-hint').textContent=c.hdbLoan?'— HDB loan: shorter of 25 yr and age 65 → '+c.tenure+' yr for you'
-    :(c.fullLtvMaxTenure>=5?'— full '+pct(D.rules.ltv.bank_individual.loan1.max,0)+' LTV needs ≤ '+c.fullLtvMaxTenure+' yr at age '+inp.age
-    :'— at age '+inp.age+' every tenure of 5+ yr runs past 65, so only the reduced LTV is available');
+  const autoLink=`<a href="#" id="ten-auto" class="xlink">set it for me</a>`;
+  $('ten-hint').innerHTML=c.hdbLoan?'— HDB loan: shorter of 25 yr and age 65 → '+c.tenure+' yr for you'
+    :(c.fullLtvMaxTenure<5?'— at age '+inp.age+' every tenure of 5+ yr runs past 65, so only the reduced LTV is available'
+    :(_tenureAuto?`— set for you: ${c.tenure} yr is the longest that keeps the full ${pct(fullLtv,0)} LTV at age ${inp.age}; drag to change it`
+    :(c.reduced?`— you chose ${c.tenure} yr, which runs past the age-65 / ${c.cliffTenure}-year line and drops LTV to ${pct(c.ltv,0)} · ${autoLink} (${autoT} yr keeps ${pct(fullLtv,0)})`
+              :`— you chose ${c.tenure} yr; full ${pct(fullLtv,0)} LTV needs ≤ ${c.fullLtvMaxTenure} yr at age ${inp.age} · ${autoLink}`)));
 
   // verdict
   let vClass='good', vMsg='';
@@ -732,7 +762,14 @@ function renderAfford(){
     (affordable?`— leaving ${sgd(c.bufferAfter)}, ${bufTxt} <b>${c.bufferMonths.toFixed(0)}-month</b> instalment buffer.`
       :`— <b>short by ${sgd(c.upfront-inp.cash)}</b>. Lower the price or raise cash.`);
   const extra=[];
-  if(c.reduced) extra.push(`this tenure pushes past the age-65 / ${c.cliffTenure}-year limit, so LTV drops to ${pct(c.ltv,0)} and minimum cash rises to ${pct(c.cashMinFrac,0)}`);
+  if(c.reduced) extra.push(`this ${c.tenure}-year tenure runs past the age-65 / ${c.cliffTenure}-year line, so LTV drops to ${pct(c.ltv,0)} and minimum cash rises to ${pct(c.cashMinFrac,0)}`
+    +(autoT&&autoT!==c.tenure?` — at ${autoT} years you would keep the full ${pct(fullLtv,0)} (tenure slider under More options)`:''));
+  // Income-bound and a longer loan would borrow more, even across the cliff: say so, do not choose it.
+  if(!c.hdbLoan&&c.bind!=='LTV (cash)'){
+    let bt=c.tenure, bl=c.maxLoan;
+    for(let t=c.tenure+1;t<=absCap;t++){const L=computeLoan(Object.assign({},inp,{tenure:t})).maxLoan; if(L>bl*1.01){bl=L;bt=t;}}
+    if(bt!==c.tenure) extra.push(`income is the limit here, so a longer loan borrows more: at ${bt} years the maximum is ${sgd(bl)}${((inp.age+bt)>D.rules.ltv.reduction_trigger.age_plus_tenure_gt||bt>c.cliffTenure)?' even at the reduced LTV':''} — the tenure slider under More options shows the trade`);
+  }
   if(c.hdbLoan){
     extra.push('HDB loan: the downpayment can be fully CPF (no minimum cash) and the eligible loan is sized at a 3% floor');
     if(c.incomeEff>D.rules.ltv.hdb_concessionary.income_ceiling_monthly) extra.push(`entered income is above the HDB-loan ceiling (S$${fmt0(D.rules.ltv.hdb_concessionary.income_ceiling_monthly)}) — a bank loan is the likely route`);
@@ -759,7 +796,8 @@ function renderAfford(){
     {l:'Monthly instalment',v:sgd(c.instActual),s:'at '+(inp.rate*100).toFixed(2)+'% · '+pct(c.instActual/c.incomeEff,0)+' of income'},
     {l:'Instalment at '+stressLbl+'% stress',v:sgd(c.instStress),s:(c.msrApplies?'MSR '+pct(c.msrUsed,0)+' · ':'')+'TDSR = '+pct(c.tdsrUsed,0)+(tdsrOk?' ✓':' ✗ over 55%'),cls:tdsrOk?'':'warn'},
     {l:'Upfront cash needed',v:sgd(c.upfront),s:'downpay + '+sgd(c.stampBSD+c.absd)+' duties'},
-    {l:'Forced-seller buffer',v:c.bufferMonths.toFixed(0)+' mo',s:sgd(Math.max(0,c.bufferAfter))+' left · '+Math.max(0,c.bufferMonthsStress).toFixed(0)+' mo at stress',cls:c.bufferMonths>=24?'good':(c.bufferMonths>=12?'warn':'warn')}
+    // A shortfall is not a negative buffer: below zero the months are meaningless, so say "short" and by how much.
+    {l:'Forced-seller buffer',v:c.bufferAfter<0?'short':c.bufferMonths.toFixed(0)+' mo',s:c.bufferAfter<0?'upfront exceeds your cash by '+sgd(-c.bufferAfter):sgd(c.bufferAfter)+' left · '+Math.max(0,c.bufferMonthsStress).toFixed(0)+' mo at stress',cls:c.bufferAfter<0?'warn':(c.bufferMonths>=24?'good':'warn')}
   ];
   $('afford-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
 
@@ -800,6 +838,7 @@ function renderAfford(){
   // feed leverage tab defaults (set state BEFORE syncLev so the buffer bars render on first paint)
   window._afford=c; window._inp=inp;
   $('l-m').value=(inp.rate*100).toFixed(2); syncLev();
+  renderType();   // the Type scorecard grades HDB / condo / landed against this price
 }
 
 /* ---------- render tab 2 ---------- */
@@ -820,12 +859,14 @@ function syncLev(){
   const tiles=[
     {l:'Rate spread (invest − borrow)',v:(spread>=0?'+':'')+pct(spread,2),s:spread>0?'leverage adds expected value':'prepaying wins',cls:spread>0?'good':'warn'},
     {l:'Carry vs a suburban rent (net)',v:(yN-m>=0?'+':'')+pct(yN-m,2),s:'net yield ≈ '+pct(yN,1)+' (gross '+pct(yG,1)+' − est. costs) − rate'},
-    {l:'Give-up from prepaying',v:sgd(edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus',cls:'hl'},
+    {l:'Give-up from prepaying',v:sgd(edge),s:'over '+N+' yr on '+sgdk(surplus)+' surplus · nominal, year-'+N+' dollars',cls:'hl'},
   ];
   $('lev-tiles').innerHTML=tiles.map(t=>`<div class="tile ${t.cls||''}"><div class="label">${t.l}</div><div class="v">${t.v}</div><div class="vs">${t.s}</div></div>`).join('');
   // buffer bars + the exit lock
   if(c&&inp){
-    const months=c.bufferMonths, monthsS=Math.max(0,c.bufferMonthsStress);
+    // Clamped at zero: when the upfront bill exceeds the cash there is no buffer to measure, and a
+    // "-67 mo" bar beside "0 mo at stress" read as a broken page rather than as a shortfall.
+    const short=c.bufferAfter<0, months=Math.max(0,c.bufferMonths), monthsS=Math.max(0,c.bufferMonthsStress);
     const monthsRun=(c.instActual+runYr/12)>0?Math.max(0,c.bufferAfter/(c.instActual+runYr/12)):0;
     const stressLbl=(c.stress*100).toFixed(2).replace(/\.?0+$/,'');
     const segs=[
@@ -837,8 +878,10 @@ function syncLev(){
     const bmax=Math.max(36,months);
     $('buffer-bars').innerHTML=segs.map(s=>`<div class="bar-row"><span>${s.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,Math.max(0,s.m)/bmax*100)}%;background:${s.col}"></div></div><span class="bar-num">${s.m.toFixed(0)} mo</span></div>`).join('');
     const ssd=D.rules.ssd;
-    $('buffer-note').innerHTML=`After buying, you hold ${sgd(Math.max(0,c.bufferAfter))} — about <b>${months.toFixed(0)} months</b> of instalments at ${sgd(c.instActual)} (${monthsS.toFixed(0)} at the ${stressLbl}% stress rate; ${monthsRun.toFixed(0)} counting ~${sgd(runYr/12)}/month maintenance and property tax, estimates). `+
-      (months>=24?`That clears the 2–3-year rule: a job loss or a rate spike does not force a sale.`:`That is below the 2–3-year rule — trim the price, borrow a touch less, or hold more cash before committing.`)+
+    $('buffer-note').innerHTML=(short
+      ?`The upfront bill is ${sgd(c.upfront)} against ${sgd(inp.cash)} of cash and CPF — <b>short by ${sgd(-c.bufferAfter)}</b> before any buffer exists, so the bars read zero. Cover the shortfall first (more cash, a lower price, or — if the Affordability tab shows the LTV stepped down — a tenure that keeps the full LTV); the buffer only starts counting from there. `
+      :`After buying, you hold ${sgd(c.bufferAfter)} — about <b>${months.toFixed(0)} months</b> of instalments at ${sgd(c.instActual)} (${monthsS.toFixed(0)} at the ${stressLbl}% stress rate; ${monthsRun.toFixed(0)} counting ~${sgd(runYr/12)}/month maintenance and property tax, estimates). `+
+      (months>=24?`That clears the 2–3-year rule: a job loss or a rate spike does not force a sale.`:`That is below the 2–3-year rule — trim the price, borrow a touch less, or hold more cash before committing.`))+
       ` <b>The exit lock:</b> selling within ${ssd.holding_period_years} years of buying costs Seller's Stamp Duty of ${ssd.rates_by_year.map(r=>pct(r,0)).join(' / ')} by year of sale — ${sgd(inp.price*ssd.rates_by_year[0])} in year one, ${sgd(inp.price*ssd.rates_by_year[3])} in year four, nil after (purchases from 4 Jul 2025; plus roughly 2% agent fee). Real liquidity begins after year ${ssd.holding_period_years}.`;
   }
   // own vs rent — year one at current assumptions (uses the appreciation slider)
@@ -866,24 +909,52 @@ function syncLev(){
   $('lev-bars').innerHTML=rows.map(r=>`
     <div class="bar-row"><span>Invest · yr ${r.y}</span><div class="bar-track"><div class="bar-fill" style="width:${r.inv/rmax*100}%;background:var(--g)"></div></div><span class="bar-num">${sgdk(r.inv)}</span></div>
     <div class="bar-row"><span>Prepay · yr ${r.y}</span><div class="bar-track"><div class="bar-fill" style="width:${r.pre/rmax*100}%;background:var(--b2)"></div></div><span class="bar-num">${sgdk(r.pre)}</span></div>`).join('');
-  $('lev-note').innerHTML=`Keeping ${sgdk(surplus)} invested at ${pct(p,1)} rather than prepaying a ${pct(m,1)} loan is expected to leave you <b>${sgd(edge)}</b> better off after ${N} years — the reward for the spread. Prepaying is the certain, lower-return path.`;
+  // Basis stated beside the figure (a reader asked whether it was inflation-adjusted): both paths are
+  // nominal, so inflation cannot change the ranking, only the size of the gap in today's money.
+  const INFL_ILLUS=0.02;
+  $('lev-note').innerHTML=`Keeping ${sgdk(surplus)} invested at ${pct(p,1)} rather than prepaying a ${pct(m,1)} loan is expected to leave you <b>${sgd(edge)}</b> better off after ${N} years — the reward for the spread. Prepaying is the certain, lower-return path. `+
+    `Both paths are in <b>year-${N} dollars, nominal</b>: no inflation adjustment, no discounting to today, and before any tax on the returns. Inflation shrinks both alike, so it does not change which path wins, only the size of the gap in today's money — at ${pct(INFL_ILLUS,0)} a year (illustrative, not a forecast) about ${sgd(edge/Math.pow(1+INFL_ILLUS,N))}.`;
   $('lev-disc').innerHTML=`<b>Read this honestly.</b> The invested path only wins if you actually invest the cash and earn ${pct(p,1)} — it is an expectation, not a promise, and it carries market risk the mortgage does not. The buffer above is what lets you ride out a bad sequence without selling. If you value certainty or would not invest the difference, prepaying is the rational choice. Not advice.`;
 }
 
 /* ---------- render tab 3 ---------- */
+/* Budget-aware. This scorecard used to grade every type against the S$1.2-1.5m worked example
+   ("brief fit" / "off-brief"), which told a reader with S$6m that landed was far above budget.
+   Entry points now come from the live feeds where present - HDB resale medians, the resale-condo
+   file, the landed bands - and each chip compares the price on the Affordability tab (the worked
+   example until the reader changes it) against that type's entry. "In reach" means the cheapest
+   quarter of what actually traded, not the single cheapest deal. Re-rendered on every input. */
 function renderType(){
-  const S=D.market.segments;
+  const S=D.market.segments, M=D.market, inp=window._inp, price=(inp&&inp.price>0)?inp.price:M.brief.budget_sgd[1];
+  const H=M.hdb_resale, hb=(H&&H.by_type)||{}, hm=k=>hb[k]?hb[k].median_price:null;
+  const hdb3=hm('3 ROOM'), hdb4=hm('4 ROOM'), hdb5=hm('5 ROOM');
+  const pp=((M.projects||{}).rows||[]).map(r=>r.price).filter(v=>v>0).sort((a,b)=>a-b);
+  const condoLive=pp.length>=20, condoEntry=condoLive?pp[Math.floor(pp.length*0.1)]:M.quantum_2br.OCR.resale;
+  const LT=(M.landed_resale||{}).by_type||{}, lt=k=>(LT[k]&&LT[k].price_p)?LT[k]:null, ter=lt('Terrace'), semi=lt('Semi-detached'), det=lt('Detached');
+  const band=t=>`${sgdk(t.price_p[1])}–${sgdk(t.price_p[3])}`;
+  const lasof=(M.landed_resale&&M.landed_resale.asof)?monYr(M.landed_resale.asof):'';
+  const chip=entry=>entry==null?'<span class="chip chip-n">—</span>':price>=entry?'<span class="chip chip-g">in reach</span>':price>=entry*0.85?'<span class="chip chip-a">a stretch</span>':'<span class="chip chip-n">above budget</span>';
+  const sub=s=>`<div class="cell-sub">${s}</div>`;
   const rows=[
-    {t:'HDB resale',quantum:'S$0.5–0.8m',liq:'Highest',yield:pct(S.HDB.yield_pt,1),app:'+0–2%',lev:'HDB loan 75% / bank; MSR 30%',restr:'Citizenship, MOP, ethnic quota; income ceilings for grants/HDB loan',hedge:'Moderate',fit:'chip-a'},
-    {t:'Private condo',quantum:'S$1.0m+',liq:'High',yield:pct(S.OCR.yield_pt,1)+' (OCR)',app:'+1–3%',lev:'Bank only; TDSR 55%',restr:'ABSD on 2nd+; SSD within 4 yr; few use restrictions',hedge:'Strong',fit:'chip-g'},
-    {t:'Landed',quantum:'S$3.5m+',liq:'Lowest',yield:pct(S.Landed.yield_pt,1),app:'+0–1% (scarce)',lev:'Bank only; TDSR 55%',restr:'Citizens only (PRs need LDAU approval); large quantum',hedge:'Strongest (land-scarce)',fit:'chip-n'}
+    {t:'HDB resale',fit:chip(hdb3||500000),
+     quantum:hdb3?`3-rm ${sgdk(hdb3)} · 4-rm ${sgdk(hdb4)} · 5-rm ${sgdk(hdb5)}`+sub(`medians · ${H.asof_month} (live)`):'S$0.5–0.8m'+sub('estimate'),
+     liq:'Highest',yield:pct(S.HDB.yield_pt,1),app:'+0–2%',lev:'HDB loan 75% / bank; MSR 30%',restr:'Citizenship, MOP, ethnic quota; income ceilings for grants/HDB loan',hedge:'Moderate'},
+    {t:'Private condo',fit:chip(condoEntry),
+     quantum:`from ~${sgdk(condoEntry)}`+sub(condoLive?'cheapest tenth of project medians · resale 12 m (live)':'2-bed OCR resale average, 2025'),
+     liq:'High',yield:pct(S.OCR.yield_pt,1)+' (OCR)',app:'+1–3%',lev:'Bank only; TDSR 55%',restr:'ABSD on 2nd+; SSD within 4 yr; few use restrictions',hedge:'Strong'},
+    {t:'Landed',fit:chip(ter?ter.price_p[1]:null),
+     quantum:ter?`terrace ${band(ter)}`+sub(`middle half · median ${sgdk(ter.price_p[2])} · resale 12 m to ${lasof} (live)`):'—'+sub('needs the live landed feed'),
+     liq:'Lowest',yield:pct(S.Landed.yield_pt,1),app:'+0–1% (scarce)',lev:'Bank only; TDSR 55%',restr:'Citizens only (PRs need LDAU approval); large quantum',hedge:'Strongest (land-scarce)'}
   ];
-  $('type-table').innerHTML=`<thead><tr><th>Type</th><th>Entry quantum</th><th>Liquidity</th><th class="num">Gross yield</th><th>2026 outlook</th><th>Leverage</th><th>Key restrictions</th><th>Inflation hedge</th></tr></thead><tbody>`+
-    rows.map(r=>`<tr><td><b>${r.t}</b> <span class="chip ${r.fit}">${r.fit==='chip-g'?'brief fit':(r.fit==='chip-a'?'possible':'—')}</span></td><td class="num">${r.quantum}</td><td>${r.liq}</td><td class="num">${r.yield}</td><td>${r.app}</td><td>${r.lev}</td><td>${r.restr}</td><td>${r.hedge}</td></tr>`).join('')+`</tbody>`;
+  $('type-table').innerHTML=`<thead><tr><th>Type</th><th>Entry quantum <span class="hint">— vs ${sgd(price)}</span></th><th>Liquidity</th><th class="num">Gross yield</th><th>2026 outlook</th><th>Leverage</th><th>Key restrictions</th><th>Inflation hedge</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td><b>${r.t}</b> ${r.fit}</td><td class="num">${r.quantum}</td><td>${r.liq}</td><td class="num">${r.yield}</td><td>${r.app}</td><td>${r.lev}</td><td>${r.restr}</td><td>${r.hedge}</td></tr>`).join('')+`</tbody>`;
+  const condoIn=price>=condoEntry, landedIn=!!(ter&&price>=ter.price_p[1]);
   const cards=[
-    {t:'Why a condo fits the brief',b:'Needs a home now, wants liquidity, has cheap leverage available. A resale condo in a good suburban spot is liquid (deep buyer pool), fully leverageable at 75% with no ABSD on a first property, and tracks inflation well. This is the centre of the target.',cls:'good'},
-    {t:'When HDB resale makes sense',b:'If the priority is the highest yield and lowest entry cost, and the eligibility rules fit. But the MSR 30% cap, MOP lock-in and the mild 2026 price dip make it a home-first, not a leverage-the-good-loan, play.',cls:''},
-    {t:'Why landed is off-brief',b:'Structurally scarce and the strongest long-run hedge, but the quantum is far above budget, it is the least liquid, and citizens-only. Not a match for a S$1.2–1.5m, liquidity-first buyer.',cls:''}
+    {t:'Why a condo suits a liquidity-first buyer',cls:condoIn?'good':'',b:'Needs a home now, wants liquidity, has cheap leverage available. A resale condo in a good suburban spot is liquid (deep buyer pool), fully leverageable at 75% with no ABSD on a first property, and tracks inflation well.'+(condoIn?'':` At ${sgd(price)} the entry sits above this budget — HDB resale is the realistic route.`)},
+    {t:'When HDB resale makes sense',cls:condoIn?'':'good',b:'If the priority is the highest yield and lowest entry cost, and the eligibility rules fit. But the MSR 30% cap, MOP lock-in and the mild 2026 price dip make it a home-first, not a leverage-the-good-loan, play.'},
+    landedIn
+      ?{t:'Landed is within reach',cls:'good',b:`At ${sgd(price)} you clear the terrace entry: over the 12 months to ${lasof} the middle half of terrace resales ran ${band(ter)}${semi?`, semi-detached ${band(semi)}`:''}${det?`, detached ${band(det)}`:''} (URA caveats, whole-house prices). Structurally scarce and the strongest long-run hedge; the price of that is liquidity (fewest buyers, slowest sale), the lowest yield, and citizens-only (PRs need LDAU approval).`}
+      :{t:'Where landed fits',cls:'',b:'Structurally scarce and the strongest long-run hedge, but the least liquid, citizens-only, and a far larger quantum than a condo.'+(ter?` The middle half of terrace resales ran ${band(ter)} over the 12 months to ${lasof} (median ${sgdk(ter.price_p[2])}) — above ${sgd(price)}.`:' The live landed feed sizes the entry point when present.')}
   ];
   $('type-cards').innerHTML=cards.map(c=>`<div class="card" style="border-left:3px solid ${c.cls==='good'?'var(--g)':'var(--bd2)'}"><h3>${c.t}</h3><p style="font-size:13px;color:var(--t2)">${c.b}</p></div>`).join('');
   const ec=D.market.ec_policy_2026;
@@ -1309,13 +1380,15 @@ function renderFairValue(){
 
 function renderWhere(){
   const S=D.market.segments, G=D.market.gls;
+  const LT=(D.market.landed_resale||{}).by_type||{}, ter=(LT.Terrace&&LT.Terrace.price_p)?LT.Terrace:null;
   const order=['OCR','RCR','CCR','Landed','HDB'];
   $('seg-table').innerHTML=`<thead><tr><th>Segment</th><th class="num">Median $psf</th><th class="num">Gross yield</th><th class="num">Latest q/q</th><th>2026 outlook</th><th>Read</th></tr></thead><tbody>`+
     order.map(k=>{const s=S[k];const mo=s.momentum_qoq;const psf=s.median_psf?('$'+fmt0(s.median_psf)):'—';
       const lead=['CCR','RCR','OCR'].reduce((a,b)=>S[a].momentum_qoq>=S[b].momentum_qoq?a:b);
-      const read=k==='OCR'?('Best yield · brief fits here'+(lead==='OCR'?' · leading q/q':''))
+      const read=k==='OCR'?('Best yield · most space per dollar'+(lead==='OCR'?' · leading q/q':''))
         :k==='CCR'?(lead==='CCR'?'Prime · leading q/q':'Prime · trailing q/q this print')
-        :k==='HDB'?'Highest yield · rule-bound':k==='RCR'?('Fringe value in D14'+(lead==='RCR'?' · leading q/q':'')):'Scarce · off-brief';
+        :k==='HDB'?'Highest yield · rule-bound':k==='RCR'?('Fringe value in D14'+(lead==='RCR'?' · leading q/q':''))
+        :('Scarce · citizens only'+(ter?` · terrace median ${sgdk(ter.price_p[2])}`:''));
       return `<tr><td><b>${k}</b> <span class="chip chip-n">${s.label.split('(')[0].trim()}</span></td><td class="num">${psf}</td><td class="num">${pct(s.yield_pt,1)}</td><td class="num ${mo>=0?'pos':'neg'}" title="${s.momentum_asof||''}">${(mo>=0?'+':'')+pct(mo,1)}</td><td>${'+'+pct(s.outlook_2026_qoq_range[0],0)+'…'+pct(s.outlook_2026_qoq_range[1],0)} q/q</td><td>${read}</td></tr>`;}).join('')+`</tbody>`;
 
   // live HDB resale median (present only when live.json is overlaid)
@@ -1382,6 +1455,7 @@ function renderWhere(){
 
   const b=D.market.brief, f=b.fit_summary;
   $('brief-map').innerHTML=`
+    <div class="note" style="margin:0 0 10px">The worked example's budget, kept as a reference. Your own figure goes in the budget field on the Start page — the cards there re-size for any amount, and the Type tab re-grades HDB, condo and landed against the price on the Affordability tab.</div>
     <div class="verdict good" style="margin-bottom:12px"><b>Best fit — ${sgd(b.budget_sgd[0])}–${sgd(b.budget_sgd[1])}, 2-bed condo:</b> ${f.best_fit}</div>
     <div class="bars">
       ${[['Resale OCR 2-bed (comfortable)',f.best_fit],['New-launch OCR 2-bed (top of budget)',f.stretch],['Resale OCR 3-bed (older stock)',f.three_bed],['RCR value pocket',f.rcr_value_pocket],['CCR at this budget',f.ccr]].map(([k,v])=>`<div style="padding:9px 0;border-bottom:1px solid var(--bd)"><span class="label" style="display:block;margin-bottom:3px">${k}</span><span style="font-size:13px;color:var(--t2)">${v}</span></div>`).join('')}
@@ -1446,23 +1520,66 @@ function renderKPIs(){
 }
 
 /* ---------- overview hook: what your budget buys + three "aha" numbers ---------- */
-function renderHook(){
-  const M=D.market, R=D.rules, B=numVal('hook-budget')||+$('hook-budget').value;
-  $('hook-bval').textContent=sgd(B);
+/* The budget has no ceiling. The slider is a log scale from S$500k to S$20m - the resale file it
+   sizes against runs to projects with a S$23m median price (2026-08) - and the figure beside it
+   is a typed field that accepts anything. Its predecessor was linear and stopped at S$3m, which
+   sent one reader away with "your budget maxes me out". */
+const HOOK_LO=500000, HOOK_HI=20000000, HOOK_STEPS=1000;
+let _hookB=1350000;
+const _hookRound=B=>{const s=B<1e6?1e4:B<5e6?5e4:B<2e7?1e5:5e5;return Math.round(B/s)*s;};
+const _sliderToBudget=v=>_hookRound(HOOK_LO*Math.pow(HOOK_HI/HOOK_LO,v/HOOK_STEPS));
+const _budgetToSlider=B=>Math.max(0,Math.min(HOOK_STEPS,Math.round(HOOK_STEPS*Math.log(Math.max(B,1)/HOOK_LO)/Math.log(HOOK_HI/HOOK_LO))));
+/* Size -> home-type label. A floor-area proxy: URA publishes no bedroom count. The lower cuts
+   follow the Which tab's bands; the upper ones come from the live resale file as of 2026-08,
+   where a project's median unit size is 1,163 sqft at the median project, 1,884 at the 90th
+   percentile and 2,486 at the 95th - past ~2,500 sqft a non-landed unit is penthouse-scale stock
+   that rarely trades, and the label says so rather than printing "6,000 sqft in the suburbs". */
+const _BIG_UNIT=2500;
+const _bed=s=>s<400?'A studio, at best':s<520?'A 1-bedroom':s<760?'A 2-bedroom':s<1050?'A roomy 2–3 bed':s<1350?'A 3-bedroom':s<1800?'A 4-bedroom':s<_BIG_UNIT?'A 4–5 bed or small penthouse':'Penthouse-scale (rare stock)';
+/* What the budget reaches in landed housing, from the live landed feed (national resale bands by
+   house type, last 12 months, whole-house prices). Nothing prints when the feed is absent: there
+   is no curated landed figure to fall back on, by design. Entry = a type's p25, stretch = its p10. */
+function _landedLine(B){
+  const L=D.market.landed_resale; if(!L||!L.by_type) return '';
+  const T=['Detached','Semi-detached','Terrace'].map(k=>Object.assign({k},L.by_type[k]||{})).filter(t=>t.price_p);
+  if(!T.length) return '';
+  const ter=T[T.length-1];                       // the entry type: Terrace when published, else the cheapest that is
+  const reach=T.find(t=>B>=t.price_p[1]);
+  const asof=L.asof?` · URA resale, 12 months to ${monYr(L.asof)}`:'';
+  const cite=t=>`${t.k.toLowerCase()} resales ran <b>${sgdk(t.price_p[1])}–${sgdk(t.price_p[3])}</b> (median ${sgdk(t.price_p[2])}, n=${fmt0(t.n)})`;
+  let what, cls='';
+  if(reach){
+    const ocr=(reach.by_region||{}).OCR;
+    what=`<b>${sgd(B)} reaches a ${reach.k.toLowerCase()} house.</b> The middle half of ${cite(reach)}${ocr?`; in the suburbs the median was ${sgdk(ocr.median_price)}`:''}. Citizens only — PRs need LDAU approval — and the least liquid segment.`;
+    cls=' best';
+  } else if(B>=ter.price_p[0]){
+    what=`<b>Landed is a stretch at ${sgd(B)}.</b> A ${ter.k.toLowerCase()} house starts around ${sgdk(ter.price_p[1])}: the middle half of ${cite(ter)}.`;
+  } else {
+    what=`<b>Landed starts above this budget.</b> The middle half of ${cite(ter)}.`;
+  }
+  return `<div class="buy buy-landed${cls}"><div class="buy-emoji">🏠</div><div><div class="buy-seg">Landed · whole-house price, not $psf${asof}</div><div class="buy-what">${what}</div></div></div>`;
+}
+function renderHook(src){   // src: 'slider' | 'field' | undefined - the control that fired is left alone
+  const M=D.market, R=D.rules, B=_hookB;
+  if(src!=='field') $('hook-bval').value=fmt0(B);
+  if(src!=='slider') $('hook-budget').value=_budgetToSlider(B);
   const segs=[
     {k:'OCR',emoji:'🏡',name:'Suburban · OCR'},
     {k:'RCR',emoji:'🏢',name:'City-fringe · RCR'},
     {k:'CCR',emoji:'🏙️',name:'Prime · CCR'}
   ];
-  const bed=s=>s<520?'A 1-bedroom':s<760?'A 2-bedroom':s<1050?'A roomy 2–3 bed':'A 3-bedroom+';
+  let big=false;
   $('buys').innerHTML=segs.map((sg,i)=>{
     const psf=M.segments[sg.k].median_psf, size=Math.round(B/psf/10)*10;
+    if(size>=_BIG_UNIT) big=true;
     return `<div class="buy${i===0?' best':''}">${i===0?'<span class="buy-tag">most home</span>':''}`+
       `<div class="buy-emoji">${sg.emoji}</div><div class="buy-seg">${sg.name}</div>`+
-      `<div class="buy-what">${bed(size)}</div><div class="buy-size">~${fmt0(size)} sqft · at $${fmt0(psf)} psf</div></div>`;
-  }).join('');
+      `<div class="buy-what">${_bed(size)}</div><div class="buy-size">~${fmt0(size)} sqft · at $${fmt0(psf)} psf${size>=_BIG_UNIT?' · few units this size':''}</div></div>`;
+  }).join('')+_landedLine(B);
   const bsdAmt=bsd(B, R.bsd.brackets);
-  $('buys-note').innerHTML=`Same <b>${sgd(B)}</b>, three very different homes — sized at each area's median $psf. Suburban stretches furthest; prime buys the least space per dollar. On top of the price, budget ~<b>${sgd(bsdAmt)}</b> buyer's stamp duty, legal fees and a cash buffer. A rough teaser — <b>Where to buy</b> has the real detail.`;
+  $('buys-note').innerHTML=`Same <b>${sgd(B)}</b>, three very different homes — sized at each area's median $psf. Suburban stretches furthest; prime buys the least space per dollar. `+
+    (big?`Non-landed units above ~${fmt0(_BIG_UNIT)} sqft are rare, so at this budget the realistic market is landed housing and the top of the condo stack, not simply a bigger flat. `:``)+
+    `On top of the price, budget ~<b>${sgd(bsdAmt)}</b> buyer's stamp duty, legal fees and a cash buffer. A rough teaser — <b>Where to buy</b> has the real detail.`;
   const loan=R.rates.fixed_best.value, cpf=R.cpf.oa_rate, land=M.gls.yoy;
   const hooks=[
     {num:'23 vs 30 yrs',txt:'At 42 the best loan terms cap you near 23 years, not 30 — the loan must clear by age 65. Shorter loan, higher monthly: the window to borrow well closes with age.',go:'See your number →',t:'afford',col:'var(--b)'},
@@ -1487,13 +1604,22 @@ function renderAtGlance(){
 
 /* ---------- wiring ---------- */
 function wire(){
-  ['i-income','i-income-var','i-price','i-cash','i-debt','l-surplus'].forEach(attachMoney);
+  ['i-income','i-income-var','i-price','i-cash','i-debt','l-surplus','hook-bval'].forEach(attachMoney);
   document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.t)));
+  // Touching the tenure slider takes it off automatic; registered before the render listener so
+  // the flag is set by the time renderAfford reads it. "Set it for me" in the hint puts it back.
+  $('i-tenure').addEventListener('input',()=>{_tenureAuto=false;});
+  $('ten-hint').addEventListener('click',e=>{if(e.target.id==='ten-auto'){e.preventDefault();_tenureAuto=true;renderAfford();}});
   ['i-age','i-income','i-income-var','i-debt','i-cash','i-price','i-type','i-loan','i-cz','i-count','i-tenure','i-rate','i-lease'].forEach(id=>{
     $(id).addEventListener('input',renderAfford);
   });
   ['l-m','l-p','l-g','l-surplus','l-n'].forEach(id=>$(id).addEventListener('input',syncLev));
-  $('hook-budget').addEventListener('input',()=>{renderHook(); setMoney('i-price',$('hook-budget').value); renderAfford();});
+  // Budget: the slider (log scale) and the typed field drive one figure. Each re-renders the other
+  // and never itself, so a drag does not snap under the thumb and a keystroke does not move the caret.
+  const hookApply=src=>{renderHook(src); setMoney('i-price',_hookB); renderAfford();};
+  $('hook-budget').addEventListener('input',()=>{_hookB=_sliderToBudget(+$('hook-budget').value); hookApply('slider');});
+  $('hook-bval').addEventListener('input',()=>{const v=numVal('hook-bval'); if(v>=100000){_hookB=v; hookApply('field');}});
+  $('hook-bval').addEventListener('change',()=>{if(numVal('hook-bval')<100000) renderHook();});   // junk left on blur: restore the last good figure
   if($('p-search')) $('p-search').addEventListener('input',e=>{_pq=e.target.value.trim(); renderProjects();});
   if($('f-district')) $('f-district').addEventListener('change',renderFairValue);
   if($('f-tenure')) $('f-tenure').addEventListener('change',renderFairValue);
@@ -1504,6 +1630,7 @@ function wire(){
     $('i-age').value=v.age; setMoney('i-income',v.income); setMoney('i-income-var',v.incomeVar||0); setMoney('i-debt',v.debt);
     setMoney('i-cash',v.cash); setMoney('i-price',v.price); $('i-type').value=v.type; $('i-loan').value=v.loan||'bank';
     $('i-cz').value=v.cz; $('i-count').value=v.count; $('i-tenure').value=v.tenure; $('i-rate').value=v.rate; $('i-lease').value='';
+    _tenureAuto=true;   // a preset's tenure is the automatic one for its age; keep following the age from here
     renderAfford();
   };
   $('presets').innerHTML=PRESETS.map((p,i)=>`<button class="preset" data-i="${i}">${p.n}</button>`).join('');

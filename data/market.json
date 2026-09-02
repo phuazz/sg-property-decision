@@ -52,7 +52,7 @@
       "median_psf": null, "median_psf_flag": "n/a",
       "yield_gross": [0.018, 0.025], "yield_pt": 0.020,
       "outlook_2026_qoq_range": [0.00, 0.01], "momentum_qoq": 0.026, "momentum_asof": "2026-Q2 flash",
-      "note": "Scarce, citizen-only, lowest yield and least liquid, but structurally supply-constrained. Outside the budget and the liquidity brief."
+      "note": "Scarce, citizen-only (PRs need LDAU approval), lowest yield and least liquid, but structurally supply-constrained. Entry quantum comes from landed_resale (live); outside the worked example's budget and liquidity brief."
     },
     "HDB": {
       "label": "HDB resale",
@@ -119,6 +119,9 @@
   },
 
   "hdb_resale": null,
+
+  "landed_resale": null,
+  "landed_resale_note": "Filled by pipeline.py from live.json (fetch_data.landed_resale: URA caveats, resale, last 12 months, whole-house price bands by Terrace / Semi-detached / Detached). No curated baseline by design - the page shows nothing for landed rather than a typed figure.",
 
   "ec_policy_2026": {
     "effective": "2026-05-08",

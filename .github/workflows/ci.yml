@@ -46,6 +46,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      # The landed feed's aggregation is a pure function (URA-shaped records in, price bands out),
+      # so it is tested here with no key and no network. fetch_data imports requests at module level.
+      - name: Landed price bands (fetch_data._landed_summary)
+        run: pip install requests && python scripts/test_landed_summary.py
+
       - name: Rebuild the page
         run: python scripts/pipeline.py   # stdlib only — nothing to install
 

@@ -33,7 +33,7 @@ def merge_live(market, live):
     """Overlay live feeds onto the curated market baseline (canonical fields)."""
     if not live:
         return market
-    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official", "districts", "projects", "new_launches", "land_to_launch")
+    feeds = ("ura_ppi", "hdb_rpi", "locality", "hdb_resale", "gls", "segments_official", "districts", "projects", "new_launches", "land_to_launch", "landed_resale")
     ok = [f for f in feeds if live.get(f)]
     market["live"] = {"present": bool(ok), "fetched": live.get("_meta", {}).get("fetched"),
                       "ok": ok, "failed": sorted(live.get("_meta", {}).get("errors", {})),
@@ -111,6 +111,10 @@ def merge_live(market, live):
         market["projects"] = live["projects"]
     if live.get("new_launches"):
         market["new_launches"] = live["new_launches"]
+    # landed resale price bands by house type (URA caveats; only present with the key). There is
+    # no curated fallback on purpose: the page prints nothing for landed rather than a typed guess.
+    if live.get("landed_resale"):
+        market["landed_resale"] = live["landed_resale"]
     return market
 
 def main():
