@@ -31,7 +31,7 @@ const templateSrc = html.slice(s, e);
 // Reconstruct the in-template implementation in its own scope, supplying the `D` global it reads.
 let orig;
 try {
-  orig = new Function('RULES', templateSrc + '\nD = {rules: RULES};\nreturn {pmt, loanFromInstalment, bsd, computeLoan};')(rules);
+  orig = new Function('RULES', templateSrc + '\nD = {rules: RULES};\nreturn {pmt, loanFromInstalment, bsd, computeLoan, leaseRelativity, leaseRundown};')(rules);
 } catch (err) {
   console.error('FAIL: could not evaluate the template engine slice:', err.message);
   process.exit(1);
@@ -104,6 +104,52 @@ for (const r of [0, 0.01, 0.04]) for (const y of [1, 25, 35]) {
     console.error(`FAIL: pmt(${r},${y}) diverges`); bad++;
   }
   n++;
+}
+
+// Leasehold relativity (the SLA table): parity across the domain — both sides of every cut, the
+// interpolation, the flat run beyond 99, quasi-freehold spans, and every kind of bad input.
+const LR = (rules.lease_relativity || {}).pct_by_years_left;
+// Fractions are deliberately asymmetric (0.25 / 0.75): at exactly x.5 an interpolation run the
+// wrong way returns the same value, which let a mutated template copy pass this grid once.
+const leases = [-5, 0, 0.25, 0.5, 1, 1.5, 29, 30, 30.25, 30.5, 59, 60, 61, 69, 69.75, 70, 85, 98, 98.5, 98.75, 99, 99.5, 100, 101, 200, 201, 999, 9968, NaN, Infinity, null, undefined, '70'];
+const horizons = [0, 1, 5, 10, 25, 30, 70, 100, -1, NaN, null];
+for (const L of leases) {
+  if (!Object.is(orig.leaseRelativity(LR, L), ENG.leaseRelativity(LR, L))) { console.error(`FAIL: leaseRelativity(${L}) diverges`); bad++; }
+  n++;
+  for (const y of horizons) {
+    if (!Object.is(orig.leaseRundown(LR, L, y), ENG.leaseRundown(LR, L, y))) { console.error(`FAIL: leaseRundown(${L},${y}) diverges`); bad++; }
+    n++;
+  }
+}
+// A missing or short table must read null, never NaN, in both copies.
+for (const T of [undefined, null, [], [1, 2, 3]]) {
+  n++;
+  if (!Object.is(orig.leaseRelativity(T, 70), null) || !Object.is(ENG.leaseRelativity(T, 70), null) ||
+      !Object.is(orig.leaseRundown(T, 70, 1), null) || !Object.is(ENG.leaseRundown(T, 70, 1), null)) {
+    console.error('FAIL: a missing table must return null'); bad++;
+  }
+}
+
+// The table itself: the published anchors, the 1948 ratios, and the run-down at every edge.
+// Guards against an edit to the array — parity alone would pass a wrong table on both sides.
+if (LR) {
+  const near = (label, got, want) => { n++; if (!(Math.abs(got - want) <= 1e-9)) { console.error(`FAIL: ${label}: got ${got}, want ${want}`); bad++; } };
+  near('table length (index 0..99)', LR.length, 100);
+  n++; if (!LR.every((v, i) => i === 0 ? v === 0 : v > LR[i - 1])) { console.error('FAIL: the table must start at 0 and rise with every year of lease'); bad++; }
+  for (const [yrs, want] of Object.entries(rules.lease_relativity.anchors_pct || {})) near(`anchor ${yrs} yr`, ENG.leaseRelativity(LR, +yrs), want);
+  near('30-year bid vs 60-year bid (Victoria Street 2005: 0.6/0.8)', ENG.leaseRelativity(LR, 30) / ENG.leaseRelativity(LR, 60), 0.75);
+  near('expired lease', ENG.leaseRelativity(LR, 0), 0);
+  near('half-year interpolation', ENG.leaseRelativity(LR, 69.5), (85.4 + 86.0) / 2);
+  near('quarter-year interpolation runs the right way', ENG.leaseRelativity(LR, 69.25), 85.4 + 0.25 * (86.0 - 85.4));
+  near('beyond the table reads the 99-year entry', ENG.leaseRelativity(LR, 150), 96.0);
+  near('run-down 70 -> 69', ENG.leaseRundown(LR, 70, 1), 1 - 85.4 / 86.0);
+  near('run-down 99 -> 98 (top of the table)', ENG.leaseRundown(LR, 99, 1), 1 - 95.9 / 96.0);
+  near('run-down 99 -> 89 over ten years', ENG.leaseRundown(LR, 99, 10), 1 - 94.3 / 96.0);
+  near('run-down 1 -> 0 (the last year)', ENG.leaseRundown(LR, 1, 1), 1);
+  near('run-down when the lease runs out inside the horizon', ENG.leaseRundown(LR, 5, 10), 1);
+  near('zero horizon', ENG.leaseRundown(LR, 70, 0), 0);
+  near('flat beyond the table', ENG.leaseRundown(LR, 150, 1), 0);
+  n++; if (ENG.leaseRundown(LR, 0, 1) !== null) { console.error('FAIL: an expired lease has nothing to run down (null)'); bad++; }
 }
 
 // The published BSD checkpoints in rules.json must hold — guards against a bracket edit.

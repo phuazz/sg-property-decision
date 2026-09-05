@@ -128,7 +128,32 @@
     return Math.max(0, principal * (g - h) / (g - 1));
   }
 
-  const API = { pmt, loanFromInstalment, bsd, computeLoan, maxPriceForCash, balanceAfter };
+  /* ---------- leasehold relativity (the SLA table, "Bala's Table") ----------
+   * table: rules.lease_relativity.pct_by_years_left — value as a % of freehold, indexed by whole
+   *        years of lease left (index 0 = expired = 0, index 99 = 96.0).
+   * Linear between whole years, 0 at expiry, flat at the 99-year entry beyond it. Returns null
+   * for a missing table or a non-numeric input — never NaN, so a blank field cannot leak into
+   * the page. Callers decide what a blank means (freehold or unknown) and where quasi-freehold
+   * (999-year) leases stop: this only reads the table.
+   */
+  function leaseRelativity(table, yearsLeft) {
+    if (!Array.isArray(table) || table.length < 100 || !Number.isFinite(yearsLeft)) return null;
+    if (yearsLeft <= 0) return 0;
+    if (yearsLeft >= 99) return table[99];
+    const lo = Math.floor(yearsLeft), hi = Math.ceil(yearsLeft);
+    return table[lo] + (table[hi] - table[lo]) * (yearsLeft - lo);
+  }
+
+  // Share of a leasehold's OWN value the table takes off over `years` of holding (1 = it runs
+  // out inside the horizon). null where nothing can be said: no table, a non-numeric input, a
+  // negative horizon, or a lease already at zero.
+  function leaseRundown(table, yearsLeft, years) {
+    const now = leaseRelativity(table, yearsLeft);
+    if (now === null || !(now > 0) || !Number.isFinite(years) || years < 0) return null;
+    return 1 - leaseRelativity(table, yearsLeft - years) / now;
+  }
+
+  const API = { pmt, loanFromInstalment, bsd, computeLoan, maxPriceForCash, balanceAfter, leaseRelativity, leaseRundown };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   root.ENGINE = API;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

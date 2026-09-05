@@ -132,7 +132,9 @@ python scripts/test_landed_summary.py # landed price bands: bucketing, 12-month 
 ```
 
 `test_engine_parity.js` asserts `engine/engine.js` is bit-identical to the engine still inlined in
-`template.html`, so the extraction stays provably a no-op. `test_lease_labels.js` pins both sides of
+`template.html`, so the extraction stays provably a no-op; since 2026-09-05 that covers the leasehold
+relativity functions too, and it pins the SLA table itself (anchors, monotonicity, the run-down at every
+edge) so an edited entry fails the run. `test_lease_labels.js` pins both sides of
 every label cut (a 999-year lease is not a 9,999-year one — ROXY SQUARE has 9,968 years left), asserts
 the tenure filter can never contradict the Lease column, and fails if a refresh brings in a lease the
 label rules cannot name.
@@ -312,5 +314,39 @@ rather than hidden. No body horizontal scroll, no unwrapped overflow, nothing un
 width. One trap for future edits: the first 640px media block precedes the base `.lead` / `.note` /
 `footer` rules at equal specificity, so phone sizes placed there silently lose; they live in the
 last media block.
+
+**Lease run-down line (2026-09-05).** The own-vs-rent ledger had five lines and no cost for a
+shortening lease. `rules.json` now carries the SLA leasehold relativity table ("Bala's Table", block
+`lease_relativity`: value as a percentage of freehold for every year of lease remaining, with the
+statutory basis, implied discount rate, uses and provenance), and the ledger charges a sixth line
+whenever a remaining lease is entered under *More options*: the table's next five years averaged and
+applied to the price, with both table values, the per-year rate and the horizon figure printed in the
+note. Averaged rather than the literal next step because the statute's entries are rounded to 0.1
+point and one is lumpy — 69 → 68 loses 0.9, 68 → 67 loses 0.3 — so a one-year step tripled between
+two adjacent inputs (the page printed S$4,793 at 68 years and roughly three times that at 69). At the
+worked example with 68 years left the line reads 0.64% a year, S$8,627, and 6.5% over ten years; a
+blank lease leaves the line out and says a freehold needs none; anything past 200 years is treated as
+freehold-like, the Projects table's own cut. The table was checked entry by entry across two public
+copies — Table 1 of Kwong, Goh and Ti, *International Real Estate Review* 28(3) 2025 (sourced to SLA,
+open access at SMU) and Appendix 1 of the CLC 2017 commentary — all 99 identical; the statute page on
+SSO refused a fetch that day, so the primary text is cited, not read. The line is labelled a
+**floor**, not a forecast: the paper's case that the market discounts leasehold more steeply at 60–85
+years rests on Giglio, Maggiori and Stroebel (24% below freehold at 71–85 years, 1995–2013 sales, age
+controlled — verified in the NBER working paper) and one mixed-tenure building, while this repo's own
+paired test (`reviews/2026-08-09_lease-matched-entry-gap.md`) puts the 85+ vs 70–84 comparator gap at
+2–8%, near the table's 5%, without controlling comparator age. That disagreement is parked in
+`C:\dev\NEXT.md` as a study. The relativity arithmetic is two functions in `engine/engine.js` with an
+identical copy in `template.html`; the parity test covers both across every cut, asymmetric fractions
+(a half-year grid let a wrong-way interpolation pass once), quasi-freehold spans and bad inputs, then
+pins the table itself — the 1948 anchors (99 → 96.0, 60 → 80.0, 30 → 60.0), the 0.75 Victoria Street
+tender ratio, monotonicity and the run-down at every edge. Guards verified by making them fail: a
+wrong entry, a shifted anchor, a flipped run-down sign and a wrong-way interpolation each fail the
+run. Measured in a real emulated viewport on the Cash tab with the line showing: no body horizontal
+scroll at 390 / 844 / 768 / 1280 px, the row label wraps to two lines at 390 px rather than clipping,
+nothing under 11 px, the note at 51 characters a line at 390 px and 70 above. One pre-existing defect
+found on the way and **not** fixed here: the masthead KPI strip is `repeat(6,1fr)` with
+`overflow:hidden` and no phone rule, so at 390 px its six tiles lay out 563 px wide inside a 360 px
+strip and the last two are clipped, not scrollable — the `1fr` min-content trap named in
+`MOBILE_CHECK.md`; parked in `NEXT.md`.
 
 _Last updated: 2026-09-03._

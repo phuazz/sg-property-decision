@@ -718,6 +718,32 @@ function computeLoan(inp){
     stampBSD,legal,upfront,instActual,instStress,tdsrUsed,msrUsed,bufferAfter,bufferMonths,bufferMonthsStress};
 }
 
+/* ---------- leasehold relativity (the SLA table, "Bala's Table") ----------
+ * table: rules.lease_relativity.pct_by_years_left — value as a % of freehold, indexed by whole
+ *        years of lease left (index 0 = expired = 0, index 99 = 96.0).
+ * Linear between whole years, 0 at expiry, flat at the 99-year entry beyond it. Returns null
+ * for a missing table or a non-numeric input — never NaN, so a blank field cannot leak into
+ * the page. Callers decide what a blank means (freehold or unknown) and where quasi-freehold
+ * (999-year) leases stop: this only reads the table. Kept identical to engine/engine.js;
+ * scripts/test_engine_parity.js checks both across the domain.
+ */
+function leaseRelativity(table, yearsLeft) {
+  if (!Array.isArray(table) || table.length < 100 || !Number.isFinite(yearsLeft)) return null;
+  if (yearsLeft <= 0) return 0;
+  if (yearsLeft >= 99) return table[99];
+  const lo = Math.floor(yearsLeft), hi = Math.ceil(yearsLeft);
+  return table[lo] + (table[hi] - table[lo]) * (yearsLeft - lo);
+}
+
+// Share of a leasehold's OWN value the table takes off over `years` of holding (1 = it runs
+// out inside the horizon). null where nothing can be said: no table, a non-numeric input, a
+// negative horizon, or a lease already at zero.
+function leaseRundown(table, yearsLeft, years) {
+  const now = leaseRelativity(table, yearsLeft);
+  if (now === null || !(now > 0) || !Number.isFinite(years) || years < 0) return null;
+  return 1 - leaseRelativity(table, yearsLeft - years) / now;
+}
+
 function readInputs(){
   return {
     age:+$('i-age').value, income:numVal('i-income'), incomeVar:numVal('i-income-var'), debt:numVal('i-debt'),
@@ -930,15 +956,32 @@ function syncLev(){
   // own vs rent — year one at current assumptions (uses the appreciation slider)
   if(c&&inp&&inp.price>0){
     const rent=yG*inp.price, interest=m*c.maxLoan, foregone=p*c.upfront, appre=g*inp.price;
-    const net=rent-interest-runYr-foregone+appre;
-    $('ovr-intro').textContent=`Renting a comparable home would cost about ${sgd(rent)} a year (gross-yield proxy). Owning swaps that for interest, running costs and tied-up capital — plus whatever the property does at your ${pct(g,1)} appreciation assumption.`;
+    /* Lease run-down: the SLA leasehold relativity table (rules.json lease_relativity) applied to
+       the years the reader entered under More options. Blank means freehold or unknown, and
+       anything past 200 years is quasi-freehold (the Projects table's own cut), so both charge
+       nothing and the note says which. The appreciation slider is read as the market's price
+       growth; the run-down is what a shortening lease loses against it. The market has priced
+       60-85-year leases more steeply than the table, so the line is a floor, and says so. */
+    const LR=(D.rules.lease_relativity||{}).pct_by_years_left;
+    const lhYears=(typeof inp.lease==='number'&&inp.lease>0&&inp.lease<=200)?inp.lease:null;
+    /* The year-one rate is the table's next five years averaged, not the single next step: the
+       statute's entries are rounded to 0.1 point and one is lumpy (69 -> 68 loses 0.9, 68 -> 67
+       loses 0.3), so a literal one-year step would triple between two adjacent inputs. Five years
+       is local enough to stay a current rate and wide enough to wash the rounding out; the
+       window shortens when the lease has fewer than five years left. */
+    const lhWin=lhYears!=null?Math.min(5,lhYears):null;
+    const rd5=lhYears!=null?leaseRundown(LR,lhYears,lhWin):null;
+    const rd1=rd5!=null?rd5/lhWin:null, rdN=lhYears!=null?leaseRundown(LR,lhYears,N):null;
+    const rundown=rd1!=null?rd1*inp.price:0;
+    const net=rent-interest-runYr-foregone+appre-rundown;
+    $('ovr-intro').textContent=`Renting a comparable home would cost about ${sgd(rent)} a year (gross-yield proxy). Owning swaps that for interest, running costs${rd1!=null?', the lease running down':''} and tied-up capital — plus whatever the property does at your ${pct(g,1)} appreciation assumption.`;
     const rows=[
       {l:'Rent you avoid',v:rent,col:'var(--g)'},
       {l:'Expected appreciation',v:appre,col:'var(--g2)'},
       {l:'Interest (year 1)',v:-interest,col:'var(--r2)'},
       {l:'Maintenance + tax (est.)',v:-runYr,col:'var(--r2)'},
       {l:'Returns forgone on upfront',v:-foregone,col:'var(--r2)'}
-    ];
+    ].concat(rd1!=null?[{l:`Lease run-down (${fmt0(lhYears)} yr left, statutory)`,v:-rundown,col:'var(--r2)'}]:[]);
     const omax=Math.max(...rows.map(r=>Math.abs(r.v)),1);
     $('ovr-bars').innerHTML=rows.map(r=>`<div class="bar-row"><span>${r.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.abs(r.v)/omax*100}%;background:${r.col}"></div></div><span class="bar-num">${r.v>=0?'+':'−'}${sgd(Math.abs(r.v))}</span></div>`).join('')
       +`<div class="bar-row" style="border-top:1px solid var(--bd);padding-top:6px;margin-top:2px"><span><b>Net, year one</b></span><div></div><span class="bar-num"><b>${net>=0?'+':'−'}${sgd(Math.abs(net))} ${net>=0?'to owning':'to renting'}</b></span></div>`;
@@ -946,6 +989,14 @@ function syncLev(){
     $('ovr-note').innerHTML=`A one-year expected-value snapshot, not a forecast: rent is proxied by the ${isHDB?'HDB':'OCR'} gross yield (portal-sourced, flagged), interest is approximated on the opening balance, and principal repayments are excluded on both sides (they are saving, not cost). `+
       `Running costs: ${isHDB?`town-council S&CC ~${sgd(maintMo)}/month (estimate)`:`MCST ~${sgd(maintMo)}/month at S$${(oc.maintenance_psf_month||[0.4,0.6])[0].toFixed(2)}–${(oc.maintenance_psf_month||[0.4,0.6])[1].toFixed(2)} psf on ~${fmt0(sizeEst)} sqft (sized at the suburban median $psf, an estimate)`}, plus property tax ~${sgd(taxYr)}/year from the IRAS owner-occupier schedule${PT&&PT.effective?` (from ${monYr(PT.effective)})`:''} on an annual value proxied by the gross-yield rent — prime rents yield less, so the tax there runs lower than this.`;
     $('ovr-note').innerHTML+=` Two exit frictions to remember: SSD applies within 4 years, and CPF used for the home flows back to your own CPF with accrued interest at sale — roughly ${sgd(cpfBack)} after ${N} years if the ${sgd(c.cpfOrCash)} CPF-or-cash portion were fully CPF — so cash-in-hand at exit is less than the equity you see.`;
+    if(rd1!=null){
+      const lhEnd=Math.max(0,lhYears-lhWin), relNow=leaseRelativity(LR,lhYears), relEnd=leaseRelativity(LR,lhEnd);
+      $('ovr-note').innerHTML+=` <b>Lease run-down (statutory floor):</b> the SLA leasehold relativity table (Bala's Table) puts ${fmt0(lhYears)} years of lease at ${relNow.toFixed(1)}% of freehold value and ${fmt0(lhEnd)} years at ${relEnd.toFixed(1)}%, an average of ${pct(rd1,2)} of value a year over the next ${lhWin===5?'five years':fmt0(lhWin)+(lhWin===1?' year':' years')} (averaged because the table's single-year steps are rounded to 0.1 point) — ${sgd(rundown)} here${rdN!=null?(rdN>=1?`, and the lease runs out inside your ${N}-year horizon`:`, and ${pct(rdN,1)} over your ${N}-year horizon`):''}. That is the statutory schedule (SLA, published since 2000), not a forecast: on 1995–2013 sales the market priced leases with 71–85 years left 24% below freehold, against 7–14% in the table, so read the line as a floor. Your appreciation slider is taken as the market's price growth; this is what a shortening lease loses against it.`;
+    } else if(typeof inp.lease==='number'&&inp.lease>200){
+      $('ovr-note').innerHTML+=` No lease run-down is charged: a ${fmt0(inp.lease)}-year remaining lease prices and finances as freehold.`;
+    } else {
+      $('ovr-note').innerHTML+=` No lease run-down is charged because no remaining lease is entered — right for a freehold; for a 99-year leasehold, enter the years left under More options on the Affordability tab and the statutory run-down (SLA leasehold table) joins this ledger.`;
+    }
   }
   // prepay vs invest projection bars (net worth delta narrative)
   const yrs=[Math.round(N/2),N];
