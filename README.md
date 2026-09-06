@@ -347,6 +347,17 @@ nothing under 11 px, the note at 51 characters a line at 390 px and 70 above. On
 found on the way and **not** fixed here: the masthead KPI strip is `repeat(6,1fr)` with
 `overflow:hidden` and no phone rule, so at 390 px its six tiles lay out 563 px wide inside a 360 px
 strip and the last two are clipped, not scrollable — the `1fr` min-content trap named in
-`MOBILE_CHECK.md`; parked in `NEXT.md`.
+`MOBILE_CHECK.md`; fixed the next day, below.
+
+**KPI strip on phones (2026-09-06).** The masthead strip was `repeat(6,1fr)` at every width with
+`overflow:hidden` and no phone rule, so at 390 px its six tiles laid out 563 px wide inside a 360 px
+strip and the last two (HDB resale RPI, GLS land bids) were clipped, not scrollable — the `1fr`
+min-content trap in `MOBILE_CHECK.md`. The 2026-09-02/03 checks measured body horizontal scroll,
+which a hidden overflow conceals, so it passed them. Now three columns under 640 px and two under
+460 px, with `min-width:0` on the tiles. Measured in a real emulated viewport: at 390 px two columns,
+all six tiles inside the strip (content width equals the strip's 360 px), nothing under 11 px; at
+844, 768 and 1280 px six columns with no clipping; and an overflow sweep across all five tool tabs at
+390 px finds no element beyond the viewport without a scrolling ancestor and no body horizontal
+scroll.
 
 _Last updated: 2026-09-03._

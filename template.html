@@ -128,6 +128,13 @@ th.dsort,th.psort,th.nsort,th.usort{cursor:pointer} th.dsort:hover,th.psort:hove
      1-5 sequence is the walkthrough; Start carries a blank line so all six words share a baseline. */
   #tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:0;overflow:visible}
   #tabs .tab{padding:6px 2px}
+  /* The KPI strip was repeat(6,1fr) at every width with overflow hidden: at 390px its six tiles
+     laid out 563px wide inside a 360px strip and the last two were clipped, not scrollable - the
+     1fr min-content trap named in MOBILE_CHECK.md, missed by checks that read body scroll (the
+     hidden overflow conceals it). Three columns here, two below 460px (see that block), and
+     min-width:0 so a long value can never push a column past its track. */
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+  .kpi{min-width:0;padding:11px 12px}
   .t-full{display:none}
   .t-mini{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.25}
   .t-mini b{font-size:11px;font-weight:700;color:var(--t3,var(--t2));font-variant-numeric:tabular-nums}
@@ -240,7 +247,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
 .nextbtn{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--b-text);background:var(--b-bg);border:1px solid var(--b-bg2);border-radius:999px;padding:9px 16px;cursor:pointer}
 .nextbtn:hover{background:var(--b-bg2)}
 @media(max-width:700px){.steps{grid-template-columns:1fr 1fr}}
-@media(max-width:460px){.steps{grid-template-columns:1fr}}
+@media(max-width:460px){.steps{grid-template-columns:1fr} .kpi-strip{grid-template-columns:1fr 1fr}}
 
 /* engaging hook hero */
 .hook-kicker{display:inline-block;font-size:12.5px;font-weight:600;color:var(--a-text);background:var(--a-bg);border:1px solid rgba(180,83,9,0.22);border-radius:999px;padding:5px 13px;margin-bottom:13px}
