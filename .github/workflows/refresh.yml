@@ -51,6 +51,11 @@ jobs:
       - name: Test lease labels against the fetched data
         run: node scripts/test_lease_labels.js
 
+      # Same reasoning: the score test's live-feed half checks the rows just fetched, so a row
+      # scored below the five-deal floor (or a thin row left in the ranking pool) stops the publish.
+      - name: Test the project score against the fetched data
+        run: node scripts/test_project_score.js
+
       - name: Build page
         run: python scripts/pipeline.py
 

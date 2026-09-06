@@ -107,7 +107,8 @@ sg-property-decision/
 │   ├── fetch_data.py      # pull live public feeds → data/live.json
 │   ├── pipeline.py        # merge live over baseline, inline into template.html → docs/index.html
 │   ├── test_engine_parity.js   # engine/engine.js == the engine inlined in template.html
-│   └── test_lease_labels.js    # lease labels, tenure buckets, sort order, and the live rows
+│   ├── test_lease_labels.js    # lease labels, tenure buckets, sort order, and the live rows
+│   └── test_project_score.js   # the Score's five-deal floor, its ranking pool, and the live rows
 ├── .github/workflows/
 │   ├── ci.yml             # every push/PR: both tests + the build-drift check
 │   └── refresh.yml        # weekly: tests, fetch_data + pipeline, commit the rebuilt page
@@ -128,6 +129,7 @@ at run time rather than duplicating it, so neither can drift away from what the 
 ```
 node scripts/test_engine_parity.js    # engine parity, ~1.04m cases across the full input grid
 node scripts/test_lease_labels.js     # lease labels + tenure buckets, and every live project row
+node scripts/test_project_score.js    # project score: five-deal floor both sides, thin rows out of the pool, live rows consistent
 python scripts/test_landed_summary.py # landed price bands: bucketing, 12-month window, thin-sample withholding
 ```
 
@@ -139,10 +141,11 @@ every label cut (a 999-year lease is not a 9,999-year one — ROXY SQUARE has 9,
 the tenure filter can never contradict the Lease column, and fails if a refresh brings in a lease the
 label rules cannot name.
 
-**Both run on every push and PR** (`ci.yml`), alongside a check that `docs/index.html` still matches a
-rebuild — so a `template.html` edit must carry its rebuild in the same commit. The weekly refresh runs
-them too: engine parity before the fetch, lease labels after it and *before* the commit, so wrong data
-never reaches the live page (stale-but-correct data still does, by design).
+**All three node tests run on every push and PR** (`ci.yml`), alongside a check that `docs/index.html`
+still matches a rebuild — so a `template.html` edit must carry its rebuild in the same commit. The weekly
+refresh runs them too: engine parity before the fetch, lease labels and the score test after it and
+*before* the commit, so wrong data never reaches the live page (stale-but-correct data still does, by
+design).
 
 ## IP firewall
 
@@ -359,5 +362,31 @@ all six tiles inside the strip (content width equals the strip's 360 px), nothin
 844, 768 and 1280 px six columns with no clipping; and an overflow sweep across all five tool tabs at
 390 px finds no element beyond the viewport without a scrolling ancestor and no body horizontal
 scroll.
+
+**Five-deal floor on the project Score (2026-09-06).** The Which tab's Score is the mean of four
+percentile ranks (cheaper vs area, turnover, remaining lease, MRT proximity) across the whole resale
+file, and the file admits any project with two or more caveats in twelve months. Two or three sales are
+not a median, and a cheap pair of them was putting old freehold stock at the top: before this change 21
+of the top 40 had fewer than five deals and 24 were freehold, ranked high for reading 20 to 69 percent
+below their district on a pair of sales, and the median top-40 project had three deals. A project now
+needs five resale deals in the last twelve months to be scored at all, the same floor as the studies'
+cell minimum. Thin projects stay in the table, marked thin, with the reason in the Score cell's tooltip,
+and sort below every scored row on the Score column whichever way it is sorted; they also leave the
+ranking pool, so one odd caveat cannot move anyone else's rank. On the 2026-09-02 feed that is 579
+scored and 555 unscored of 1,134 (486 of the 728 freehold-like projects sit below the floor). After: no
+thin project in the top 40, 9 freehold, median 20 deals; 18 of the 19 adequately traded projects in the
+old top 40 stay (8 @ Mount Sophia, 8 deals, falls out) and 22 well-traded projects enter, Commonwealth
+Towers, Echelon, Parc Botannia, Watertown, High Park Residences, Park Colonial, A Treasure Trove,
+Bartley Ridge and D'Leedon among them; scores among the stayers move by up to six points because the
+pool changed. The scorer is now a pure function sliced out of the template by a third test,
+`scripts/test_project_score.js`, which pins the floor at 5, checks both sides of it, checks that a thin
+outlier leaves the others' ranks unchanged while a floor of 2 lets it move them, that stale scores are
+cleared on re-render, that the extremes land on 0 and 100, and on the live feed that every unscored row
+is unscored for a reason; it runs in CI and before the weekly publish. Four guards verified by making
+them fail: the floor constant, the comparison direction, the pool filter and the stale-score clear.
+Rendered check on the Which tab at 390 and 1280 px: no body horizontal scroll, no element beyond the
+viewport without a scrolling ancestor, nothing under 11 px. What this does not fix, and is next: Value
+still compares a project's $psf with an all-tenure district median, so lease is counted once in Value
+and again in the Lease rank; the fix is a tenure-and-age-matched Value basis, queued in `C:\dev\NEXT.md`.
 
 _Last updated: 2026-09-03._

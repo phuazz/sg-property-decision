@@ -485,7 +485,7 @@ h2.section{font-family:var(--serif);font-size:24px;margin:6px 0 4px}
     <div class="grid" style="grid-template-columns:1fr;gap:18px">
       <div class="card" id="projects-card">
         <h3>Projects — turnover, lease &amp; value <em style="font-style:normal;color:var(--t3-text)">live URA resale</em></h3>
-        <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. <span style="color:var(--t3-text)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
+        <p class="intro">Drill into individual condos: the typical resale <b>price</b> and <b>unit size</b>, how <b>liquid</b> each is (resale turnover), its <b>remaining lease</b>, nearest MRT, and whether it is <b>cheap or dear versus its district</b>. Search a name or filter by area; click a column to sort. Projects with fewer than five resale deals in the last 12 months are listed but not scored: two or three sales are not a median. <span style="color:var(--t3-text)">(Developer is not in URA's resale caveat data, so it is not shown.)</span></p>
         <div id="dmap-card">
           <div class="dmap-cap">Tap a district on the map to filter the list &mdash; colour runs <b>clay (less attractive) &rarr; green (more)</b> on the Balanced score, matching the chips. Approximate zones around each district's resale activity, not official boundaries.</div>
           <div id="dmap-wrap"><div id="dmap"></div><div id="dmap-tip"></div></div>
@@ -1175,6 +1175,33 @@ const _leaseTxt=l=>l==='FH'?'Freehold':(typeof l==='number'
    Unknown tenure (null) fails both fh and lh: it is not evidence either way. */
 const _fhLike=l=>l==='FH'||(typeof l==='number'&&l>200);
 const _lhOnly=l=>typeof l==='number'&&l<=200;
+/* ---------- project attractiveness score ----------
+   Mean of four percentile ranks across every SCORED project (0 = lowest, 100 = highest): value
+   (cheaper vs the district median), liquidity (12-month resale turnover, log-scaled so large
+   developments do not dominate), remaining lease (freehold and quasi-freehold as 105 years) and
+   MRT proximity. Percentile ranks so equal weight is truly equal - min-max let wide-spread
+   liquidity dominate and compressed value. Recomputed on every render over the whole file, so the
+   ranks are the same whatever filter is on: a stable global normalisation.
+   Floor: a project needs SCORE_MIN_DEALS resale deals in the last 12 months to be scored at all.
+   Two or three sales are not a median. Before the floor (2026-09-06) the top of the table was old
+   freehold stock on two or three cheap caveats - 21 of the top 40 had fewer than five deals and 24
+   were freehold, ranked high for reading 20-69% below their district on a pair of sales. Unscored
+   rows are still listed, sort below every scored row on the Score column, and carry the reason in
+   the cell tooltip. Thin rows leave the ranking pool too, so one odd caveat cannot move anyone
+   else's rank. Same floor as the studies' cell minimum (MIN_CELL_N = 5).
+   Pure: rows in; score and _sc written onto every row (null below the floor); the scored subset
+   returned. Sliced out and tested by scripts/test_project_score.js. */
+const SCORE_MIN_DEALS=5;
+function _scoreProjects(rows, dmed, minDeals){
+  const _lyr=r=>Math.min(r.lease==='FH'?105:(typeof r.lease==='number'?r.lease:80),105), _vsa=r=>dmed[r.d]?r.median_psf/dmed[r.d]-1:0;
+  rows.forEach(r=>{r.score=null; r._sc=null;});
+  const allP=rows.filter(r=>r.median_psf&&(r.vol_12m||0)>=minDeals);
+  const AV=allP.map(r=>-_vsa(r)),AL=allP.map(r=>Math.log(r.vol_12m||1)),ALe=allP.map(r=>_lyr(r)),AM=allP.map(r=>-(r.mrt_m!=null?r.mrt_m:1500));
+  const _prank=vals=>{const o=vals.map((v,i)=>i).sort((a,b)=>vals[a]-vals[b]),rk=[];o.forEach((i,k)=>rk[i]=vals.length>1?k/(vals.length-1):0.5);return rk;};
+  const pV=_prank(AV),pL=_prank(AL),pLe=_prank(ALe),pM=_prank(AM);
+  allP.forEach((r,i)=>{r.score=Math.round(100*(pV[i]+pL[i]+pLe[i]+pM[i])/4); r._sc=[Math.round(pV[i]*100),Math.round(pL[i]*100),Math.round(pLe[i]*100),Math.round(pM[i]*100)];});
+  return allP;
+}
 function pfReset(){['pf-pmax','pf-tmin','pf-lmin','pf-szmin','pf-szmax','pf-psfmax','pf-mrtmax'].forEach(id=>{const el=$(id);if(el)el.value='';});
   const t=$('pf-ten'); if(t)t.value='any'; renderProjects();}
 /* ---------- district attractiveness (shared by the chips, the choropleth and tooltips) ---------- */
@@ -1247,14 +1274,8 @@ function renderProjects(){
     const u=t(s), st=(!act&&u!=null)?` style="background:rgba(${_attrRGB(u)},0.42);border-color:rgba(${_attrRGB(u)},0.66)"`:'';
     return `<button class="preset${act?' active':''}" data-d="${d}"${st} title="${dnfo[d]||d}">${act?'&#10003; ':''}${shortNm(d)}</button>`;}).join('');
   $('p-clear').style.display=_pdists.size?'inline':'none';
-  // broad attractiveness score across ALL projects (stable global normalisation): value (vs area) + liquidity + lease + MRT proximity
-  const _lyr=r=>Math.min(r.lease==='FH'?105:(typeof r.lease==='number'?r.lease:80),105), _vsa=r=>dmed[r.d]?r.median_psf/dmed[r.d]-1:0;
-  const allP=P.rows.filter(r=>r.median_psf);
-  const AV=allP.map(r=>-_vsa(r)),AL=allP.map(r=>Math.log(r.vol_12m||1)),ALe=allP.map(r=>_lyr(r)),AM=allP.map(r=>-(r.mrt_m!=null?r.mrt_m:1500));
-  // percentile-rank each factor so equal weight is truly equal — min-max let wide-spread liquidity dominate and compressed value
-  const _prank=vals=>{const o=vals.map((v,i)=>i).sort((a,b)=>vals[a]-vals[b]),rk=[];o.forEach((i,k)=>rk[i]=vals.length>1?k/(vals.length-1):0.5);return rk;};
-  const pV=_prank(AV),pL=_prank(AL),pLe=_prank(ALe),pM=_prank(AM);
-  allP.forEach((r,i)=>{r.score=Math.round(100*(pV[i]+pL[i]+pLe[i]+pM[i])/4); r._sc=[Math.round(pV[i]*100),Math.round(pL[i]*100),Math.round(pLe[i]*100),Math.round(pM[i]*100)];});
+  // attractiveness score - see _scoreProjects above: four percentile ranks, equal weight, five-deal floor
+  _scoreProjects(P.rows, dmed, SCORE_MIN_DEALS);
   let rows=P.rows.filter(r=>r.median_psf);
   if(_pdists.size) rows=rows.filter(r=>_pdists.has(r.district));
   if(_pq){const q=_pq.toLowerCase(); rows=rows.filter(r=>(r.project||'').toLowerCase().includes(q));}
@@ -1276,23 +1297,24 @@ function renderProjects(){
   });
   const _pkey=r=>_psort==='project'?(r.project||'').toLowerCase():_psort==='district'?(+String(r.district||'').replace(/\D/g,'')||0):_psort==='lease'?_leaseNum(r.lease):_psort==='mrt_m'?(r.mrt_m==null?Infinity:r.mrt_m):(r[_psort]==null?-Infinity:r[_psort]);
   const _pd=_pasc?1:-1;
-  rows=rows.slice().sort((a,b)=>{const ka=_pkey(a),kb=_pkey(b);return _pd*((typeof ka==='string')?ka.localeCompare(kb):(ka-kb));});
+  // Unscored rows sit below every scored row on the Score column whichever way it is sorted
+  rows=rows.slice().sort((a,b)=>{if(_psort==='score'){const an=a.score==null,bn=b.score==null;if(an||bn)return an&&bn?0:(an?1:-1);}const ka=_pkey(a),kb=_pkey(b);return _pd*((typeof ka==='string')?ka.localeCompare(kb):(ka-kb));});
   const cap=_pall?rows.length:40, total=rows.length, shown=rows.slice(0,cap);
   const hasMrt=(D.market.projects||{}).mrt_ok;
   const cols=[['project','Project'],['score','Score'],['district','District'],['price','Median price'],['size','Size'],['median_psf','Resale $psf'],['momentum','1yr'],['vol_12m','Turnover 1y']].concat(hasMrt?[['mrt_m','Nearest MRT']]:[]).concat([['lease','Lease']]);
   const numk=['median_psf','momentum','vol_12m','lease','price','size','score'];
-  const TIT={score:'Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across all projects',vol_12m:'Resale transactions in the last 12 months — the liquidity proxy used in the Score (log-scaled so large developments do not dominate)',momentum:'Change in the resale median $psf over the last 12 months — shown for context, not part of the Score'};
+  const TIT={score:'Attractiveness: value (vs area) + liquidity (turnover) + remaining lease + MRT proximity, equal-weight across projects with at least '+SCORE_MIN_DEALS+' resale deals in 12 months; thinner projects are listed but not scored',vol_12m:'Resale transactions in the last 12 months — the liquidity proxy used in the Score (log-scaled so large developments do not dominate)',momentum:'Change in the resale median $psf over the last 12 months — shown for context, not part of the Score'};
   const th=cols.map(([k,l])=>`<th class="${numk.includes(k)?'num ':''}psort" data-k="${k}"${TIT[k]?` title="${TIT[k]}"`:''}>${l}${_psort===k?(_pasc?' ▴':' ▾'):''}</th>`).join('')+'<th class="num">vs area</th><th>Explore</th>';
   const body=shown.map(r=>{const dm=dmed[r.d], vs=dm?r.median_psf/dm-1:null, nm=r.project||'—',
     leaseCls=(typeof r.lease==='number'&&r.lease<60)?'neg':'', mo=monthsOld(r.last), stale=mo!=null&&mo>9;
     return `<tr><td>${nm}</td>`+
-      `<td class="num" style="background:rgba(26,135,84,${((r.score||0)/100*0.22).toFixed(3)})" title="Score ${r.score!=null?r.score:'—'} = mean of four percentile ranks vs all projects (0 = lowest, 100 = highest):&#10;Value — cheaper vs area: ${r._sc?r._sc[0]:'—'}&#10;Liquidity — resale turnover: ${r._sc?r._sc[1]:'—'}&#10;Remaining lease: ${r._sc?r._sc[2]:'—'}&#10;MRT proximity: ${r._sc?r._sc[3]:'—'}"><b>${r.score!=null?r.score:'—'}</b></td>`+
+      `<td class="num" style="background:rgba(26,135,84,${((r.score||0)/100*0.22).toFixed(3)})" title="${r.score!=null?`Score ${r.score} = mean of four percentile ranks vs all scored projects (0 = lowest, 100 = highest):&#10;Value — cheaper vs area: ${r._sc[0]}&#10;Liquidity — resale turnover: ${r._sc[1]}&#10;Remaining lease: ${r._sc[2]}&#10;MRT proximity: ${r._sc[3]}`:`Not scored — ${fmt0(r.vol_12m||0)} resale deal${r.vol_12m===1?'':'s'} in 12 months, below the ${SCORE_MIN_DEALS}-deal floor: two or three sales are not a median`}"><b>${r.score!=null?r.score:'—'}</b></td>`+
       `<td><span class="mono">${r.district||'—'}</span>${_dar(r.district)?` <span style="color:var(--t3-text);font-size:12px">${_areaLbl(_dar(r.district))}</span>`:''}</td>`+
       `<td class="num">${r.price?sgdk(r.price):'—'}</td>`+
       `<td class="num" title="${r.size_r?'typical '+fmt0(r.size_r[0])+'–'+fmt0(r.size_r[1])+' sqft':''}">${r.size?fmt0(r.size)+' sf':'—'}</td>`+
       `<td class="num" title="${r.last?'latest resale '+r.last:''}">$${fmt0(r.median_psf)}${stale?' <span style="color:var(--a);cursor:help" title="latest resale '+r.last+' — 12-month median may be stale">&#9888;</span>':''}</td>`+
       `<td class="num ${r.momentum==null?'':(r.momentum>=0?'pos':'neg')}">${r.momentum==null?'—':((r.momentum>=0?'+':'')+pct(r.momentum,1))}</td>`+
-      `<td class="num"${r.vol_12m<6?' title="few resales — treat the median as indicative"':''}>${fmt0(r.vol_12m)}${r.vol_12m<6?' <span style="color:var(--a);font-size:11px">thin</span>':''}</td>`+
+      `<td class="num"${(r.vol_12m||0)<SCORE_MIN_DEALS?` title="fewer than ${SCORE_MIN_DEALS} resales in 12 months — listed, not scored; treat the median as indicative"`:''}>${fmt0(r.vol_12m)}${(r.vol_12m||0)<SCORE_MIN_DEALS?' <span style="color:var(--a);font-size:11px">thin</span>':''}</td>`+
       (hasMrt?`<td>${r.mrt_m!=null?('<span class="mono"'+(r.mrt_m<400?' style="color:var(--g)"':'')+'>'+fmt0(r.mrt_m)+'m</span> <span style="color:var(--t3-text)">'+(r.mrt||'')+'</span>'):'—'}</td>`:'')+
       `<td class="num ${leaseCls}"${(typeof r.lease==='number'&&r.lease>200)?` title="${fmt0(r.lease)} years remaining"`:''}>${_leaseTxt(r.lease)}</td>`+
       `<td class="num ${vs==null?'':(vs<0?'pos':'neg')}" title="vs district median">${vs==null?'—':((vs>=0?'+':'')+pct(vs,0))}</td>`+

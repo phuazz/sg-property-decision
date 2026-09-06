@@ -33,6 +33,9 @@ jobs:
       - name: Lease labels and tenure buckets
         run: node scripts/test_lease_labels.js
 
+      - name: Project score and the five-deal floor
+        run: node scripts/test_project_score.js
+
   # docs/index.html is what the world actually loads, and it is generated — so an edit to
   # template.html that was never rebuilt leaves the live page silently lagging its source, with
   # nothing in the diff to show it. pipeline.py reads only the repo and stamps no clock, so a
