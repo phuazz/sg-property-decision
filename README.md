@@ -108,7 +108,7 @@ sg-property-decision/
 │   ├── pipeline.py        # merge live over baseline, inline into template.html → docs/index.html
 │   ├── test_engine_parity.js   # engine/engine.js == the engine inlined in template.html
 │   ├── test_lease_labels.js    # lease labels, tenure buckets, sort order, and the live rows
-│   └── test_project_score.js   # the Score's five-deal floor, its ranking pool, and the live rows
+│   └── test_project_score.js   # the Score: confidence-weighted value, tie-averaged ranks, and the live rows
 ├── .github/workflows/
 │   ├── ci.yml             # every push/PR: both tests + the build-drift check
 │   └── refresh.yml        # weekly: tests, fetch_data + pipeline, commit the rebuilt page
@@ -129,7 +129,7 @@ at run time rather than duplicating it, so neither can drift away from what the 
 ```
 node scripts/test_engine_parity.js    # engine parity, ~1.04m cases across the full input grid
 node scripts/test_lease_labels.js     # lease labels + tenure buckets, and every live project row
-node scripts/test_project_score.js    # project score: five-deal floor both sides, thin rows out of the pool, live rows consistent
+node scripts/test_project_score.js    # project score: confidence weighting by deal count, tie-averaged ranks, order-invariant on the live rows
 python scripts/test_landed_summary.py # landed price bands: bucketing, 12-month window, thin-sample withholding
 ```
 
@@ -388,5 +388,33 @@ Rendered check on the Which tab at 390 and 1280 px: no body horizontal scroll, n
 viewport without a scrolling ancestor, nothing under 11 px. What this does not fix, and is next: Value
 still compares a project's $psf with an all-tenure district median, so lease is counted once in Value
 and again in the Lease rank; the fix is a tenure-and-age-matched Value basis, queued in `C:\dev\NEXT.md`.
+Superseded the same day, below.
+
+**Score: confidence weighting replaces the floor (2026-09-06, same day).** Zhenghao's call on the
+floor above: not fair to remove projects from the pool; caveat the lack of data and give the score
+lower confidence. So every project with a resale median is scored again, and the evidence behind its
+median sets how much its own price counts. The value factor now shrinks a project's observed discount
+to its district by n/(n+5), n being its resale deals in the last twelve months: the project median
+counts one vote per deal against five for the district median, so two deals keep 29% of the observed
+discount, five keep half, twenty keep 80%. The other three factors (turnover, lease, MRT) are facts of
+the record, not estimates, and are not shrunk. Fewer than five deals is labelled *low conf* beside the
+Score, with the weight and the deal count in the tooltip. On the way the ranker's tie handling turned
+out to be a defect of its own: 64% of the file is freehold (one lease value) and 26% has exactly two
+deals (one liquidity value), and ties were split by file order, so identical freehold projects drew
+lease ranks anywhere from 36 to 100 and the Score depended on the order rows arrived in. Ties now share
+the average rank (every freehold-like project takes lease rank 68; every 99-year lease sits below it),
+and a shuffled file scores every project identically, which the test asserts on the live feed. Against
+the original top 40, before either change: all 19 adequately traded projects stay; of the 21 thin ones
+only Roxy Square remains (3 deals, now 18th at 69, flagged), and three four-deal projects enter
+(Platinum Edge, Grange Heights, Luma, flagged); freehold-like falls from 24 to 16, the median deal
+count rises from 3 to 14, and Parc Emily leads at 78. The floor version had no thin row and a median of
+20 deals, at the cost of 555 unscored projects; this keeps everyone. Same test file, rewritten: the
+prior pinned at 5; the weight at 0, 5 and 20 deals; a −25% discount on 20 deals outranking a −69%
+discount on 2; identical inputs taking identical ranks, a tied group taking the average position, a
+reversed pool scoring identically; stale scores cleared; extremes at 0 and 100; and on the live feed
+every row with a median scored, every label matching its deal count, and a shuffled file unchanged.
+Four guards verified by making them fail: the prior constant, the shrinkage, the tie handling and the
+label threshold. Rendered check on the Which tab at 390 and 1280 px: no body horizontal scroll, no
+unwrapped overflow, nothing under 11 px. The Value-basis item in `C:\dev\NEXT.md` stands.
 
 _Last updated: 2026-09-03._

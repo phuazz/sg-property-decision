@@ -33,7 +33,7 @@ jobs:
       - name: Lease labels and tenure buckets
         run: node scripts/test_lease_labels.js
 
-      - name: Project score and the five-deal floor
+      - name: Project score, confidence weighting and tie-averaged ranks
         run: node scripts/test_project_score.js
 
   # docs/index.html is what the world actually loads, and it is generated — so an edit to
