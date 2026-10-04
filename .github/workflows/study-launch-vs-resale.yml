@@ -29,6 +29,9 @@ jobs:
       - name: Self-test (no key needed)
         run: python scripts/study_launch_vs_resale.py --self-test
 
+      # The result. Landed duplicate caveat records are removed before the rows are built (the
+      # study reads condominiums and apartments only, so this leaves its rows untouched by
+      # construction - the _data block in the output says how many records the step removed).
       - name: Run study
         env:
           URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}
@@ -36,6 +39,14 @@ jobs:
 
       - name: Print full result
         run: cat reviews/launch_vs_resale_result.json
+
+      # A comparison run, never the record: the same feed with the exact-duplicate removal widened
+      # to every record, which the 2026-10-04 census showed would discard distinct condominium sales.
+      # It exists to put a number on what that treatment would have done to the two filed records.
+      - name: Run study with the removal widened to all records (comparison only)
+        env:
+          URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}
+        run: python scripts/study_launch_vs_resale.py --run --dedup-scope all --out reviews/launch_vs_resale_result_dedup-all.json
 
       - name: Test A2 summary
         run: python scripts/study_a2_summary.py
@@ -47,5 +58,7 @@ jobs:
         if: always()
         with:
           name: launch-vs-resale-result
-          path: reviews/launch_vs_resale_result.json
+          path: |
+            reviews/launch_vs_resale_result.json
+            reviews/launch_vs_resale_result_dedup-all.json
           if-no-files-found: error

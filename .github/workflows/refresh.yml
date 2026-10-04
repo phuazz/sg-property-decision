@@ -39,6 +39,11 @@ jobs:
       - name: Test the landed price bands
         run: python scripts/test_landed_summary.py
 
+      # And the step those bands now depend on: landed duplicate caveat records are dropped before
+      # any count, non-landed records are left as served, and each mutation of that must be caught.
+      - name: Test the duplicate-record removal
+        run: python scripts/test_dedup.py
+
       - name: Fetch live data
         env:
           URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}   # optional — official segment $psf lights up if set

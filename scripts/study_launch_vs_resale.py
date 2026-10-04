@@ -75,6 +75,7 @@ import json
 import os
 import re
 import statistics
+import subprocess
 import sys
 from collections import defaultdict
 
@@ -106,6 +107,70 @@ MIN_AGE_BUCKET_DISTRICTS = 5      # pre-registered stop condition
 LEASE_TERM_MIN, LEASE_TERM_MAX = 95, 110
 CONDO_TYPES = ("Condominium", "Apartment")
 SALE_NEW, SALE_SUB, SALE_RESALE = "1", "2", "3"
+
+# --- duplicate records in the feed, found 2026-10-04 ---------------------------------------------
+# The free feed serves one LANDED caveat as two or three identical records (a house on several
+# lots, by the look of it): 21.2% of landed records, in pairs and triples only, and removing them
+# reproduces URA's published landed counts. Identical NON-LANDED records are distinct sales -
+# mirror-image units sold at one list price - and URA's developer-sales unit counts match the raw
+# caveat count (16,216 against 15,986 units sold for the projects launched inside the window),
+# not the de-duplicated one (14,222). Census: scripts/ura_duplicate_census.py, run 37200900931.
+# So the removal is scoped to landed houses, which this study never reads: it is here so the path
+# from feed to rows is the same as fetch_data's (same key, same scope), so the two filed records
+# could be re-run on it, and so the scope can be widened for comparison (--dedup-scope all) and
+# labelled as such in the output. STUDY_MUTATE=keep-duplicates forces the scope to 'none' for the
+# mutation sweep only; --run refuses to start while it is set.
+_MUTATE = os.environ.get("STUDY_MUTATE", "")
+LANDED_WORDS = ("detached", "terrace", "semi-d")     # mirrors fetch_data.LANDED_WORDS / _landed_type
+
+
+def is_landed_house(property_type) -> bool:
+    """Terrace, semi-detached or detached house; strata landed is NOT a landed house here."""
+    p = str(property_type or "").lower()
+    return any(w in p for w in LANDED_WORDS) and "strata" not in p
+
+
+def dedup_payload(projects, scope="landed"):
+    """Drop exact duplicate transaction records for the records in `scope`.
+
+    scope 'landed' (default) is the measured artefact; 'all' is a comparison run; 'none' removes
+    nothing. The identity is the project's name and street plus every field on the record, as in
+    fetch_data._record_key. Pure; returns (clean projects, stats).
+    """
+    if _MUTATE == "keep-duplicates":
+        scope = "none"
+    applies = {"landed": lambda t: is_landed_house(t.get("propertyType")),
+               "all": lambda t: True, "none": lambda t: False}[scope]
+    seen, seen_out, out = set(), set(), []
+    records = in_scope = removed = left = 0
+    for proj in projects or []:
+        kept = []
+        for t in proj.get("transaction", []) or []:
+            records += 1
+            k = (str(proj.get("project")), str(proj.get("street")),
+                 tuple(sorted((str(a), str(b)) for a, b in t.items())))
+            if not applies(t):
+                if k in seen_out:
+                    left += 1
+                seen_out.add(k)
+                kept.append(t)
+                continue
+            in_scope += 1
+            if k in seen:
+                removed += 1
+                continue
+            seen.add(k)
+            kept.append(t)
+        out.append({**proj, "transaction": kept})
+    return out, {"scope": scope, "records": records, "in_scope": in_scope, "removed": removed,
+                 "kept": records - removed, "identical_left_in_place": left,
+                 "key": "project, street and every field on the record (exact duplicates only)"}
+
+
+def prepare_rows(payload, scope="landed"):
+    """The one path from the feed to the rows every test reads: de-duplicate, then flatten."""
+    clean, stats = dedup_payload(payload, scope)
+    return flatten(clean), stats
 
 
 # ---------------------------------------------------------------- date helpers
@@ -709,7 +774,7 @@ def _tx(mmyy, price, sqm, sale, tenure="99 yrs lease commencing from 2020"):
             "typeOfSale": sale, "propertyType": "Condominium", "tenure": tenure}
 
 
-def self_test() -> int:
+def self_test(inner: bool = False) -> int:
     fails, ran = [], []
 
     def check(label, got, want):
@@ -1098,6 +1163,40 @@ def self_test() -> int:
                         "transaction": aged(psf, start, n=6)})
     check("C detects a non-monotone gradient", test_c_age_decay(flatten(inv))["monotone_decreasing"], False)
 
+    # --- duplicate records (2026-10-04): landed caveats de-duplicated, non-landed left alone ------
+    # Five identical condominium records are five sales and must all reach the tests; the same
+    # landed caveat served twice is one sale and must not.
+    def house(price, area="150"):
+        return {"contractDate": "0324", "price": str(price), "area": area, "typeOfSale": SALE_RESALE,
+                "propertyType": "Terrace House", "tenure": "Freehold", "district": "15", "floorRange": "-"}
+    dup_fx = [proj("FIVEFLATS", units(1000, MIN_CELL_N, "0324", SALE_RESALE)),
+              {"project": "HOUSES", "street": "HOUSE ROAD", "district": "15", "marketSegment": "OCR",
+               "transaction": [house(3_000_000), house(3_000_000), house(3_000_000, area="160"), house(3_200_000)]}]
+    clean, st = dedup_payload(dup_fx)
+    check("dedup removes the landed exact duplicate", st["removed"], 1)
+    check("dedup keeps a house that differs only in land area", len(clean[1]["transaction"]), 3)
+    check("dedup leaves identical condominium records in place", len(clean[0]["transaction"]), MIN_CELL_N)
+    check("dedup counts the identical non-landed records it left", st["identical_left_in_place"], MIN_CELL_N - 1)
+    check("dedup scope is reported", st["scope"], "landed")
+    check("dedup does not mutate its input", len(dup_fx[1]["transaction"]), 4)
+    rows_d, st2 = prepare_rows(dup_fx)
+    check("prepare_rows hands the tests every condominium row", len(rows_d), MIN_CELL_N)
+    check("prepare_rows reports the landed removal", st2["removed"], 1)
+    clean_all, st_all = dedup_payload(dup_fx, scope="all")
+    check("scope 'all' (comparison only) collapses the identical condominium records", len(clean_all[0]["transaction"]), 1)
+    check("scope 'all' is labelled", st_all["scope"], "all")
+    check("strata landed is not a landed house", is_landed_house("Strata Terrace"), False)
+    check("a semi-detached house is", is_landed_house("Semi-Detached House"), True)
+
+    if not inner:
+        # The guard is verified by making it fail: the same suite under STUDY_MUTATE must go red.
+        env = {**os.environ, "STUDY_MUTATE": "keep-duplicates", "PYTHONIOENCODING": "utf-8"}
+        p = subprocess.run([sys.executable, os.path.abspath(__file__), "--self-test-inner"],
+                           env=env, capture_output=True, text=True)
+        ran.append("mutation keep-duplicates is caught")
+        if p.returncode == 0:
+            fails.append("mutation keep-duplicates NOT caught - the de-duplication guard is not load-bearing")
+
     if fails:
         print("SELF-TEST FAILED")
         for f in fails:
@@ -1105,7 +1204,8 @@ def self_test() -> int:
         return 1
     print(f"SELF-TEST PASSED ({len(ran)} checks) - date boundaries, banding, "
           "self-contamination guard, SSD-hold and thin-cell exclusions, age-at-transaction "
-          "arithmetic, and both stop conditions on every test (A, A2, B, C).")
+          "arithmetic, both stop conditions on every test (A, A2, B, C), and the landed-only "
+          "de-duplication" + ("" if inner else " with its mutation caught") + ".")
     return 0
 
 
@@ -1151,13 +1251,22 @@ def load_live(key: str) -> list:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--self-test", action="store_true", help="verify the logic on synthetic fixtures; no key needed")
+    ap.add_argument("--self-test-inner", action="store_true", help=argparse.SUPPRESS)   # the suite without its mutation sweep
     ap.add_argument("--run", action="store_true", help="run against live URA data; needs URA_ACCESS_KEY")
     ap.add_argument("--out", default="reviews/launch_vs_resale_result.json")
+    ap.add_argument("--dedup-scope", choices=("landed", "all", "none"), default="landed",
+                    help="which records the exact-duplicate removal applies to: 'landed' is the measured "
+                         "artefact and the default; 'all' is a comparison run, labelled as such in the output")
     args = ap.parse_args()
 
+    if args.self_test_inner:
+        return self_test(inner=True)
     if args.self_test or not args.run:
         return self_test()
 
+    if _MUTATE:
+        print("STUDY_MUTATE is set; refusing to run against data", file=sys.stderr)
+        return 2
     key = os.environ.get("URA_ACCESS_KEY")
     if not key:
         print("URA_ACCESS_KEY is not set.\n"
@@ -1171,8 +1280,11 @@ def main() -> int:
         return 1
 
     payload = load_live(key)
-    rows = flatten(payload)
-    print(f"\n{len(rows):,} condo/apartment transactions in window.")
+    rows, dedup = prepare_rows(payload, scope=args.dedup_scope)
+    print(f"\nDe-duplication scope '{args.dedup_scope}': {dedup['removed']:,} of {dedup['in_scope']:,} in-scope "
+          f"records removed as exact duplicates; {dedup['identical_left_in_place']:,} identical records outside "
+          f"the scope left in place ({dedup['records']:,} records in the feed).")
+    print(f"{len(rows):,} condo/apartment transactions in window.")
     # Census the key the comparator pools are built on. The first A2 run reported districts=1
     # in every cell because district was read off the project rather than the transaction and
     # came back None, silently merging all 26 into one national pool. A count that can be read
@@ -1202,6 +1314,10 @@ def main() -> int:
                      "sample conditioned on a resale existing (SSD selection)",
                      "floor mix not controlled",
                      "~5-year window = one rate/cooling regime"],
+        "_data": {"feed": "URA PMI_Resi_Transaction, 4 batches, as served on the run date",
+                  "run_date": datetime.date.today().isoformat(),
+                  "window": [quarter_label(min(r["quarter"] for r in rows)), quarter_label(max(r["quarter"] for r in rows))],
+                  "dedup": dedup, "condo_apartment_rows": len(rows), "districts": ndist},
         "test_a_launch_premium_pct": test_a_launch_premium(rows),
         "test_a_by_year": test_a_by_year(rows),
         "test_a2_lease_matched": test_a2_lease_matched(rows, mrt_by_project=mrt),

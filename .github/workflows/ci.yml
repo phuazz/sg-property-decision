@@ -54,6 +54,11 @@ jobs:
       - name: Landed price bands (fetch_data._landed_summary)
         run: pip install requests && python scripts/test_landed_summary.py
 
+      # Same footing: the removal of the landed feed's duplicate caveat records is a pure function
+      # with its scope and key pinned, and its three mutations must each be caught.
+      - name: Duplicate caveat records (fetch_data.dedup_records)
+        run: python scripts/test_dedup.py
+
       - name: Rebuild the page
         run: python scripts/pipeline.py   # stdlib only — nothing to install
 

@@ -261,12 +261,91 @@ def _ura_projects_raw(key):
                      headers=hdr, timeout=60).json().get("Result", [])
     return projs
 
+# ---- duplicate records in the URA feeds ----------------------------------------------------
+# The free Data Service serves one LANDED caveat as two or three records that agree on every
+# field - the project's name and street and everything URA puts on the transaction - and URA's
+# own published landed counts do not carry them. Nothing here de-duplicated until 2026-10-04, so
+# the landed volumes this file published were overstated by about a fifth. Measured in CI on
+# 2026-10-04 (scripts/ura_duplicate_census.py, run 37200900931): 21.2% of landed records, in
+# pairs and triples only - a house on one, two or three lots - against 0.5% of condominium
+# resales and 9.9% of condominium new sales in groups of up to thirteen. Those non-landed
+# identical records are DISTINCT SALES, not an artefact: for the projects launched inside the
+# window, the raw new-sale caveat count equals URA's developer-sales count of units sold
+# (16,216 against 15,986), while de-duplicating would have cut it to 14,222. So the removal is
+# scoped to landed houses, where it is established, and leaves everything else as served. The
+# identity is the WHOLE record: a key that dropped a field would remove a different sale.
+# scripts/test_dedup.py pins both edges and verifies the guard by mutation.
+_DEDUP = {}   # filled by the de-duplication steps, copied into live.json._meta.dedup by main()
+
+def _record_key(proj, rec):
+    """Identity of one feed record: the project's name and street plus every field on the record."""
+    return (str(proj.get("project")), str(proj.get("street")),
+            tuple(sorted((str(k), str(v)) for k, v in rec.items())))
+
+def _dedup_applies(rec):
+    """Which records the removal applies to: landed houses (terrace, semi-detached, detached), the
+    one category where identical records are the same sale. Strata landed and non-landed records
+    are left as served, whatever they repeat."""
+    return _landed_type(rec.get("propertyType")) in LANDED_TYPES
+
+def dedup_records(projs, field, applies=None):
+    """Drop exact duplicate records from each project's `field` list ('transaction' or 'rental'),
+    for the records `applies` selects (default: landed houses, see _dedup_applies).
+
+    Returns (projects with the duplicates removed, stats). Pure: the input is not mutated, so the
+    test can run it on a fixture with no key and no network. The first record of each identical
+    group is kept, project and record order are preserved, and a project URA serves as two
+    objects under one name de-duplicates across them. Stats carry the removed count in total and
+    by property type, and the identical records OUTSIDE the scope that were left in place, so the
+    artefact's shape and the choice made about it stay visible in live.json._meta.
+    """
+    applies = _dedup_applies if applies is None else applies
+    seen, seen_out, groups, by_type = set(), set(), collections.Counter(), collections.Counter()
+    out, records, in_scope, removed, left = [], 0, 0, 0, 0
+    for proj in projs:
+        kept = []
+        for rec in proj.get(field, []) or []:
+            records += 1
+            k = _record_key(proj, rec)
+            if not applies(rec):
+                if k in seen_out:
+                    left += 1
+                seen_out.add(k)
+                kept.append(rec)
+                continue
+            in_scope += 1
+            groups[k] += 1
+            if k in seen:
+                removed += 1
+                by_type[str(rec.get("propertyType"))] += 1
+                continue
+            seen.add(k)
+            kept.append(rec)
+        out.append({**proj, field: kept})
+    sizes = collections.Counter(n for n in groups.values() if n > 1)
+    stats = {"records": records, "in_scope": in_scope, "removed": removed, "kept": records - removed,
+             "rate_in_scope": (round(removed / in_scope, 4) if in_scope else None),
+             "identical_left_in_place": left,
+             "duplicate_groups_by_size": {str(s): n for s, n in sorted(sizes.items())},
+             "removed_by_property_type": dict(by_type.most_common()),
+             "scope": "landed houses (terrace, semi-detached, detached); strata landed and non-landed left as served",
+             "key": "project, street and every field on the record (exact duplicates only)"}
+    return out, stats
+
+def _say_dedup(feed, s):
+    print(f"  dedup {feed}: {s['removed']:,} of {s['in_scope']:,} landed records were exact duplicates "
+          f"({(s['rate_in_scope'] or 0):.1%}), dropped before aggregation; "
+          f"{s['identical_left_in_place']:,} identical non-landed records left in place")
+
 _URA_PROJECTS = None
 def _ura_projects(key):
-    """Pull PMI_Resi_Transaction once (4 district batches), cache for reuse across aggregations."""
+    """Pull PMI_Resi_Transaction once (4 district batches), drop the landed feed's exact duplicate
+    records, cache for reuse across aggregations. Every landed count downstream is a count of the
+    de-duplicated feed; non-landed counts are counts of the feed as served."""
     global _URA_PROJECTS
     if _URA_PROJECTS is None:
-        _URA_PROJECTS = _ura_projects_raw(key)
+        _URA_PROJECTS, _DEDUP["transactions"] = dedup_records(_ura_projects_raw(key), "transaction")
+        _say_dedup("PMI_Resi_Transaction", _DEDUP["transactions"])
     return _URA_PROJECTS
 
 def _midx(mmyy):
@@ -334,11 +413,20 @@ def _ura_rentals_raw(key):
                    headers=hdr, timeout=60).json().get("Result", [])
     return out
 
+def _ura_rentals(key):
+    """PMI_Resi_Rental, last 4 reference quarters, with the same landed-only removal of exact
+    duplicate records as the transaction feed (1.1% of landed rental rows on 2026-10-04). Identical
+    non-landed rental rows - one rent, one size band, one month, one project - are the ordinary
+    shape of a large block's lettings and are left as served. Stats land in _meta.dedup.rentals."""
+    projs, _DEDUP["rentals"] = dedup_records(_ura_rentals_raw(key), "rental")
+    _say_dedup("PMI_Resi_Rental", _DEDUP["rentals"])
+    return projs
+
 def _district_rent_psf(key):
     """Median monthly rent $psf by district over the last 4 quarters. Best-effort; {} on any trouble."""
     try:
         by = collections.defaultdict(list)
-        for proj in _ura_rentals_raw(key):
+        for proj in _ura_rentals(key):
             for c in proj.get("rental", []):
                 d = str(c.get("district") or proj.get("district") or "").zfill(2)
                 mid, rent = _range_mid(c.get("areaSqft")), c.get("rent")
@@ -693,7 +781,8 @@ def target_homes():
             "landed": {"n": len(landed), "rows": landed},
             "property_type_census": dict(sorted(census.items(), key=lambda kv: -kv[1])),
             "bedroom_note": "URA publishes no bedroom count; floor area is a proxy only",
-            "source": "URA PMI_Resi_Transaction resale, unit level, 24 months"}
+            "source": "URA PMI_Resi_Transaction resale, unit level, 24 months; landed exact duplicate caveat "
+                      "records removed (live.json _meta.dedup)"}
 
 # ---- landed housing: what a budget above the condo market actually reaches ----
 # The page's budget input has no ceiling, and the resale-condo file it sizes homes against runs
@@ -798,7 +887,11 @@ def landed_resale():
     key = os.environ.get("URA_ACCESS_KEY")
     if not key:
         return None
-    return _landed_summary(_ura_projects(key), datetime.date.today())
+    out = _landed_summary(_ura_projects(key), datetime.date.today())
+    # The summary is a pure function and says nothing about cleaning; the feed it is handed here
+    # has been de-duplicated by _ura_projects, which is what makes these counts URA's counts.
+    out["source"] += "; exact duplicate caveat records removed (live.json _meta.dedup)"
+    return out
 
 def ura_new_launches():
     """URA developer sales (current new launches). Structure probe first — emits keys + a sample so the
@@ -1215,6 +1308,15 @@ def main():
 
     for name in live["_meta"]["errors"]:
         print(f"::warning::live feed failed: {name} - curated baseline values will stand for it")
+    # What the URA feeds lost to de-duplication this run, so a count on the page can be read back
+    # to the raw feed. Absent when no URA feed was pulled (no key, or everything carried forward).
+    if _DEDUP:
+        live["_meta"]["dedup"] = {**_DEDUP, "note": "landed houses only: exact duplicate records - identical "
+                                  "on every field, the project's name and street included - were dropped "
+                                  "before aggregation, so every landed count in this file is after removal. "
+                                  "Identical non-landed records are distinct sales (URA developer-sales unit "
+                                  "counts match the raw caveat count) and are left as served; their number "
+                                  "is reported as identical_left_in_place"}
     OUT.write_text(json.dumps(live, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size/1024:.1f} KB); errors: {list(live['_meta']['errors'])}")
 
