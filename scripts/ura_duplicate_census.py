@@ -134,6 +134,102 @@ def census_rentals(rentals):
             "periods": F._rental_periods(datetime.date.today())}
 
 
+def developer_sales_crosscheck(projs, launches):
+    """Are identical new-sale records one sale served twice, or several identical units sold?
+
+    URA's developer-sales feed counts UNITS sold to date per project from developers' returns
+    (Options to Purchase), independently of caveats. For a project whose first new-sale caveat
+    falls well inside the transaction window, every unit it has sold is inside the window too,
+    so its new-sale caveat count has a ceiling: it cannot legitimately exceed units sold. If the
+    raw count exceeds that ceiling and the de-duplicated count sits under it, the duplicates are
+    an artefact; if the raw count already sits at or under it, they are distinct sales.
+    """
+    if not launches or not launches.get("rows"):
+        return {"available": False}
+    months = [F._midx(t.get("contractDate", "")) for p in projs for t in p.get("transaction", []) or []]
+    months = [m for m in months if m]
+    window_start = min(months)
+    by = {}
+    for proj in projs:
+        name = str(proj.get("project") or "").strip().upper()
+        c = by.setdefault(name, {"raw": 0, "keys": set(), "first": None, "last": None})
+        for t in proj.get("transaction", []) or []:
+            if str(t.get("typeOfSale", "")).strip() != "1":
+                continue
+            c["raw"] += 1
+            c["keys"].add(key_full(proj, t))
+            mi = F._midx(t.get("contractDate", ""))
+            if mi:
+                c["first"] = mi if c["first"] is None else min(c["first"], mi)
+                c["last"] = mi if c["last"] is None else max(c["last"], mi)
+
+    def fmt(mi):
+        return None if mi is None else f"{(mi - 1) // 12}-{(mi - 1) % 12 + 1:02d}"
+
+    rows = []
+    for p in launches["rows"]:
+        c = by.get(str(p.get("project") or "").strip().upper())
+        if not c or not c["raw"] or not p.get("sold"):
+            continue
+        dedup = len(c["keys"])
+        rows.append({"project": p["project"], "launched": p.get("units"), "sold_to_date": p["sold"],
+                     "caveats_raw": c["raw"], "caveats_dedup": dedup,
+                     "first_new_sale": fmt(c["first"]), "last_new_sale": fmt(c["last"]),
+                     "in_window_launch": c["first"] >= window_start + 3,
+                     "raw_over_sold": round(c["raw"] / p["sold"], 3), "dedup_over_sold": round(dedup / p["sold"], 3)})
+    inw = [r for r in rows if r["in_window_launch"]]
+    agg = {"projects_matched": len(rows), "in_window_launches": len(inw),
+           "sum_sold_to_date": sum(r["sold_to_date"] for r in inw),
+           "sum_caveats_raw": sum(r["caveats_raw"] for r in inw),
+           "sum_caveats_dedup": sum(r["caveats_dedup"] for r in inw),
+           "projects_raw_above_sold": sum(1 for r in inw if r["caveats_raw"] > r["sold_to_date"]),
+           "projects_dedup_above_sold": sum(1 for r in inw if r["caveats_dedup"] > r["sold_to_date"])}
+    if agg["sum_sold_to_date"]:
+        agg["raw_over_sold"] = round(agg["sum_caveats_raw"] / agg["sum_sold_to_date"], 3)
+        agg["dedup_over_sold"] = round(agg["sum_caveats_dedup"] / agg["sum_sold_to_date"], 3)
+    return {"available": True, "developer_sales_asof": launches.get("asof"), "window_start": fmt(window_start),
+            "aggregate": agg, "projects": sorted(rows, key=lambda r: -r["sold_to_date"])}
+
+
+def quarterly_counts(projs):
+    """Condominium/apartment new sales and resales per contract quarter, raw and de-duplicated on the
+    full key, for comparison with the counts URA publishes each quarter."""
+    raw, keys = collections.Counter(), collections.defaultdict(set)
+    for proj in projs:
+        for t in proj.get("transaction", []) or []:
+            if t.get("propertyType") not in ("Condominium", "Apartment"):
+                continue
+            mi = F._midx(t.get("contractDate", ""))
+            sale = str(t.get("typeOfSale", "")).strip()
+            if not mi or sale not in ("1", "3"):
+                continue
+            q = f"{(mi - 1) // 12}-Q{((mi - 1) % 12) // 3 + 1}"
+            raw[(q, sale)] += 1
+            keys[(q, sale)].add(key_full(proj, t))
+    out = {}
+    for (q, sale), n in sorted(raw.items()):
+        out.setdefault(q, {})[SALE[sale]] = {"raw": n, "dedup_full": len(keys[(q, sale)])}
+    return out
+
+
+def rental_quarterly_counts(rentals):
+    """Rental contracts per reference quarter (leaseDate), landed against the rest, raw and de-duplicated."""
+    raw, keys = collections.Counter(), collections.defaultdict(set)
+    for proj in rentals:
+        for c in proj.get("rental", []) or []:
+            mi = F._midx(c.get("leaseDate", ""))
+            if not mi:
+                continue
+            q = f"{(mi - 1) // 12}-Q{((mi - 1) % 12) // 3 + 1}"
+            cat = "landed (non-strata)" if category(str(c.get("propertyType"))) == "landed (non-strata)" else "other"
+            raw[(q, cat)] += 1
+            keys[(q, cat)].add(key_full(proj, c))
+    out = {}
+    for (q, cat), n in sorted(raw.items()):
+        out.setdefault(q, {})[cat] = {"raw": n, "dedup_full": len(keys[(q, cat)])}
+    return out
+
+
 def pct(x):
     return "n/a" if x is None else f"{x:.1%}"
 
@@ -172,6 +268,36 @@ def markdown(report):
     for cat, c in rt["by_category"].items():
         L.append(f"| {cat} | {c['records']:,} | {c['dup_full']:,} | {pct(c['rate_full'])} |")
     L.append(f"| **all** | {rt['total']['records']:,} | {rt['total']['dup_full']:,} | {pct(rt['total']['rate_full'])} |")
+
+    x = report.get("developer_sales_crosscheck") or {}
+    if x.get("available"):
+        a = x["aggregate"]
+        L += ["", f"### New-sale caveats against URA developer sales (units sold to date, file {x['developer_sales_asof']})", "",
+              f"Transaction window opens {x['window_start']}; an in-window launch has its first new-sale caveat at least "
+              f"three months later, so all its sales are inside the window. {a['projects_matched']} selling projects matched "
+              f"by name, {a['in_window_launches']} launched in-window.", "",
+              f"- in-window launches: units sold to date {a['sum_sold_to_date']:,}; new-sale caveats raw {a['sum_caveats_raw']:,} "
+              f"({a.get('raw_over_sold')} of units sold), de-duplicated {a['sum_caveats_dedup']:,} ({a.get('dedup_over_sold')})",
+              f"- projects whose RAW caveat count exceeds units sold: {a['projects_raw_above_sold']}; after de-duplication: {a['projects_dedup_above_sold']}",
+              "", "| Project | Launched | Sold to date | Caveats raw | Caveats dedup | First new sale | In-window | raw/sold | dedup/sold |",
+              "|---|---:|---:|---:|---:|---|---|---:|---:|"]
+        for r in x["projects"]:
+            L.append(f"| {r['project']} | {r['launched'] if r['launched'] is not None else '—'} | {r['sold_to_date']:,} | {r['caveats_raw']:,} | "
+                     f"{r['caveats_dedup']:,} | {r['first_new_sale']} | {'yes' if r['in_window_launch'] else 'no'} | "
+                     f"{r['raw_over_sold']} | {r['dedup_over_sold']} |")
+    else:
+        L += ["", "Developer-sales cross-check unavailable this run."]
+
+    L += ["", "### Condominium / apartment counts by contract quarter, raw and de-duplicated (full key)", "",
+          "| Quarter | New sale raw | New sale dedup | Resale raw | Resale dedup |", "|---|---:|---:|---:|---:|"]
+    for q, d in report["quarterly_counts"].items():
+        n, r = d.get("1 new sale", {}), d.get("3 resale", {})
+        L.append(f"| {q} | {n.get('raw', 0):,} | {n.get('dedup_full', 0):,} | {r.get('raw', 0):,} | {r.get('dedup_full', 0):,} |")
+    L += ["", "### Rental contracts by reference quarter, raw and de-duplicated (full key)", "",
+          "| Quarter | Landed raw | Landed dedup | Other raw | Other dedup |", "|---|---:|---:|---:|---:|"]
+    for q, d in report["rental_quarterly_counts"].items():
+        l, o = d.get("landed (non-strata)", {}), d.get("other", {})
+        L.append(f"| {q} | {l.get('raw', 0):,} | {l.get('dedup_full', 0):,} | {o.get('raw', 0):,} | {o.get('dedup_full', 0):,} |")
     return "\n".join(L) + "\n"
 
 
@@ -184,10 +310,21 @@ def main():
         sys.exit("URA_ACCESS_KEY is not set; this census runs in CI, where the key is a repository secret.")
     projs = F._ura_projects_raw(key)
     rentals = F._ura_rentals_raw(key)
+    try:
+        launches = F.ura_new_launches()      # developer sales: units sold to date per selling project
+        if launches and launches.get("error"):
+            print(f"  note: developer-sales feed unavailable ({launches['error']})")
+            launches = None
+    except Exception as e:
+        print(f"  note: developer-sales feed unavailable ({e!r})")
+        launches = None
     report = {"run_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
               "source": "URA Data Service PMI_Resi_Transaction (4 batches) and PMI_Resi_Rental "
                         "(4 reference quarters), as served, before any cleaning",
-              "transactions": census_transactions(projs), "rentals": census_rentals(rentals)}
+              "transactions": census_transactions(projs), "rentals": census_rentals(rentals),
+              "developer_sales_crosscheck": developer_sales_crosscheck(projs, launches),
+              "quarterly_counts": quarterly_counts(projs),
+              "rental_quarterly_counts": rental_quarterly_counts(rentals)}
     md = markdown(report)
     print(md)
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
