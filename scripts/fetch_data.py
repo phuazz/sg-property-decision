@@ -245,20 +245,29 @@ def _ura_token(key):
                            "Renew URA_ACCESS_KEY at https://eservice.ura.gov.sg/maps/api/reg.html")
     return tok
 
-_URA_PROJECTS = None
-def _ura_projects(key):
-    """Pull PMI_Resi_Transaction once (4 district batches), cache for reuse across aggregations."""
-    global _URA_PROJECTS
-    if _URA_PROJECTS is not None:
-        return _URA_PROJECTS
+def _ura_projects_raw(key):
+    """PMI_Resi_Transaction as URA serves it: the 4 district batches concatenated, nothing removed.
+
+    One object per project (project, street, marketSegment, x, y) carrying a `transaction` list;
+    district sits on each transaction. Kept separate from _ura_projects so the raw feed can be
+    audited (scripts/ura_duplicate_census.py) independently of whatever cleaning sits between it
+    and the aggregations.
+    """
     tok = _ura_token(key)
     hdr = {**UA, "AccessKey": key, "Token": tok}
     projs = []
     for batch in (1, 2, 3, 4):
         projs += GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Transaction&batch={batch}",
                      headers=hdr, timeout=60).json().get("Result", [])
-    _URA_PROJECTS = projs
     return projs
+
+_URA_PROJECTS = None
+def _ura_projects(key):
+    """Pull PMI_Resi_Transaction once (4 district batches), cache for reuse across aggregations."""
+    global _URA_PROJECTS
+    if _URA_PROJECTS is None:
+        _URA_PROJECTS = _ura_projects_raw(key)
+    return _URA_PROJECTS
 
 def _midx(mmyy):
     """'mmyy' contract date -> month index (year*12+month) for windowing, or None."""
@@ -300,28 +309,41 @@ def _range_mid(s):
     nums = [float(n) for n in re.findall(r"\d+", str(s))]
     return sum(nums) / len(nums) if nums else None
 
+def _rental_periods(today):
+    """The 4 most recent URA rental reference quarters as 'yyqN' strings, latest first.
+
+    Python dates: months are 1-indexed, so (month - 1) // 3 + 1 is the calendar quarter.
+    """
+    yy, qq, periods = today.year % 100, (today.month - 1) // 3 + 1, []
+    for _ in range(4):
+        periods.append(f"{yy:02d}q{qq}")
+        qq -= 1
+        if qq == 0:
+            qq, yy = 4, yy - 1
+    return periods
+
+def _ura_rentals_raw(key):
+    """PMI_Resi_Rental for the last 4 reference quarters as URA serves it: one object per project
+    per quarter carrying a `rental` list, nothing removed. Separate from the aggregation so the
+    raw feed can be audited (scripts/ura_duplicate_census.py)."""
+    tok = _ura_token(key)
+    hdr = {**UA, "AccessKey": key, "Token": tok}
+    out = []
+    for rp in _rental_periods(datetime.date.today()):
+        out += GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Rental&refPeriod={rp}",
+                   headers=hdr, timeout=60).json().get("Result", [])
+    return out
+
 def _district_rent_psf(key):
     """Median monthly rent $psf by district over the last 4 quarters. Best-effort; {} on any trouble."""
     try:
-        tok = _ura_token(key)
-        hdr = {**UA, "AccessKey": key, "Token": tok}
-        today = datetime.date.today()
-        yy, qq, periods = today.year % 100, (today.month - 1) // 3 + 1, []
-        for _ in range(4):
-            periods.append(f"{yy:02d}q{qq}")
-            qq -= 1
-            if qq == 0:
-                qq, yy = 4, yy - 1
         by = collections.defaultdict(list)
-        for rp in periods:
-            res = GET(f"https://eservice.ura.gov.sg/uraDataService/invokeUraDS/v1?service=PMI_Resi_Rental&refPeriod={rp}",
-                      headers=hdr, timeout=60).json().get("Result", [])
-            for proj in res:
-                for c in proj.get("rental", []):
-                    d = str(c.get("district") or proj.get("district") or "").zfill(2)
-                    mid, rent = _range_mid(c.get("areaSqft")), c.get("rent")
-                    if d in DISTRICT_NAME and mid and rent:
-                        by[d].append(float(rent) / mid)
+        for proj in _ura_rentals_raw(key):
+            for c in proj.get("rental", []):
+                d = str(c.get("district") or proj.get("district") or "").zfill(2)
+                mid, rent = _range_mid(c.get("areaSqft")), c.get("rent")
+                if d in DISTRICT_NAME and mid and rent:
+                    by[d].append(float(rent) / mid)
         return {d: statistics.median(v) for d, v in by.items() if len(v) >= 20}
     except Exception:
         return {}

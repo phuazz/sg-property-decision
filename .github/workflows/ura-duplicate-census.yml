@@ -1,0 +1,38 @@
+name: URA duplicate census
+
+# Manual only. Measures how many exact duplicate records the URA transaction and rental feeds
+# carry, by property type and sale type, so the repo's de-duplication step rests on a measured
+# rate rather than an assumption. Runs here rather than locally so URA_ACCESS_KEY never leaves
+# GitHub. Read-only against URA; commits nothing; prints aggregate counts only.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # fetch_data imports requests at module level; nothing else is needed.
+      - name: Install
+        run: python -m pip install --quiet requests
+
+      - name: Census
+        env:
+          URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}
+        run: python scripts/ura_duplicate_census.py --out ura_duplicate_census.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ura-duplicate-census
+          path: ura_duplicate_census.json
+          if-no-files-found: error
