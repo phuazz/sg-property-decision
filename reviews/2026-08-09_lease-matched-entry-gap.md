@@ -191,3 +191,64 @@ the record's own numbers were computed on a broken key. Adjacent:
   change. A period estimate, not a law.
 - Distance to MRT is reported, not controlled.
 - CCR primary rests on 3 districts. Indicative only.
+
+## Correction note, 2026-10-04 — duplicate records in the feed: checked, this record is not affected
+
+Appended 2026-10-04 (Sunday). Nothing above is rewritten.
+
+**What prompted the check.** A separate study of landed houses on the same URA feed found that
+`PMI_Resi_Transaction` serves one landed caveat as two or three records identical on every field,
+and that removing them reproduces URA's published landed counts. The question for this record was
+whether the 105,599 condominium and apartment transactions it rests on carried the same artefact,
+which would have overstated every n above by about a fifth and could have moved the medians.
+
+**What was measured.** `scripts/ura_duplicate_census.py`, run in CI on 2026-10-04 (runs
+37200377892 and 37200900931) on the feed as served that day, contract months 2021-09 to 2026-09.
+An identical record is one that agrees with an earlier record on the project's name and street and
+on every field URA puts on the transaction.
+
+| Category | Records | Identical records beyond the first | Rate |
+|---|---:|---:|---:|
+| Landed houses (terrace, semi-detached, detached) | 10,989 | 2,329 | 21.2%, in pairs and triples only |
+| Condominium / apartment, resale | 60,329 | 318 | 0.5% |
+| Condominium / apartment, sub-sale | 4,994 | 268 | 5.4% |
+| Condominium / apartment, new sale | 38,243 | 3,779 | 9.9%, in groups of up to thirteen |
+
+The identical condominium records are distinct sales, not the landed artefact. URA's
+developer-sales feed counts units sold per project from developers' returns, independently of
+caveats. For the 45 selling projects whose first new-sale caveat falls inside the window, the raw
+new-sale caveat count equals units sold, 16,216 against 15,986 (1.014), while removing the
+identical records would have cut it to 14,222 (0.89). Mirror-image units sold at one list price
+in one floor band in one month produce identical records; a house on two or three lots produces
+the landed pairs and triples.
+
+**What changed in the code.** `scripts/fetch_data.py` and `scripts/study_launch_vs_resale.py` now
+drop exact duplicate records of landed houses before anything is counted. The whole record is the
+key; strata landed and every non-landed record are left as served and the identical ones are
+counted. `scripts/test_dedup.py` pins both edges and runs three mutations (keep the duplicates,
+widen the scope, drop a field from the key), each of which must fail the suite; CI and the weekly
+refresh run it. This study reads condominiums and apartments only, so the step changes none of
+its rows by construction, and the study's own self-test now asserts that.
+
+**What moved, and what did not.** Re-run on 2026-10-04 (workflow_dispatch 37201371001; output
+filed as `reviews/2026-10-04_launch-vs-resale-result_landed-dedup.json`). The feed delivered
+103,566 condominium and apartment transactions and the de-duplication removed none of them
+(2,329 landed records removed; 5,844 identical non-landed records left in place). The filed n of
+105,599 was therefore not overstated by duplicates; the difference to 103,566 is the feed's
+rolling window, which has moved since August. On the October feed the lease-matched primary reads
+CCR +31.78% (n=69, 3 districts), OCR +30.30% (n=254, 9), RCR +30.35% (n=232, 9) against the filed
++31.78 / +30.30 / +30.16 (n=69 / 277 / 245); the paired lease effect 2.98 / 12.10 / 3.97pp against
+2.98 / 11.80 / 4.27; the unrestricted leasehold baseline +39.89 / +53.25 / +44.62 against +40.10 /
++50.00 / +44.11; the corrected test A +41.84 / +54.10 / +47.07 (n=283 / 380 / 465) against +42.19
+/ +51.99 / +46.85 (n=293 / 405 / 483); the 85+ comparators still sit 550 m from the nearest
+station. Every one of those movements is window drift, and none changes a finding: the three
+segments still sit within 1.5pp of each other once lease is matched, the gradient is still
+monotone in all three, and the three infeasible cells are the same three. The filed figures stand
+as the record of the August feed; `reviews/launch_vs_resale_result.json` is unchanged.
+
+**What the assumed treatment would have done.** A comparison run with the removal widened to
+every record (same workflow run, `reviews/2026-10-04_launch-vs-resale-result_dedup-all.json`)
+discards 4,365 condominium and apartment records (103,566 to 99,201) and moves the lease-matched
+primary to +32.25 / +30.16 / +30.85 and the paired effect to 3.00 / 12.22 / 3.99pp: about half a
+point on the CCR and RCR medians, bought by discarding sales URA counts. It is filed for
+comparison and is not the record.

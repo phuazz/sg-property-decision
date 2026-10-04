@@ -88,6 +88,15 @@ flips the pill to `LIVE · stale (Nd)`.
 | 3M compounded SORA / package rates | MAS API portal / aggregators | Key / no feed | **curated** (SORA one line in `rules.json`) |
 | Land bid → launch price multiple | the two rows above, joined | Derived in `fetch_data.land_to_launch` | **live** where the URA key is set, else the last good value |
 
+Since 2026-10-04 the two URA feeds are cleaned before anything is counted: the free transaction
+feed serves one **landed** caveat as two or three records identical on every field (21.2% of landed
+records; a house on one, two or three lots), and `fetch_data.dedup_records` drops them. The scope is
+landed houses only, because identical non-landed records are distinct sales: for the projects
+launched inside the window the raw new-sale caveat count equals URA's developer-sales count of
+units sold. What was removed, and what was left in place, is written to `live.json._meta.dedup`;
+`scripts/ura_duplicate_census.py` (manual workflow, CI only) re-measures the rate by property type
+and sale type.
+
 To light up official segment $psf: register for a free URA Data Service AccessKey
 (`https://eservice.ura.gov.sg/maps/api/reg.html`) and set it as the `URA_ACCESS_KEY` env var / repo
 secret. REALIS ($1,960/yr or $87/day) is the paid escape hatch for unit-level addresses, exact dates and
@@ -131,6 +140,7 @@ node scripts/test_engine_parity.js    # engine parity, ~1.04m cases across the f
 node scripts/test_lease_labels.js     # lease labels + tenure buckets, and every live project row
 node scripts/test_project_score.js    # project score: confidence weighting by deal count, tie-averaged ranks, order-invariant on the live rows
 python scripts/test_landed_summary.py # landed price bands: bucketing, 12-month window, thin-sample withholding
+python scripts/test_dedup.py          # landed duplicate caveat records: dropped and counted, scope and key pinned, three mutations caught
 ```
 
 `test_engine_parity.js` asserts `engine/engine.js` is bit-identical to the engine still inlined in
@@ -417,4 +427,39 @@ Four guards verified by making them fail: the prior constant, the shrinkage, the
 label threshold. Rendered check on the Which tab at 390 and 1280 px: no body horizontal scroll, no
 unwrapped overflow, nothing under 11 px. The Value-basis item in `C:\dev\NEXT.md` stands.
 
-_Last updated: 2026-09-03._
+**Duplicate caveat records in the URA feed (2026-10-04).** A study of landed houses on the same feed
+found that `PMI_Resi_Transaction` serves one landed caveat as two or three records identical on every
+field, and that removing them reproduces URA's published landed counts; nothing here had ever
+de-duplicated, so every landed count on the page was overstated by about a fifth. Measured before
+anything was changed (`scripts/ura_duplicate_census.py`, CI runs 37200377892 and 37200900931, feed as
+served on 2026-10-04): 2,329 of 10,989 landed records were identical to an earlier one (21.2%, in 901
+pairs and 714 triples and nothing larger), against 318 of 60,329 condominium and apartment resales
+(0.5%) and 3,779 of 38,243 new sales (9.9%, in groups of up to thirteen). The condominium figures are
+not the same artefact. URA's developer-sales feed counts units sold per project from developers'
+returns, independently of caveats, and for the 45 selling projects launched inside the window the raw
+new-sale caveat count equals units sold, 16,216 against 15,986, while de-duplicating would have cut it
+to 14,222. Mirror-image units sold at one list price in one floor band in one month are identical
+records and distinct sales; a house on several lots is one sale and several records. So the removal
+is scoped to landed houses, the whole record is the key (a key that dropped `floorRange` would remove
+a different unit), strata landed and every non-landed record are left as served, and the identical
+ones left in place are counted. The step runs inside the cached transaction pull and the rental pull
+(36 of 3,341 landed rental rows), and writes removed, kept, rate and what was left to
+`live.json._meta.dedup`. `scripts/test_dedup.py` pins both edges and runs three mutations in process,
+keep the duplicates, widen the scope and drop a field from the key, each of which must fail the same
+checks; it runs in CI and before every weekly fetch. On the first de-duplicated build the landed
+resale bands rest on 1,652 houses over twelve months (terrace 931, semi-detached 520, detached 201)
+where the raw-feed build of 2026-09-28 showed 2,334, and the D15 replacement-home screen carries 459
+landed rows where it carried 784; a week of the rolling window sits inside both comparisons. Nothing
+non-landed changed except by that week. The two filed condominium studies were re-run on the cleaned
+feed in the same session: the step removes none of their rows, their filed n's were not overstated,
+and each carries a dated correction note saying what moved with the window and what did not
+(`reviews/2026-08-09_lease-matched-entry-gap.md`, `reviews/2026-08-10_building-age-decay.md`; the
+October runs are filed beside them, with a comparison run that widens the removal to every record so
+the cost of the assumed treatment is on the record). Rendered check in a real emulated viewport on all
+six tabs, folds open: `clientWidth` read back as 390 / 829 / 753 / 1265 at the four widths (the
+scrollbar takes the rest); body scroll width equal to the viewport on every tab, no element beyond
+the viewport without a scrolling ancestor, smallest type 11 px (the masthead pill) everywhere;
+running prose 40–55 characters a line at 390 px (medians 49–52 by tab) and 54–74 above (the Type
+tab's two-column notes 48–59, every other tab 61–74).
+
+_Last updated: 2026-10-04._

@@ -160,3 +160,54 @@ all plausible and none is tested.
 - The 0–5 bucket rests on 187 transactions in 12 districts. It clears both floors but is the
   thinnest row in the table and should not be leaned on.
 - Distance to MRT is not controlled here (test A2 reports it for the entry gap).
+
+## Correction note, 2026-10-04 — duplicate records in the feed: checked, this record is not affected
+
+Appended 2026-10-04 (Sunday). Nothing above is rewritten.
+
+**What prompted the check.** A separate study of landed houses on the same URA feed found that
+`PMI_Resi_Transaction` serves one landed caveat as two or three records identical on every field.
+The question for this record was whether the 37,722 resales and 34,623 new sales it rests on
+carried the same artefact, which would have overstated every n above by about a fifth.
+
+**What was measured.** The census and the developer-sales cross-check are set out in the
+correction note of `reviews/2026-08-09_lease-matched-entry-gap.md` (CI runs 37200377892 and
+37200900931, 2026-10-04). In short: 21.2% of landed records are identical to an earlier one, in
+pairs and triples only; 0.5% of condominium and apartment resales and 9.9% of new sales are, and
+the new-sale ones are distinct sales, because for the projects launched inside the window the raw
+new-sale caveat count equals URA's count of units sold (16,216 against 15,986) while removing the
+identical records would have cut it to 14,222.
+
+**What changed in the code.** Exact duplicate records of landed houses are now dropped before
+anything is counted, in `scripts/fetch_data.py` and in this study's loader, with the whole record
+as the key, strata landed and every non-landed record left as served, a fixture, and three
+mutations that must each fail the suite. This study reads condominiums and apartments only, so the
+step changes none of its rows by construction.
+
+**What moved, and what did not.** Re-run on 2026-10-04 (workflow_dispatch 37201371001; output
+filed as `reviews/2026-10-04_launch-vs-resale-result_landed-dedup.json`). The de-duplication
+removed no condominium or apartment record, so the filed n's were not overstated by duplicates.
+The October feed clears 37,495 resales through the guards against the filed 37,722, and the
+difference is the rolling window. On that feed the gradient reads +20.70% (0–5, n=192, 13
+districts), +10.25% (6–10, n=10,496), −0.04% (11–15, n=12,101), +1.40% (16–20, n=4,308), −12.47%
+(21–30, n=7,372), −25.30% (31+, n=3,026) against the filed +19.79 / +9.92 / +0.07 / +1.39 / −12.40
+/ −25.23; the entry anchor +45.71% (n=33,293) against +45.22% (n=34,623); 21,651 rows dropped for
+a non-standard lease and 1,183 for a thin cell against 22,054 and 1,208. No bucket median moved by
+more than half a point, no bucket changed feasibility, the gradient is still not monotone, and the
+old end is still stable year by year.
+
+One figure did move, and it is window drift rather than correction: the interpolated zero crossing
+reads 13.0 years on the October feed against the filed 18.8, because the 11–15 median moved from
++0.07% to −0.04% and the interpolation now lands between the 6–10 and 11–15 midpoints instead of
+beyond the 16–20 plateau. The record above already declined to place the crossing more precisely
+than a range; this re-run says the range is 11 to 20 years, not 15 to 20, and that a plateau
+sitting at zero makes any single crossing figure a property of the month's sample. The 2026 row
+of the by-year table also filled in (6–10 +13.1%, 11–15 +0.6%, 16–20 +0.1%, 21–30 −12.5%, 31+
+−25.0%) and the 2021 0–5 cell fell below the 30-transaction floor as 2021-08 left the window. The
+filed figures stand as the record of the August feed; `reviews/launch_vs_resale_result.json` is
+unchanged.
+
+**What the assumed treatment would have done.** With the removal widened to every record (same
+run, `reviews/2026-10-04_launch-vs-resale-result_dedup-all.json`) the gradient medians move by at
+most 0.07pp, but the entry anchor's n falls from 33,293 to 30,200 and the resales cleared from
+37,495 to 37,237, by discarding sales URA counts. Filed for comparison; not the record.
